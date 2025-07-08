@@ -1,41 +1,32 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+  <q-layout view="lHh Lpr lFf" class="main-background">
+    <q-header class="main-background">
       <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+        <q-btn flat dense class="main-text" round icon="fa-solid fa-angle-left" aria-label="Menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <q-toolbar-title class="main-text"> Panel de Control </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in linksList"
-          :key="link.title"
-          v-bind="link"
-        />
+    <q-drawer :width="250" v-model="leftDrawerOpen" show-if-above class="main-background">
+      <q-list dense>
+        <q-toolbar>
+          <q-icon size="30px" :name="iconOneZipCampanas" />
+          <q-toolbar-title class="text-weight-medium">OneZip Campañas</q-toolbar-title>
+        </q-toolbar>
+        <q-separator />
+        <q-item-section>
+          <q-item-label header class="text-subtitle2">Navegación</q-item-label>
+        </q-item-section>
+        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
+        <q-separator />
+        <q-item-section class="text-center">
+          <q-item-label caption class="q-mt-md"
+            >© {{ new Date().getFullYear() }} OneZip Campañas</q-item-label
+          >
+        </q-item-section>
       </q-list>
     </q-drawer>
 
@@ -47,56 +38,41 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+import EssentialLink, { type EssentialLinkProps } from 'components/dashboard/EssentialLink.vue';
 
 const linksList: EssentialLinkProps[] = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Panel de control',
+    icon: 'fa-solid fa-chart-area',
+    link: '/',
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+    title: 'Campañas',
+    icon: 'fa-solid fa-rocket',
+    link: '/campaigns',
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    title: 'Plantillas',
+    icon: 'fa-solid fa-file-invoice',
+    link: '/templates',
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
+    title: 'Contactos',
+    icon: 'fa-solid fa-user-group',
+    link: '/contacts',
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
+    title: 'Configuración',
+    icon: 'fa-solid fa-gear',
+    link: '/settings',
   },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
 ];
 
 const leftDrawerOpen = ref(false);
 
-function toggleLeftDrawer () {
+function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
 }
+
+const iconOneZipCampanas = `img:data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="rgb(22 163 74 / 1)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`;
 </script>
