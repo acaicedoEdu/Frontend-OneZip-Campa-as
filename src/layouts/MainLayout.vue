@@ -1,31 +1,44 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="main-background">
     <q-header class="main-background">
+      <div>
       <q-toolbar>
-        <q-btn flat dense class="main-text" round icon="fa-solid fa-angle-left" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-toolbar-title class="main-text text-h4 text-weight-medium">
+          {{ currentPageTitle }}
+        </q-toolbar-title>
 
-        <q-toolbar-title class="main-text"> Panel de Control </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <div class="text-caption main-text">Quasar v{{ $q.version }}</div>
       </q-toolbar>
+        <span class="text-subtitle1 secondary-text q-pl-sm">Resumen de tus campañas de WhatsApp</span>
+      </div>
     </q-header>
 
-    <q-drawer :width="250" v-model="leftDrawerOpen" show-if-above class="main-background">
+    <q-drawer
+      v-model="navigationStore.isDrawerOpen"
+      :width="242"
+      show-if-above
+      class="main-background"
+    >
       <q-list dense>
         <q-toolbar>
-          <q-icon size="30px" :name="iconOneZipCampanas" />
+          <q-icon size="30px" :name="APP_ICON" />
           <q-toolbar-title class="text-weight-medium">OneZip Campañas</q-toolbar-title>
         </q-toolbar>
         <q-separator />
         <q-item-section>
           <q-item-label header class="text-subtitle2">Navegación</q-item-label>
         </q-item-section>
-        <EssentialLink v-for="link in linksList" :key="link.title" v-bind="link" />
+        <EssentialLink
+          v-for="link in MAIN_NAVIGATION"
+          :key="link.title"
+          v-bind="link"
+          :active="currentRoute.path === link.link"
+        />
         <q-separator />
         <q-item-section class="text-center">
-          <q-item-label caption class="q-mt-md"
-            >© {{ new Date().getFullYear() }} OneZip Campañas</q-item-label
-          >
+          <q-item-label caption class="q-mt-md">
+            © {{ currentYear }} OneZip Campañas
+          </q-item-label>
         </q-item-section>
       </q-list>
     </q-drawer>
@@ -37,42 +50,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import EssentialLink, { type EssentialLinkProps } from 'components/dashboard/EssentialLink.vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import EssentialLink from 'components/dashboard/EssentialLink.vue';
+import { useNavigationStore } from '../stores/navigation';
+import { MAIN_NAVIGATION, APP_ICON } from '../constants/navigation';
 
-const linksList: EssentialLinkProps[] = [
-  {
-    title: 'Panel de control',
-    icon: 'fa-solid fa-chart-area',
-    link: '/',
-  },
-  {
-    title: 'Campañas',
-    icon: 'fa-solid fa-rocket',
-    link: '/campaigns',
-  },
-  {
-    title: 'Plantillas',
-    icon: 'fa-solid fa-file-invoice',
-    link: '/templates',
-  },
-  {
-    title: 'Contactos',
-    icon: 'fa-solid fa-user-group',
-    link: '/contacts',
-  },
-  {
-    title: 'Configuración',
-    icon: 'fa-solid fa-gear',
-    link: '/settings',
-  },
-];
+// Composables
+const navigationStore = useNavigationStore();
+const currentRoute = useRoute();
 
-const leftDrawerOpen = ref(false);
-
-function toggleLeftDrawer() {
-  leftDrawerOpen.value = !leftDrawerOpen.value;
-}
-
-const iconOneZipCampanas = `img:data:image/svg+xml;charset=utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="rgb(22 163 74 / 1)"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>`;
+// Computed
+const currentYear = computed(() => new Date().getFullYear());
+const currentPageTitle = computed(() => {
+  const currentLink = MAIN_NAVIGATION.find((link) => link.link === currentRoute.path);
+  return currentLink?.title || 'Panel de Control';
+});
 </script>

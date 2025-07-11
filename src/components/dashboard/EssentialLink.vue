@@ -1,6 +1,18 @@
 <template>
-  <q-item clickable v-ripple exact active-class="hover-background text-black" :to="link" class="secondary-text">
-    <q-item-section v-if="icon" side>
+  <q-item
+    clickable
+    v-ripple
+    exact
+    :active="active"
+    :to="link"
+    :class="{
+      'verde-suave': active,
+      'verde-texto': active,
+      'text-weight-medium': active, 
+      'secondary-text': !active,
+    }"
+  >
+    <q-item-section side :class="{ 'verde-texto': active }">
       <q-icon :name="icon" size="xs" />
     </q-item-section>
 
@@ -11,14 +23,12 @@
 </template>
 
 <script setup lang="ts">
-export interface EssentialLinkProps {
-  title: string;
-  link?: string;
-  icon?: string;
-}
+import type { NavigationLink } from '../../types/navigation';
 
-withDefaults(defineProps<EssentialLinkProps>(), {
-  link: '/',
+ withDefaults(defineProps<NavigationLink & { active?: boolean }>(), {
+  title: '',
   icon: '',
+  link: '',
+  active: false,
 });
 </script>
