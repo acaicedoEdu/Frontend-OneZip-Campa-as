@@ -8,26 +8,26 @@
     :class="{
       'verde-suave': active,
       'verde-texto': active,
-      'text-weight-medium': active, 
+      'text-weight-medium': active,
       'secondary-text': !active,
     }"
   >
     <q-item-section side :class="{ 'verde-texto': active }">
-      <q-icon :name="icon" size="xs" />
+      <q-icon :name="icono" size="xs" />
     </q-item-section>
 
     <q-item-section>
-      <q-item-label>{{ title }}</q-item-label>
+      <q-item-label>{{ titulo }}</q-item-label>
     </q-item-section>
   </q-item>
 </template>
 
 <script setup lang="ts">
-import type { NavigationLink } from '../../types/navigation';
+import type { LinkNavegacion } from '../../types/navegacion';
 
- withDefaults(defineProps<NavigationLink & { active?: boolean }>(), {
-  title: '',
-  icon: '',
+withDefaults(defineProps<LinkNavegacion & { active?: boolean }>(), {
+  titulo: '',
+  icono: '',
   link: '',
   active: false,
 });
