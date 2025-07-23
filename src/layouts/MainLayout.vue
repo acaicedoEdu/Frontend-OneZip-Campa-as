@@ -7,7 +7,15 @@
             {{ tituloActual }}
           </q-toolbar-title>
 
-          <div class="text-caption main-text">Quasar v{{ $q.version }}</div>
+          <q-btn
+            v-for="boton in botonesActual"
+            :key="boton.titulo"
+            :icon="boton.icono"
+            :label="boton.titulo"
+            class="q-ml-sm"
+            color="primary"
+            @click="boton.funcion"
+          />
         </q-toolbar>
         <span class="text-subtitle1 secondary-text q-pl-sm">{{ descripcionActual }}</span>
       </div>
@@ -63,12 +71,14 @@ const navegacionActual = computed(() => {
 });
 
 const tituloActual = computed(() => {
-  return navegacionActual.value ? navegacionActual.value.titulo : 'Panel de Control';
+  return navegacionActual.value?.titulo;
 });
 
 const descripcionActual = computed(() => {
-  return navegacionActual.value
-    ? navegacionActual.value.descripcion
-    : 'Resumen de tus campañas de WhatsApp Business';
+  return navegacionActual.value?.descripcion;
+});
+
+const botonesActual = computed(() => {
+  return navegacionActual.value?.botones;
 });
 </script>
