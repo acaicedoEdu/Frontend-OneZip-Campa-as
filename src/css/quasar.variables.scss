@@ -14,49 +14,48 @@
 
 // Colores Principales
 // Verde
-.verde-principal{
-  background-color: #16a34a;
+.verde-principal {
+  background-color: #16a34a !important;
 }
-.verde-claro{
+.verde-claro {
   background-color: #22c55e;
 }
-.verde-suave{
+.verde-suave {
   background-color: #dcfce7;
 }
-.verde-texto{
+.verde-texto {
   color: #166534 !important;
 }
 
 // Fondos
-.main-background{
+.main-background {
   background-color: #f9fafb;
 }
-.cards-background{
+.cards-background {
   background-color: #ffffff;
 }
-.hover-background{
+.hover-background {
   background-color: #f4f4f5;
 }
 
 // Bordes
-.main-border{
-  border-color:#e5e7eb;
+.main-border {
+  border-color: #e5e7eb !important;
 }
-.soft-border{
-  border-color:#f3f4f6;
+.soft-border {
+  border-color: #f3f4f6;
 }
 
 // Textos
-.main-text{
+.main-text {
   color: #18181b !important;
 }
-.secondary-text{
+.secondary-text {
   color: #6b7280;
 }
-.soft-text{
-  color: #9ca3af;
+.soft-text {
+  color: #9ca3af !important;
 }
 
-
-$dark      : #1D1D1D;
-$dark-page : #121212;
+$dark: #1d1d1d;
+$dark-page: #121212;

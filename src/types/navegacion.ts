@@ -10,5 +10,10 @@ interface BotonNavegacion {
   titulo: string;
   icono: string;
   principal: boolean;
-  funcion?: () => void;
+  opciones?: OpcionBotonNavegacion[];
+}
+
+interface OpcionBotonNavegacion {
+  titulo: string;
+  icono: string;
 }

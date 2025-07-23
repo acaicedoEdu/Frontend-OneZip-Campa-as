@@ -1,32 +1,71 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="main-background">
     <q-header class="main-background">
-      <div>
-        <q-toolbar>
-          <q-toolbar-title class="main-text text-h4 text-weight-medium">
+      <div class="row items-center justify-between q-pa-md">
+        <div class="column items-start justify-center">
+          <span class="main-text text-h4 text-weight-medium">
             {{ tituloActual }}
-          </q-toolbar-title>
+          </span>
+          <span class="text-subtitle1 secondary-text q-pl-sm">{{ descripcionActual }}</span>
+        </div>
+        <div class="row items-center justify-center">
+          <div v-for="boton in botonesActual" :key="boton.titulo">
+            <q-btn
+              v-if="!boton.opciones"
+              class="flex items-center justify-center"
+              :class="boton.principal ? 'verde-principal q-ml-sm' : 'boton-importar'"
+              unelevated
+              :outline="!boton.principal"
+              no-caps
+              default
+              @click="!boton.principal ? (importDialog = true) : null"
+            >
+              <q-icon
+                :name="boton.icono"
+                size="13px"
+                :class="boton.principal ? '' : 'secondary-text'"
+              />
+              <span
+                class="text-weight-regular q-ml-sm"
+                :class="boton.principal ? '' : 'secondary-text'"
+                >{{ boton.titulo }}</span
+              >
+            </q-btn>
 
-          <q-btn
-            v-for="boton in botonesActual"
-            :key="boton.titulo"
-            :icon="boton.icono"
-            :label="boton.titulo"
-            class="q-ml-sm"
-            color="primary"
-            @click="boton.funcion"
-          />
-        </q-toolbar>
-        <span class="text-subtitle1 secondary-text q-pl-sm">{{ descripcionActual }}</span>
+            <q-btn-dropdown
+              v-else
+              class="flex items-center justify-center verde-principal q-ml-sm"
+              unelevated
+              no-caps
+              default
+              :label="boton.titulo"
+              :dropdown-icon="boton.icono"
+              content-class="shadow-1"
+              :menu-offset="[0, 10]"
+            >
+              <q-list dense>
+                <q-item
+                  v-for="opcion in boton.opciones"
+                  :key="opcion.titulo"
+                  clickable
+                  v-close-popup
+                  @click="console.log(opcion.titulo)"
+                >
+                  <q-item-section side>
+                    <q-icon :name="opcion.icono" size="13px" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>{{ opcion.titulo }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+          </div>
+        </div>
       </div>
     </q-header>
 
-    <q-drawer
-      v-model="navigationStore.isDrawerOpen"
-      :width="242"
-      show-if-above
-      class="main-background"
-    >
+    <q-drawer v-model="navigationStore" :width="242" show-if-above class="main-background">
       <q-list dense>
         <q-toolbar>
           <q-icon size="30px" :name="ICONO_APON" />
@@ -53,16 +92,19 @@
       <router-view />
     </q-page-container>
   </q-layout>
+
+  <ImportarContactos v-model="importDialog" />
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import NavegacionPrincipal from 'components/principal/NavegacionPrincipal.vue';
-import { useNavegacionStore } from '../stores/navegacion';
 import { NAVEGACION_PRINCIPAL, ICONO_APON } from '../constants/navegacion';
+import ImportarContactos from 'src/components/contacto/ImportarContactos.vue';
 
-const navigationStore = useNavegacionStore();
+const navigationStore = ref(true);
+const importDialog = ref(false);
 const rutaActual = useRoute();
 
 const anoActual = computed(() => new Date().getFullYear());
@@ -82,3 +124,13 @@ const botonesActual = computed(() => {
   return navegacionActual.value?.botones;
 });
 </script>
+
+<style>
+.boton-importar {
+  background-color: white !important;
+  color: #e5e7eb !important;
+}
+.boton-importar:hover {
+  background-color: #f4f4f5 !important;
+}
+</style>
