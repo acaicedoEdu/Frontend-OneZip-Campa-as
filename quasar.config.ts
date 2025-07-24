@@ -13,7 +13,7 @@ export default defineConfig((/* ctx */) => {
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
       'pinia',
-      // 'axios',
+      'axios',
       // 'i18n',
       // 'quasar-extras',
       // 'my-custom-boot-file'
@@ -104,7 +104,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Notify'],
     },
 
     // animations: 'all', // --- includes all animations

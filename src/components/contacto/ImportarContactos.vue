@@ -14,7 +14,8 @@
       <q-card-section class="q-pt-md">
         <q-file
           v-model="selectedFile"
-          filled
+          outlined
+          dense
           label="Seleccionar archivo Excel (.xlsx)"
           accept=".xlsx"
           class="q-mt-md"
@@ -29,7 +30,8 @@
           :options="destinationOptions"
           label="Importar a:"
           options-dense
-          filled
+          dense
+          outlined
           class="q-mt-md"
           dropdown-icon="fa-solid fa-angle-down"
         />

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Grupo } from 'src/types/grupo';
+import { Notify } from 'quasar';
+
 interface GrupoState {
   grupos: Grupo[];
   loading: boolean;
@@ -30,12 +32,27 @@ export const useGrupoStore = defineStore('grupos', {
 
       this.loading = true;
       try {
-        const response = await axios.get<Grupo[]>('/grupos');
-        this.grupos = response.data;
+        const response = await axios.get('/grupo');
+        let grupos: Grupo[] = [];
+        grupos = response.data.Dato || [];
+        this.grupos = grupos;
         this.lastFetch = Date.now();
-        console.log('Contactos cargados desde la API.');
       } catch (error) {
-        console.error('Error al obtener los contactos:', error);
+        Notify.create({
+          message: 'Algo salió mal al obtener los grupos.',
+          color: 'grey-9',
+          position: 'bottom-right',
+          timeout: 5000,
+          icon: 'fa-solid fa-exclamation-triangle',
+          actions: [
+            {
+              icon: 'fa-solid fa-xmark',
+              color: 'white',
+              round: true,
+            },
+          ],
+        });
+        console.error('Error al obtener los grupos:', error);
       } finally {
         this.loading = false;
       }
@@ -43,7 +60,7 @@ export const useGrupoStore = defineStore('grupos', {
 
     async addGrupo(newGrupoData: Omit<Grupo, 'id'>) {
       try {
-        const response = await axios.post<Grupo>('/grupos', newGrupoData);
+        const response = await axios.post<Grupo>('/grupo', newGrupoData);
         this.grupos.push(response.data);
       } catch (error) {
         console.error('Error al crear el contacto:', error);

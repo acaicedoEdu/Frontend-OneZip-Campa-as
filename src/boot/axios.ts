@@ -8,6 +8,7 @@ declare module '@vue/runtime-core' {
 }
 
 export default boot(({ app }) => {
+  axios.defaults.baseURL = 'http://localhost:55604/api';
   app.config.globalProperties.$axios = axios;
 });
 

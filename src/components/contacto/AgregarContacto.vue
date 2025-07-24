@@ -1,29 +1,29 @@
 <template>
-  <div class="q-pa-md">
-    <q-btn label="Abrir Modal de Contacto" color="primary" @click="addContactDialog = true" />
-  </div>
-
-  <q-dialog v-model="addContactDialog" persistent>
+  <q-dialog
+    :model-value="modelValue"
+    @update:model-value="(value) => emit('update:modelValue', value)"
+    @hide="resetForm"
+  >
     <q-card style="width: 500px; max-width: 90vw; border-radius: 12px">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6 text-weight-bold">Añadir Nuevo Contacto</div>
         <q-space />
-        <q-btn icon="close" flat round dense v-close-popup />
+        <q-btn icon="fa-solid fa-xmark" flat round dense v-close-popup />
       </q-card-section>
 
       <q-card-section>
         <div class="text-grey-9 q-mb-xs">Teléfono</div>
-        <q-input outlined rounded v-model="telefono" placeholder="+34 600 123 456" />
+        <q-input outlined dense v-model="telefono" placeholder="+34 600 123 456" />
 
         <div v-for="(field, index) in dynamicFields" :key="field.key" class="q-mt-md">
           <div class="text-grey-9 q-mb-xs">{{ field.label }}</div>
-          <q-input outlined rounded v-model="field.value">
+          <q-input outlined dense v-model="field.value">
             <template v-slot:append>
               <q-btn
                 round
                 dense
                 flat
-                icon="close"
+                icon="fa-solid fa-xmark"
                 color="grey-7"
                 @click="removeField(index)"
                 aria-label="Eliminar campo"
@@ -36,7 +36,7 @@
           v-if="availableFieldsToAdd.length > 0"
           split
           outline
-          rounded
+          dropdown-icon="fa-solid fa-angle-down"
           no-caps
           color="primary"
           label="Añadir campo"
@@ -60,15 +60,17 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="Cancelar" color="grey-8" no-caps rounded v-close-popup />
+        <q-btn flat label="Cancelar" color="grey-8" no-caps v-close-popup />
         <q-btn
           unelevated
-          icon="person_add"
-          label="Añadir Contacto"
-          color="positive"
+          class="verde-principal text-white flex items-center justify-center"
           no-caps
-          rounded
-        />
+          default
+          :disable="!telefono || dynamicFields.some((f) => !f.value)"
+        >
+          <q-icon name="fa-solid fa-user-plus" size="13px" />
+          <span class="text-weight-regular q-ml-sm">Crear Grupo</span>
+        </q-btn>
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -83,7 +85,6 @@ interface DynamicField {
   value: string;
 }
 
-const addContactDialog = ref(false);
 const telefono = ref('');
 const dynamicFields = ref<DynamicField[]>([]);
 
@@ -108,4 +109,17 @@ function addField(field: DynamicField) {
 function removeField(index: number) {
   dynamicFields.value.splice(index, 1);
 }
+
+defineProps<{
+  modelValue: boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: boolean): void;
+}>();
+
+const resetForm = () => {
+  telefono.value = '';
+  dynamicFields.value = [];
+};
 </script>

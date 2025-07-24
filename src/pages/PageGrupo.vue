@@ -13,57 +13,59 @@
         align="left"
         swipeable
       >
-        <q-tab name="grupos" icon="fa-regular fa-folder-open" label="Grupos (4)" />
-        <q-tab name="contactos" icon="fa-regular fa-user" label="Contactos Individuales (3)" />
+        <q-tab
+          name="grupos"
+          icon="fa-regular fa-folder-open"
+          :label="grupoStore.grupos.length > 0 ? `Grupos (${grupoStore.grupos.length})` : 'Grupos'"
+        />
+        <q-tab name="contactos" icon="fa-regular fa-user" :label="`Contactos Individuales (5)`" />
       </q-tabs>
     </div>
-    <q-tab-panels v-model="tab" animated swipeable>
-      <q-tab-panel name="grupos">
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="fa-regular fa-folder-open" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Grupo 1</q-item-label>
-              <q-item-label caption>Grupo 1</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+    <q-tab-panels v-model="tab" class="q-ma-md" animated swipeable>
+      <q-tab-panel name="grupos" class="bordered-panel q-pa-none">
+        <MostrarGrupo :grupos="grupoStore.grupos" />
       </q-tab-panel>
       <q-tab-panel name="contactos">
-        <q-list>
-          <q-item>
-            <q-item-section avatar>
-              <q-icon name="fa-regular fa-user" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Grupo 1</q-item-label>
-              <q-item-label caption>Grupo 1</q-item-label>
-            </q-item-section>
-          </q-item>
-        </q-list>
+        <MostrarContactos />
       </q-tab-panel>
     </q-tab-panels>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import MostrarGrupo from 'src/components/grupo/MostrarGrupo.vue';
+import MostrarContactos from 'src/components/contacto/MostrarContacto.vue';
+import { useGrupoStore } from 'src/stores/grupo.store';
 
+const grupoStore = useGrupoStore();
+
+onMounted(async () => {
+  try {
+    await grupoStore.fetchGrupos();
+  } catch (e) {
+    console.error('Error al cargar grupos', e);
+  }
+});
 const tab = ref('grupos');
 </script>
 
 <style scoped>
 .custom-tabs {
   border: 1px solid #e0e0e0;
-  border-radius: 11px;
+  border-radius: calc(0.5rem - 2px);
   padding: 4px;
+  background-color: white;
 }
 
 .q-tab {
-  border-radius: 8px;
+  border-radius: calc(0.5rem - 6px);
   margin: 0 2px;
   font-weight: 500;
+}
+
+.bordered-panel {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
 }
 </style>

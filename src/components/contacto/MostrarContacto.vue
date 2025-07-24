@@ -1,8 +1,6 @@
 <template>
   <div class="q-pa-md q-pa-lg-lg">
-
     <div class="row items-center q-mb-md">
-      <q-icon name="o_person_outline" size="md" class="q-mr-md" />
       <div>
         <div class="text-h5 text-weight-bold">Contactos Individuales</div>
         <div class="text-grey-8">{{ rows.length }} contactos sin grupo asignado</div>
@@ -13,31 +11,29 @@
       <q-input
         outlined
         dense
-        rounded
         v-model="searchText"
         placeholder="Buscar contactos..."
         class="q-mr-sm"
-        style="width: 250px;"
+        style="width: 250px"
       >
         <template v-slot:prepend>
-          <q-icon name="search" />
+          <q-icon name="fa-solid fa-magnifying-glass" size="18px" />
         </template>
       </q-input>
-      <q-btn outline round dense color="grey-8" icon="o_filter_alt" class="q-mr-md" />
       <q-btn
+        class="flex items-center justify-center boton-importar-contactos"
+        unelevated
         outline
         no-caps
-        rounded
-        color="grey-9"
-        icon="o_add_circle_outline"
-        label="Añadir a Grupo"
-        style="font-weight: 500;"
-      />
+        default
+      >
+        <q-icon name="fa-solid fa-folder-plus" size="13px" class="text-dark" />
+        <span class="text-weight-regular q-ml-sm text-dark">Añadir a Grupo</span>
+      </q-btn>
     </div>
 
     <q-table
       :rows="rows"
-      :columns="columns"
       row-key="email"
       selection="multiple"
       v-model:selected="selected"
@@ -63,26 +59,44 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue';
 
-const searchText = ref('')
-const selected = ref([]) // Almacenará las filas que el usuario seleccione
+const searchText = ref('');
+const selected = ref([]);
 
-// Definición de las columnas de la tabla.
-// Esto le dice a q-table qué mostrar y cómo alinearlo.
-const columns = [
-  { name: 'name', label: 'Nombre', field: 'name', align: 'left', sortable: true },
-  { name: 'phone', label: 'Teléfono', field: 'phone', align: 'left' },
-  { name: 'email', label: 'Email', field: 'email', align: 'left' },
-  { name: 'lastContact', label: 'Último Contacto', field: 'lastContact', align: 'left', sortable: true },
-  { name: 'actions', label: 'Acciones', field: 'actions', align: 'center' }
-]
-
-// Datos de ejemplo. En una app real, esto vendría de una API.
 const rows = ref([
-  { name: 'Ana Rodríguez', addedDate: '2024-01-14', phone: '+34 600 111 222', email: 'ana.rodriguez@email.com', lastContact: '2024-01-15' },
-  { name: 'Pedro Martínez', addedDate: '2024-01-13', phone: '+34 600 333 444', email: 'pedro.martinez@email.com', lastContact: '2024-01-14' },
-  { name: 'Laura Sánchez', addedDate: '2024-01-12', phone: '+34 600 555 666', email: 'laura.sanchez@email.com', lastContact: '2024-01-15' },
-])
+  {
+    name: 'Ana Rodríguez',
+    addedDate: '2024-01-14',
+    phone: '+34 600 111 222',
+    email: 'ana.rodriguez@email.com',
+    lastContact: '2024-01-15',
+  },
+  {
+    name: 'Pedro Martínez',
+    addedDate: '2024-01-13',
+    phone: '+34 600 333 444',
+    email: 'pedro.martinez@email.com',
+    lastContact: '2024-01-14',
+  },
+  {
+    name: 'Laura Sánchez',
+    addedDate: '2024-01-12',
+    phone: '+34 600 555 666',
+    email: 'laura.sanchez@email.com',
+    lastContact: '2024-01-15',
+  },
+]);
 </script>
+
+<style>
+.boton-importar-contactos {
+  color: #e5e7eb;
+  padding: 8px 16px;
+}
+
+.boton-importar-contactos:hover {
+  background-color: #f4f4f5 !important;
+}
+</style>
