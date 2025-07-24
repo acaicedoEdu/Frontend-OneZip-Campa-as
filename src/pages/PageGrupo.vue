@@ -23,7 +23,7 @@
     </div>
     <q-tab-panels v-model="tab" class="q-ma-md" animated swipeable>
       <q-tab-panel name="grupos" class="bordered-panel q-pa-none">
-        <MostrarGrupo :grupos="grupoStore.grupos" />
+        <MostrarGrupo />
       </q-tab-panel>
       <q-tab-panel name="contactos">
         <MostrarContactos />
@@ -38,8 +38,9 @@ import MostrarGrupo from 'src/components/grupo/MostrarGrupo.vue';
 import MostrarContactos from 'src/components/contacto/MostrarContacto.vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 
-const grupoStore = useGrupoStore();
+const tab = ref('grupos');
 
+const grupoStore = useGrupoStore();
 onMounted(async () => {
   try {
     await grupoStore.fetchGrupos();
@@ -47,7 +48,6 @@ onMounted(async () => {
     console.error('Error al cargar grupos', e);
   }
 });
-const tab = ref('grupos');
 </script>
 
 <style scoped>

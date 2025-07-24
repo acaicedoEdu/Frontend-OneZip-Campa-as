@@ -1,11 +1,11 @@
 export interface Grupo {
-  IdGrupo: number;
+  IdGrupo?: number;
   Nombre: string;
   Descripcion: string;
-  FuenteCarga: string;
-  FechaCarga: Date;
+  FuenteCarga?: string;
+  FechaCarga?: Date;
   TotalContactos?: number;
   IdEstado?: number;
   IdAplicacion: number;
-  FechaModificacion: Date;
+  FechaModificacion?: Date;
 }

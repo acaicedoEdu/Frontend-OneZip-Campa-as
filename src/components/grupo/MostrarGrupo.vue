@@ -62,7 +62,10 @@
           </q-card-section>
 
           <q-card-section class="q-pt-xs text-caption text-grey">
-            <div>Creado: {{ group.fechaCarga }}</div>
+            <div>
+              Creado: {{ group.fechaCarga }}
+              <q-spinner-tail v-if="!group.fechaCarga" color="blue-grey" />
+            </div>
             <div v-if="group.fechaModificacion">Actualizado: {{ group.fechaModificacion }}</div>
           </q-card-section>
         </q-card>
@@ -72,17 +75,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { type Grupo } from 'src/types/grupo';
-
+import { ref, computed, onMounted } from 'vue';
+import { useGrupoStore } from 'src/stores/grupo.store';
 const searchText = ref('');
 
-const props = defineProps<{
-  grupos: Grupo[];
-}>();
+const grupoStore = useGrupoStore();
+
+onMounted(async () => {
+  try {
+    await grupoStore.fetchGrupos();
+  } catch (e) {
+    console.error('Error al cargar grupos', e);
+  }
+});
 
 const groups = computed(() => {
-  return props.grupos
+  return grupoStore.grupos
     .filter((g) => g.Nombre.toLowerCase().includes(searchText.value.toLowerCase()))
     .map((g) => ({
       nombre: g.Nombre,

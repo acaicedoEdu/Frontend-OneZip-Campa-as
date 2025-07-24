@@ -13,7 +13,14 @@
 
       <q-card-section>
         <div class="text-grey-9 q-mb-xs">Nombre del Grupo</div>
-        <q-input outlined dense placeholder="Nombre del grupo" v-model="groupName">
+        <q-input
+          outlined
+          dense
+          placeholder="Nombre del grupo"
+          v-model="nombre"
+          no-error-icon
+          :rules="[(val) => !!val || 'El nombre es requerido']"
+        >
           <template v-slot:prepend>
             <q-icon name="fa-regular fa-folder-open" size="18px" color="grey-7" />
           </template>
@@ -21,11 +28,13 @@
 
         <div class="text-grey-9 q-mb-xs q-mt-md">Descripción</div>
         <q-input
-          v-model="groupDescription"
+          v-model="descripcion"
           type="textarea"
           outlined
           dense
+          no-error-icon
           placeholder="Descripción del grupo"
+          :rules="[(val) => !!val || 'La descripción es requerida']"
         />
       </q-card-section>
 
@@ -36,7 +45,8 @@
           class="verde-principal text-white flex items-center justify-center"
           no-caps
           default
-          :disable="!groupName || !groupDescription"
+          :disable="!nombre || !descripcion"
+          @click="addGrupo"
         >
           <q-icon name="fa-solid fa-folder-plus" size="13px" />
           <span class="text-weight-regular q-ml-sm">Crear Grupo</span>
@@ -47,10 +57,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, type ComputedRef, ref } from 'vue';
+import { useGrupoStore } from 'src/stores/grupo.store';
+import { type Grupo } from 'src/types/grupo';
 
-const groupName = ref('');
-const groupDescription = ref('');
+const nombre = ref('');
+const descripcion = ref('');
 
 defineProps<{
   modelValue: boolean;
@@ -61,7 +73,20 @@ const emit = defineEmits<{
 }>();
 
 const resetForm = () => {
-  groupName.value = '';
-  groupDescription.value = '';
+  nombre.value = '';
+  descripcion.value = '';
 };
+
+const grupo: ComputedRef<Grupo> = computed(() => {
+  return {
+    Nombre: nombre.value,
+    Descripcion: descripcion.value,
+    IdAplicacion: 1,
+  };
+});
+
+const addGrupo = async () => {
+  emit('update:modelValue', false);
+  await useGrupoStore().addGrupo(grupo.value);
+};  
 </script>

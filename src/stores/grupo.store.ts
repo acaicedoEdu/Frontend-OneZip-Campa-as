@@ -1,10 +1,27 @@
 import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Grupo } from 'src/types/grupo';
+import type { QNotifyCreateOptions } from 'quasar';
 import { Notify } from 'quasar';
+
+// MEJORA: Helper para no repetir las notificaciones de error
+const showErrorNotification = (message: string) => {
+  const options: QNotifyCreateOptions = {
+    message,
+    color: 'grey-9',
+    position: 'bottom-right',
+    timeout: 5000,
+    icon: 'fa-solid fa-exclamation-triangle',
+    actions: [{ icon: 'fa-solid fa-xmark', color: 'white', round: true }],
+  };
+  Notify.create(options);
+};
 
 interface GrupoState {
   grupos: Grupo[];
+  tamano: number;
+  totalPaginas: number;
+  pagina: number;
   loading: boolean;
   lastFetch: number | null;
 }
@@ -12,59 +29,108 @@ interface GrupoState {
 export const useGrupoStore = defineStore('grupos', {
   state: (): GrupoState => ({
     grupos: [],
+    tamano: 0,
+    totalPaginas: 0,
+    pagina: 0,
     loading: false,
     lastFetch: null,
   }),
 
   getters: {
-    getGrupoById: (state) => (id: number) => {
-      return state.grupos.find((grupo) => grupo.IdGrupo === id);
-    },
+    getGrupoById:
+      (state) =>
+      (id: number): Grupo | undefined => {
+        return state.grupos.find((grupo) => grupo.IdGrupo === id);
+      },
     hasData: (state) => state.grupos.length > 0,
   },
 
   actions: {
     async fetchGrupos(forceRefresh = false) {
-      if (this.hasData && !forceRefresh) {
-        console.log('Usando contactos cacheados.');
+      const now = Date.now();
+      const cacheDuration = 5 * 60 * 1000;
+
+      if (this.hasData && !forceRefresh && this.lastFetch && now - this.lastFetch < cacheDuration) {
+        console.log('Usando grupos cacheados.');
         return;
       }
 
       this.loading = true;
       try {
         const response = await axios.get('/grupo');
-        let grupos: Grupo[] = [];
-        grupos = response.data.Dato || [];
-        this.grupos = grupos;
+        const data = response.data;
+
+        if (!data.IsEstado) {
+          showErrorNotification(data.Mensaje);
+        }
+
+        this.grupos = data.Dato || [];
+        this.tamano = data.Tamano;
+        this.totalPaginas = data.TotalPaginas;
+        this.pagina = data.Pagina;
         this.lastFetch = Date.now();
       } catch (error) {
-        Notify.create({
-          message: 'Algo salió mal al obtener los grupos.',
-          color: 'grey-9',
-          position: 'bottom-right',
-          timeout: 5000,
-          icon: 'fa-solid fa-exclamation-triangle',
-          actions: [
-            {
-              icon: 'fa-solid fa-xmark',
-              color: 'white',
-              round: true,
-            },
-          ],
-        });
+        showErrorNotification('Algo salió mal al obtener los grupos.');
         console.error('Error al obtener los grupos:', error);
       } finally {
         this.loading = false;
       }
     },
 
-    async addGrupo(newGrupoData: Omit<Grupo, 'id'>) {
+    async fetchGrupoById(id: number): Promise<Grupo | null> {
+      const grupoLocal = this.getGrupoById(id);
+      if (grupoLocal) {
+        return grupoLocal;
+      }
+
+      this.loading = true;
       try {
-        const response = await axios.post<Grupo>('/grupo', newGrupoData);
-        this.grupos.push(response.data);
+        const response = await axios.get(`/grupo/${id}`);
+        const data = response.data;
+
+        if (!data.IsEstado) {
+          showErrorNotification(data.Mensaje);
+          return null;
+        }
+
+        const fetchedGrupo = data.Dato as Grupo;
+        if (fetchedGrupo && !this.getGrupoById(fetchedGrupo.IdGrupo!)) {
+          this.grupos.push(fetchedGrupo);
+        }
+
+        return fetchedGrupo;
       } catch (error) {
-        console.error('Error al crear el contacto:', error);
-        throw error;
+        showErrorNotification('Algo salió mal al obtener el grupo.');
+        console.error('Error al obtener el grupo:', error);
+        return null;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async addGrupo(newGrupoData: Grupo) {
+      const tempId = -Date.now();
+      const tempGrupo = { ...newGrupoData, IdGrupo: tempId };
+      this.grupos.push(tempGrupo);
+      console.log(tempGrupo);
+      try {
+        const response = await axios.post('/grupo', newGrupoData);
+        const data = response.data;
+
+        if (!data.IsEstado) {
+          showErrorNotification(data.Mensaje);
+          this.grupos = this.grupos.filter((g) => g.IdGrupo !== tempId);
+        } else {
+          const savedGrupo = data.Dato as Grupo;
+          const index = this.grupos.findIndex((g) => g.IdGrupo === tempId);
+          if (index !== -1) {
+            this.grupos[index] = savedGrupo;
+          }
+        }
+      } catch (error) {
+        showErrorNotification('Algo salió mal al crear el grupo.');
+        console.error('Error al crear el grupo:', error);
+        this.grupos = this.grupos.filter((g) => g.IdGrupo !== tempId);
       }
     },
   },
