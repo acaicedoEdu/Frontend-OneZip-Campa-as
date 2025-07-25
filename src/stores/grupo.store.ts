@@ -1,21 +1,7 @@
 import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Grupo } from 'src/types/grupo';
-import type { QNotifyCreateOptions } from 'quasar';
-import { Notify } from 'quasar';
-
-// MEJORA: Helper para no repetir las notificaciones de error
-const showErrorNotification = (message: string) => {
-  const options: QNotifyCreateOptions = {
-    message,
-    color: 'grey-9',
-    position: 'bottom-right',
-    timeout: 5000,
-    icon: 'fa-solid fa-exclamation-triangle',
-    actions: [{ icon: 'fa-solid fa-xmark', color: 'white', round: true }],
-  };
-  Notify.create(options);
-};
+import { showErrorNotification } from 'src/components/notificacion/notificacion';
 
 interface GrupoState {
   grupos: Grupo[];
@@ -51,7 +37,6 @@ export const useGrupoStore = defineStore('grupos', {
       const cacheDuration = 5 * 60 * 1000;
 
       if (this.hasData && !forceRefresh && this.lastFetch && now - this.lastFetch < cacheDuration) {
-        console.log('Usando grupos cacheados.');
         return;
       }
 

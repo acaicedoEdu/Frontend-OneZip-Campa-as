@@ -28,16 +28,17 @@
         />
 
         <div
-          v-for="row in dynamicRows"
-          :key="row.id"
+          v-for="columna in camposPersonalizados"
+          :key="columna.id"
           class="row q-col-gutter-sm q-mb-sm items-center justify-center"
         >
           <div class="col">
             <q-input
-              v-model="row.column"
+              v-model="columna.nombre"
               outlined
               no-error-icon
               dense
+              type="text"
               label="Nombre Columna"
               :rules="[(val) => !!val || 'El nombre es requerido']"
             />
@@ -45,7 +46,7 @@
 
           <div class="col">
             <q-input
-              v-model="row.value"
+              v-model="columna.valor"
               outlined
               no-error-icon
               dense
@@ -54,8 +55,8 @@
             />
           </div>
 
-          <div class="col-auto">
-            <q-btn flat round dense color="negative" @click="deleteRow(row.id)">
+          <div class="col-auto q-mb-md">
+            <q-btn flat round dense color="negative" @click="deleteRow(columna.id)">
               <q-icon name="fa-solid fa-trash-can" size="15px" />
             </q-btn>
           </div>
@@ -72,8 +73,8 @@
           default
           @click="addRow"
         >
-          <q-icon name="fa-solid fa-plus" size="13px" />
-          <span class="text-weight-regular q-ml-sm">Agregar Atributo</span>
+          <q-icon name="fa-solid fa-plus" class="text-dark" size="13px" />
+          <span class="text-weight-regular q-ml-sm text-dark">Agregar Atributo</span>
         </q-btn>
         <q-space />
         <q-btn flat label="Cancelar" color="grey-8" no-caps v-close-popup />
@@ -95,35 +96,25 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-
-interface DynamicField {
-  key: string;
-  label: string;
-  value: string;
-}
+import { type CampoPersonalizadoContacto } from 'src/types/campopersonalizadocontacto';
 
 const telefono = ref('');
-const dynamicFields = ref<DynamicField[]>([]);
 
-interface DynamicRow {
-  id: number;
-  column: string;
-  value: string;
-}
-
-const dynamicRows = ref<DynamicRow[]>([]);
+const camposPersonalizados = ref<CampoPersonalizadoContacto[]>([]);
 
 const addRow = () => {
-  const newRow: DynamicRow = {
+  const newRow: CampoPersonalizadoContacto = {
     id: Date.now(),
-    column: '',
-    value: '',
+    nombre: '',
+    valor: '',
   };
-  dynamicRows.value.push(newRow);
+  camposPersonalizados.value.push(newRow);
 };
 
-const deleteRow = (rowId: number) => {
-  dynamicRows.value = dynamicRows.value.filter((row) => row.id !== rowId);
+const deleteRow = (columnaid: number) => {
+  camposPersonalizados.value = camposPersonalizados.value.filter(
+    (columna) => columna.id !== columnaid,
+  );
 };
 
 defineProps<{
@@ -136,7 +127,7 @@ const emit = defineEmits<{
 
 const resetForm = () => {
   telefono.value = '';
-  dynamicFields.value = [];
+  camposPersonalizados.value = [];
 };
 </script>
 

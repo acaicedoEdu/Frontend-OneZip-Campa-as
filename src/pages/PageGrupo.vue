@@ -1,25 +1,47 @@
 <template>
   <q-page>
-    <div class="q-pa-md" style="width: 420px">
-      <q-tabs
-        v-model="tab"
-        inline-label
-        class="text-grey-8 custom-tabs"
-        :active-color="tab === 'grupos' ? 'positive' : 'primary'"
-        :active-bg-color="tab === 'grupos' ? 'green-1' : 'blue-1'"
-        indicator-color="transparent"
-        no-caps
+    <div class="row items-center justify-between q-pr-md">
+      <div class="q-pa-md" style="width: 420px">
+        <q-tabs
+          v-model="tab"
+          inline-label
+          class="text-grey-8 custom-tabs"
+          :active-color="tab === 'grupos' ? 'positive' : 'primary'"
+          :active-bg-color="tab === 'grupos' ? 'green-1' : 'blue-1'"
+          indicator-color="transparent"
+          no-caps
+          dense
+          align="left"
+          swipeable
+        >
+          <q-tab
+            name="grupos"
+            icon="fa-regular fa-folder-open"
+            :label="
+              grupoStore.grupos.length > 0 ? `Grupos (${grupoStore.grupos.length})` : 'Grupos'
+            "
+          />
+          <q-tab name="contactos" icon="fa-solid fa-user" :label="`Contactos Individuales (5)`" />
+        </q-tabs>
+      </div>
+      <q-select
+        class="bg-white"
+        outlined
         dense
-        align="left"
-        swipeable
+        v-model="modelAplicacion"
+        label="Aplicación"
+        dropdown-icon="fa-solid fa-chevron-down"
+        :options="opcionesAplicacion"
+        style="width: 250px"
+        :loading="aplicacionStore.loading"
+        options-dense
       >
-        <q-tab
-          name="grupos"
-          icon="fa-regular fa-folder-open"
-          :label="grupoStore.grupos.length > 0 ? `Grupos (${grupoStore.grupos.length})` : 'Grupos'"
-        />
-        <q-tab name="contactos" icon="fa-regular fa-user" :label="`Contactos Individuales (5)`" />
-      </q-tabs>
+        <template v-slot:no-option>
+          <q-item>
+            <q-item-section class="text-grey"> No results </q-item-section>
+          </q-item>
+        </template>
+      </q-select>
     </div>
     <q-tab-panels v-model="tab" class="q-ma-md" animated swipeable>
       <q-tab-panel name="grupos" class="bordered-panel q-pa-none">
@@ -33,21 +55,44 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import MostrarGrupo from 'src/components/grupo/MostrarGrupo.vue';
 import MostrarContactos from 'src/components/contacto/MostrarContacto.vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
+import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
+const aplicacionStore = useAplicacionStore();
+const grupoStore = useGrupoStore();
 const tab = ref('grupos');
 
-const grupoStore = useGrupoStore();
+const storeOpcionesAplicacion = computed(() => {
+  return aplicacionStore.aplicaciones.map((app) => ({
+    label: app.Nombre,
+    value: app.IdAplicacion,
+  }));
+});
+
+const modelAplicacion = ref(
+  storeOpcionesAplicacion.value.filter(
+    (app) => app.value == aplicacionStore.IdAplicacionEscogida,
+  )[0],
+);
+
 onMounted(async () => {
   try {
+    await aplicacionStore.fetchAplicaciones();
+    console.log('HOLA');
     await grupoStore.fetchGrupos();
   } catch (e) {
-    console.error('Error al cargar grupos', e);
+    console.error('Error al cargar store', e);
   }
 });
+
+watch(modelAplicacion, (valorEscogido) => {
+  aplicacionStore.setIdAplicacionEscogida(valorEscogido!.value);
+});
+
+const opcionesAplicacion = ref(storeOpcionesAplicacion);
 </script>
 
 <style scoped>

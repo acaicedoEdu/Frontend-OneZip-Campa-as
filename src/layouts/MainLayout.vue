@@ -49,7 +49,11 @@
                   :key="opcion.titulo"
                   clickable
                   v-close-popup
-                  @click="opcion.titulo === 'Nuevo Grupo' ? (createGroupDialog = true) : (addContactDialog = true)"
+                  @click="
+                    opcion.titulo === 'Nuevo Grupo'
+                      ? (createGroupDialog = true)
+                      : (addContactDialog = true)
+                  "
                 >
                   <q-item-section side>
                     <q-icon :name="opcion.icono" size="13px" />

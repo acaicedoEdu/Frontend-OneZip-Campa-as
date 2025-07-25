@@ -60,9 +60,13 @@
 import { computed, type ComputedRef, ref } from 'vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import { type Grupo } from 'src/types/grupo';
+import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
 const nombre = ref('');
 const descripcion = ref('');
+const IdAplicacion: ComputedRef<number> = computed(
+  () => useAplicacionStore().IdAplicacionEscogida || 0,
+);
 
 defineProps<{
   modelValue: boolean;
@@ -81,12 +85,12 @@ const grupo: ComputedRef<Grupo> = computed(() => {
   return {
     Nombre: nombre.value,
     Descripcion: descripcion.value,
-    IdAplicacion: 1,
+    IdAplicacion: IdAplicacion.value,
   };
 });
 
 const addGrupo = async () => {
   emit('update:modelValue', false);
   await useGrupoStore().addGrupo(grupo.value);
-};  
+};
 </script>
