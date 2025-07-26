@@ -1,8 +1,8 @@
 <template>
   <q-dialog
     :model-value="modelValue"
-    @update:model-value="(value) => emit('update:modelValue', value)"
     @hide="resetForm"
+    @before-hide="contactoStore.estadoAgregarContacto && contactoStore.toggleAgregarContacto()"
   >
     <q-card style="width: 500px; max-width: 90vw; border-radius: 12px">
       <q-card-section class="row items-center q-pb-none">
@@ -16,6 +16,7 @@
         <q-input
           outlined
           dense
+          autofocus
           v-model="telefono"
           placeholder="Numero de Celular"
           mask="### ### ####"
@@ -29,7 +30,7 @@
 
         <div
           v-for="columna in camposPersonalizados"
-          :key="columna.id"
+          :key="columna.id || 0"
           class="row q-col-gutter-sm q-mb-sm items-center justify-center"
         >
           <div class="col">
@@ -56,7 +57,13 @@
           </div>
 
           <div class="col-auto q-mb-md">
-            <q-btn flat round dense color="negative" @click="deleteRow(columna.id)">
+            <q-btn
+              flat
+              round
+              dense
+              color="negative"
+              @click="eliminarCampoPersonalizado(columna.id || 0)"
+            >
               <q-icon name="fa-solid fa-trash-can" size="15px" />
             </q-btn>
           </div>
@@ -65,13 +72,14 @@
 
       <q-card-actions class="q-pa-md q-pt-none">
         <q-btn
+          v-if="camposPersonalizados.length === 0"
           unelevated
           outline
           class="bg-white soft-text flex items-center justify-center"
           style="width: 150px"
           no-caps
           default
-          @click="addRow"
+          @click="agregarCampoPersonalizado"
         >
           <q-icon name="fa-solid fa-plus" class="text-dark" size="13px" />
           <span class="text-weight-regular q-ml-sm text-dark">Agregar Atributo</span>
@@ -85,6 +93,7 @@
           no-caps
           default
           :disable="!telefono || telefono.length !== 12"
+          @click="agregarContacto"
         >
           <q-icon name="fa-solid fa-user-plus" size="13px" />
           <span class="text-weight-regular q-ml-sm">Crear Contacto</span>
@@ -95,14 +104,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, type ComputedRef, ref } from 'vue';
 import { type CampoPersonalizadoContacto } from 'src/types/campopersonalizadocontacto';
+import { type Contacto } from 'src/types/contacto';
+import { useContactoStore } from 'src/stores/contacto.store';
+import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
 const telefono = ref('');
-
+const contactoStore = useContactoStore();
+const IdAplicacion: ComputedRef<number> = computed(
+  () => useAplicacionStore().IdAplicacionEscogida || 0,
+);
 const camposPersonalizados = ref<CampoPersonalizadoContacto[]>([]);
 
-const addRow = () => {
+const props = defineProps<{
+  idGrupo?: number;
+}>();
+
+if (props.idGrupo && props.idGrupo > 0) {
+  camposPersonalizados.value =
+    contactoStore.getContactoById(props.idGrupo)?.campoPersonalizado || [];
+}
+
+const modelValue = ref(computed(() => contactoStore.estadoAgregarContacto));
+
+const agregarCampoPersonalizado = () => {
   const newRow: CampoPersonalizadoContacto = {
     id: Date.now(),
     nombre: '',
@@ -111,23 +137,30 @@ const addRow = () => {
   camposPersonalizados.value.push(newRow);
 };
 
-const deleteRow = (columnaid: number) => {
+const eliminarCampoPersonalizado = (columnaid: number) => {
   camposPersonalizados.value = camposPersonalizados.value.filter(
     (columna) => columna.id !== columnaid,
   );
 };
 
-defineProps<{
-  modelValue: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-}>();
+const contacto: ComputedRef<Contacto> = computed(() => {
+  return {
+    telefono: telefono.value,
+    campoPersonalizado: camposPersonalizados.value,
+    idAplicacion: IdAplicacion.value,
+    idGrupo: props.idGrupo || 0,
+  };
+});
 
 const resetForm = () => {
   telefono.value = '';
   camposPersonalizados.value = [];
+};
+
+const agregarContacto = async () => {
+  contactoStore.toggleAgregarContacto();
+  await contactoStore.agregarContacto(contacto.value);
+  resetForm();
 };
 </script>
 

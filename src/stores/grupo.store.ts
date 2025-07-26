@@ -5,6 +5,7 @@ import { showErrorNotification } from 'src/components/notificacion/notificacion'
 
 interface GrupoState {
   grupos: Grupo[];
+  estadoAgregarGrupo: boolean;
   tamano: number;
   totalPaginas: number;
   pagina: number;
@@ -15,6 +16,7 @@ interface GrupoState {
 export const useGrupoStore = defineStore('grupos', {
   state: (): GrupoState => ({
     grupos: [],
+    estadoAgregarGrupo: false,
     tamano: 0,
     totalPaginas: 0,
     pagina: 0,
@@ -117,6 +119,9 @@ export const useGrupoStore = defineStore('grupos', {
         console.error('Error al crear el grupo:', error);
         this.grupos = this.grupos.filter((g) => g.IdGrupo !== tempId);
       }
+    },
+    toggleAgregarGrupo() {
+      this.estadoAgregarGrupo = !this.estadoAgregarGrupo;
     },
   },
 });

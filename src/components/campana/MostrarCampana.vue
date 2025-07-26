@@ -2,7 +2,7 @@
   <div class="q-pa-md q-pa-lg-lg">
     <div class="row items-center q-mb-md">
       <div>
-        <div class="text-h5 text-weight-bold">Contactos Individuales</div>
+        <div class="text-h5 text-weight-bold">Campañas Masivas</div>
         <div class="text-grey-8">{{ contactos.length }} contactos con campos personalizables</div>
       </div>
       <q-space />
@@ -162,16 +162,3 @@ const columnas: Columnas[] = [
   },
 ];
 </script>
-
-<style>
-.transition-card-contacto {
-  transition:
-    transform 0.28s,
-    background-color 0.28s !important;
-}
-
-.card-contacto:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  border-color: #86b3ef !important;
-}
-</style>

@@ -1,6 +1,9 @@
 <template>
   <div class="q-pa-lg">
-    <div class="row items-center q-mb-lg">
+    <div v-if="groups.length === 0">
+      <VacioDatos pagina="grupo" />
+    </div>
+    <div v-else class="row items-center q-mb-lg">
       <div>
         <div class="text-h5 text-weight-bold">Grupos de Contactos</div>
         <div class="text-grey-8">{{ groups.length }} grupos disponibles</div>
@@ -75,19 +78,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
+import VacioDatos from 'src/components/VacioDatos.vue';
+
 const searchText = ref('');
-
 const grupoStore = useGrupoStore();
-
-onMounted(async () => {
-  try {
-    await grupoStore.fetchGrupos();
-  } catch (e) {
-    console.error('Error al cargar grupos', e);
-  }
-});
 
 const groups = computed(() => {
   return grupoStore.grupos

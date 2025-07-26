@@ -1,7 +1,7 @@
 import { type CampoPersonalizadoContacto } from './campopersonalizadocontacto';
 
 export interface Contacto {
-  id?: number;
+  idContacto?: number;
   idGrupo?: number;
   idAplicacion?: number;
   telefono: string;

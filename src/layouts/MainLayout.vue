@@ -10,60 +10,62 @@
         </div>
         <div class="row items-center justify-center">
           <div v-for="boton in botonesActual" :key="boton.titulo">
-            <q-btn
-              v-if="!boton.opciones"
-              class="flex items-center justify-center"
-              :class="boton.principal ? 'verde-principal q-ml-sm' : 'boton-importar'"
-              unelevated
-              :outline="!boton.principal"
-              no-caps
-              default
-              @click="!boton.principal ? (importDialog = true) : null"
-            >
-              <q-icon
-                :name="boton.icono"
-                size="13px"
-                :class="boton.principal ? '' : 'secondary-text'"
-              />
-              <span
-                class="text-weight-regular q-ml-sm"
-                :class="boton.principal ? '' : 'secondary-text'"
-                >{{ boton.titulo }}</span
+            <div v-if="useAplicacionStore().aplicaciones.length > 0">
+              <q-btn
+                v-if="!boton.opciones"
+                class="flex items-center justify-center"
+                :class="boton.principal ? 'verde-principal q-ml-sm' : 'boton-importar'"
+                unelevated
+                :outline="!boton.principal"
+                no-caps
+                default
+                @click="!boton.principal ? (importDialog = true) : null"
               >
-            </q-btn>
-
-            <q-btn-dropdown
-              v-else
-              class="flex items-center justify-center verde-principal q-ml-sm"
-              unelevated
-              no-caps
-              default
-              :label="boton.titulo"
-              :dropdown-icon="boton.icono"
-              content-class="shadow-1"
-              :menu-offset="[0, 10]"
-            >
-              <q-list dense>
-                <q-item
-                  v-for="opcion in boton.opciones"
-                  :key="opcion.titulo"
-                  clickable
-                  v-close-popup
-                  @click="
-                    opcion.titulo === 'Nuevo Grupo'
-                      ? (createGroupDialog = true)
-                      : (addContactDialog = true)
-                  "
+                <q-icon
+                  :name="boton.icono"
+                  size="13px"
+                  :class="boton.principal ? '' : 'secondary-text'"
+                />
+                <span
+                  class="text-weight-regular q-ml-sm"
+                  :class="boton.principal ? '' : 'secondary-text'"
+                  >{{ boton.titulo }}</span
                 >
-                  <q-item-section side>
-                    <q-icon :name="opcion.icono" size="13px" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label>{{ opcion.titulo }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
+              </q-btn>
+
+              <q-btn-dropdown
+                v-else
+                class="flex items-center justify-center verde-principal q-ml-sm"
+                unelevated
+                no-caps
+                default
+                :label="boton.titulo"
+                :dropdown-icon="boton.icono"
+                content-class="shadow-1"
+                :menu-offset="[0, 10]"
+              >
+                <q-list dense>
+                  <q-item
+                    v-for="opcion in boton.opciones"
+                    :key="opcion.titulo"
+                    clickable
+                    v-close-popup
+                    @click="
+                      opcion.titulo === 'Nuevo Grupo'
+                        ? useGrupoStore().toggleAgregarGrupo()
+                        : (addContactDialog = true)
+                    "
+                  >
+                    <q-item-section side>
+                      <q-icon :name="opcion.icono" size="13px" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ opcion.titulo }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </div>
           </div>
         </div>
       </div>
@@ -98,7 +100,7 @@
   </q-layout>
 
   <ImportarContactos v-model="importDialog" />
-  <AgregarGrupo v-model="createGroupDialog" />
+  <AgregarGrupo />
   <AgregarContacto v-model="addContactDialog" />
 </template>
 
@@ -110,10 +112,12 @@ import { NAVEGACION_PRINCIPAL, ICONO_APON } from '../constants/navegacion';
 import ImportarContactos from 'src/components/contacto/ImportarContactos.vue';
 import AgregarGrupo from 'src/components/grupo/AgregarGrupo.vue';
 import AgregarContacto from 'src/components/contacto/AgregarContacto.vue';
+import { useGrupoStore } from 'src/stores/grupo.store';
+// import { useContactoStore } from 'src/stores/contacto.store';
+import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
 const navigationStore = ref(true);
 const importDialog = ref(false);
-const createGroupDialog = ref(false);
 const addContactDialog = ref(false);
 const rutaActual = useRoute();
 

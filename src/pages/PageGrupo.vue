@@ -1,6 +1,12 @@
 <template>
   <q-page>
-    <div class="row items-center justify-between q-pr-md">
+    <div v-if="aplicacionStore.aplicaciones.length === 0">
+      <div v-if="aplicacionStore.loading" class="flex flex-center" style="height: 80vh">
+        <q-spinner-oval color="primary" size="4em" />
+      </div>
+      <VacioDatos v-else pagina="aplicacion" />
+    </div>
+    <div v-else class="row items-center justify-between q-pr-md">
       <div class="q-pa-md" style="width: 420px">
         <q-tabs
           v-model="tab"
@@ -21,29 +27,26 @@
               grupoStore.grupos.length > 0 ? `Grupos (${grupoStore.grupos.length})` : 'Grupos'
             "
           />
-          <q-tab name="contactos" icon="fa-solid fa-user" :label="`Contactos Individuales (5)`" />
+          <q-tab
+            name="contactos"
+            icon="fa-solid fa-user"
+            :label="
+              contactoStore.contactos.length > 0
+                ? `Contactos Individuales (${contactoStore.contactos.length})`
+                : 'Contactos Individuales'
+            "
+          />
         </q-tabs>
       </div>
-      <q-select
-        class="bg-white"
-        outlined
-        dense
-        v-model="modelAplicacion"
-        label="Aplicación"
-        dropdown-icon="fa-solid fa-chevron-down"
-        :options="opcionesAplicacion"
-        style="width: 250px"
-        :loading="aplicacionStore.loading"
-        options-dense
-      >
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section class="text-grey"> No results </q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+      <SeleccionAplicacion />
     </div>
-    <q-tab-panels v-model="tab" class="q-ma-md" animated swipeable>
+    <q-tab-panels
+      v-if="aplicacionStore.aplicaciones.length > 0"
+      v-model="tab"
+      class="q-ma-md"
+      animated
+      swipeable
+    >
       <q-tab-panel name="grupos" class="bordered-panel q-pa-none">
         <MostrarGrupo />
       </q-tab-panel>
@@ -55,44 +58,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
+import type { Ref } from 'vue';
+import { ref, watch } from 'vue';
 import MostrarGrupo from 'src/components/grupo/MostrarGrupo.vue';
 import MostrarContactos from 'src/components/contacto/MostrarContacto.vue';
+import SeleccionAplicacion from 'src/components/configuracion/aplicacion/SeleccionAplicacion.vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
+import { useContactoStore } from 'src/stores/contacto.store';
+import VacioDatos from 'src/components/VacioDatos.vue';
 
+const tab = ref('grupos');
 const aplicacionStore = useAplicacionStore();
 const grupoStore = useGrupoStore();
-const tab = ref('grupos');
+const contactoStore = useContactoStore();
+const IdAplicacionEscogida: Ref<number> = ref(aplicacionStore.IdAplicacionEscogida);
 
-const storeOpcionesAplicacion = computed(() => {
-  return aplicacionStore.aplicaciones.map((app) => ({
-    label: app.Nombre,
-    value: app.IdAplicacion,
-  }));
-});
-
-const modelAplicacion = ref(
-  storeOpcionesAplicacion.value.filter(
-    (app) => app.value == aplicacionStore.IdAplicacionEscogida,
-  )[0],
+watch(
+  IdAplicacionEscogida,
+  async (newAppId) => {
+    if (newAppId) {
+      await grupoStore.fetchGrupos();
+      await contactoStore.fetchContactos();
+    }
+  },
+  { immediate: true },
 );
-
-onMounted(async () => {
-  try {
-    await aplicacionStore.fetchAplicaciones();
-    console.log('HOLA');
-    await grupoStore.fetchGrupos();
-  } catch (e) {
-    console.error('Error al cargar store', e);
-  }
-});
-
-watch(modelAplicacion, (valorEscogido) => {
-  aplicacionStore.setIdAplicacionEscogida(valorEscogido!.value);
-});
-
-const opcionesAplicacion = ref(storeOpcionesAplicacion);
 </script>
 
 <style scoped>

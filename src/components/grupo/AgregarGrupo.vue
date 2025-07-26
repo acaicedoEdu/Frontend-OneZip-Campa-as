@@ -1,8 +1,8 @@
 <template>
   <q-dialog
     :model-value="modelValue"
-    @update:model-value="(value) => emit('update:modelValue', value)"
     @hide="resetForm"
+    @before-hide="grupoStore.estadoAgregarGrupo && grupoStore.toggleAgregarGrupo()"
   >
     <q-card style="width: 500px; max-width: 90vw; border-radius: 12px">
       <q-card-section class="row items-center q-pb-none">
@@ -15,6 +15,7 @@
         <div class="text-grey-9 q-mb-xs">Nombre del Grupo</div>
         <q-input
           outlined
+          autofocus
           dense
           placeholder="Nombre del grupo"
           v-model="nombre"
@@ -64,17 +65,12 @@ import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
 const nombre = ref('');
 const descripcion = ref('');
+const grupoStore = useGrupoStore();
 const IdAplicacion: ComputedRef<number> = computed(
   () => useAplicacionStore().IdAplicacionEscogida || 0,
 );
 
-defineProps<{
-  modelValue: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-}>();
+const modelValue = ref(computed(() => grupoStore.estadoAgregarGrupo));
 
 const resetForm = () => {
   nombre.value = '';
@@ -90,7 +86,8 @@ const grupo: ComputedRef<Grupo> = computed(() => {
 });
 
 const addGrupo = async () => {
-  emit('update:modelValue', false);
-  await useGrupoStore().addGrupo(grupo.value);
+  grupoStore.toggleAgregarGrupo();
+  await grupoStore.addGrupo(grupo.value);
+  resetForm();
 };
 </script>

@@ -5,6 +5,7 @@ import { showErrorNotification } from 'src/components/notificacion/notificacion'
 
 interface ContactoState {
   contactos: Contacto[];
+  estadoAgregarContacto: boolean;
   tamano: number;
   totalPaginas: number;
   pagina: number;
@@ -15,6 +16,7 @@ interface ContactoState {
 export const useContactoStore = defineStore('contactos', {
   state: (): ContactoState => ({
     contactos: [],
+    estadoAgregarContacto: false,
     tamano: 0,
     totalPaginas: 0,
     pagina: 0,
@@ -26,7 +28,7 @@ export const useContactoStore = defineStore('contactos', {
     getContactoById:
       (state) =>
       (id: number): Contacto | undefined => {
-        return state.contactos.find((contacto) => contacto.id === id);
+        return state.contactos.find((contacto) => contacto.idContacto === id);
       },
     hasData: (state) => state.contactos.length > 0,
   },
@@ -78,6 +80,10 @@ export const useContactoStore = defineStore('contactos', {
         showErrorNotification('Algo salió mal al agregar el contacto.');
         console.error('Error al agregar el contacto:', error);
       }
+    },
+
+    toggleAgregarContacto() {
+      this.estadoAgregarContacto = !this.estadoAgregarContacto;
     },
   },
 });
