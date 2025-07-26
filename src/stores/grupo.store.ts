@@ -99,12 +99,10 @@ export const useGrupoStore = defineStore('grupos', {
       const tempId = -Date.now();
       const tempGrupo = { ...newGrupoData, IdGrupo: tempId };
       this.grupos.push(tempGrupo);
-      console.log(tempGrupo);
       try {
         const response = await axios.post('/grupo', newGrupoData);
         const data = response.data;
-
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
           this.grupos = this.grupos.filter((g) => g.IdGrupo !== tempId);
         } else {

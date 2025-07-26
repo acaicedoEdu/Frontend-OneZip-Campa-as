@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import type { Ref } from 'vue';
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import MostrarGrupo from 'src/components/grupo/MostrarGrupo.vue';
 import MostrarContactos from 'src/components/contacto/MostrarContacto.vue';
 import SeleccionAplicacion from 'src/components/configuracion/aplicacion/SeleccionAplicacion.vue';
@@ -73,6 +73,17 @@ const aplicacionStore = useAplicacionStore();
 const grupoStore = useGrupoStore();
 const contactoStore = useContactoStore();
 const IdAplicacionEscogida: Ref<number> = ref(aplicacionStore.IdAplicacionEscogida);
+
+onMounted(async () => {
+  try {
+    await aplicacionStore.fetchAplicaciones();
+    if (aplicacionStore.aplicaciones.length > 0) {
+      aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
+    }
+  } catch (error) {
+    console.error('Error al cargar aplicaciones', error);
+  }
+});
 
 watch(
   IdAplicacionEscogida,

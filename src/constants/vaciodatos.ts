@@ -1,6 +1,5 @@
 import { type VacioDatos } from '../types/vaciodatos';
 import { toggleAgregarGrupo } from '../composables/grupo/vaciodatos';
-import { dirigirAConfiguracion } from '../composables/aplicacion/vaciodatos';
 
 export const VACIO_DATOS: VacioDatos[] = [
   {
@@ -67,7 +66,35 @@ export const VACIO_DATOS: VacioDatos[] = [
         titulo: 'Crear mi primer aplicacion',
         icono: 'fa-solid fa-plus',
         color: 'green',
-        funcion: dirigirAConfiguracion,
+        link: '/configuracion',
+      },
+    ],
+  },
+  {
+    pagina: 'campana',
+    titulo: '¡Lanza tus campañas masivas!',
+    descripcion:
+      'Las campañas te permiten gestionar líneas de WhatsApp para envíos masivos. Crea y administra todas tus campañas desde un solo lugar.',
+    puntos: [
+      {
+        titulo: 'Gestión completa',
+        descripcion: 'Crea y administra múltiples lineas de WhatsApp desde una sola plataforma',
+        icono: 'fa-solid fa-gear',
+        color: 'green',
+      },
+      {
+        titulo: 'Envíos masivos',
+        descripcion: 'Distribuye tus campañas entre diferentes aplicaciones para mayor alcance',
+        icono: 'fa-solid fa-message',
+        color: 'blue',
+      },
+    ],
+    botones: [
+      {
+        titulo: 'Ejecutar mi primer campaña',
+        icono: 'fa-solid fa-rocket',
+        color: 'green',
+        link: '/crear',
       },
     ],
   },

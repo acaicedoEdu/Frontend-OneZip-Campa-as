@@ -17,5 +17,6 @@ export interface Boton {
   titulo: string;
   icono: string;
   color: string;
+  link?: string;
   funcion?: CallableFunction;
 }

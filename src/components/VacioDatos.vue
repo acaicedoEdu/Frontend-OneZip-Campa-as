@@ -59,10 +59,19 @@
           default
           :class="boton.color === 'white' ? 'bg-white soft-text' : 'verde-claro'"
           padding="10px 24px"
-          @click="boton?.funcion?.()"
+          :to="boton.link"
+          @click="boton.funcion?.()"
         >
-          <q-icon :name="boton?.icono" size="15px" :class="boton.color === 'white' ? 'text-black' : 'text-white'"/>
-          <span class="text-weight-bold q-ml-sm" :class="boton.color === 'white' ? 'text-black' : 'text-white'">{{ boton?.titulo }}</span>
+          <q-icon
+            :name="boton?.icono"
+            size="15px"
+            :class="boton.color === 'white' ? 'text-black' : 'text-white'"
+          />
+          <span
+            class="text-weight-bold q-ml-sm"
+            :class="boton.color === 'white' ? 'text-black' : 'text-white'"
+            >{{ boton?.titulo }}</span
+          >
         </q-btn>
       </div>
     </div>

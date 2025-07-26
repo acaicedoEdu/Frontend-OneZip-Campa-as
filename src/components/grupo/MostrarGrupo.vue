@@ -1,12 +1,12 @@
 <template>
-  <div class="q-pa-lg">
-    <div v-if="groups.length === 0">
+  <div class="q-pa-md">
+    <div v-if="grupos.length === 0">
       <VacioDatos pagina="grupo" />
     </div>
     <div v-else class="row items-center q-mb-lg">
       <div>
         <div class="text-h5 text-weight-bold">Grupos de Contactos</div>
-        <div class="text-grey-8">{{ groups.length }} grupos disponibles</div>
+        <div class="text-grey-8">{{ grupos.length }} grupos disponibles</div>
       </div>
 
       <q-space />
@@ -24,78 +24,119 @@
         </template>
       </q-input>
     </div>
+    <q-table
+      :rows="grupos"
+      :columns="columnas"
+      row-key="IdGrupo"
+      grid
+      :loading="grupoStore.loading"
+      v-model:pagination="paginacion"
+      v-model:selected="gruposSeleccionados"
+      selection="multiple"
+      :filter="searchText"
+      icon-next-page="fa-solid fa-angle-right"
+      icon-prev-page="fa-solid fa-angle-left"
+      :rows-per-page-options="[6]"
+      :selected-rows-label="(numberOfRows) => `${numberOfRows} contactos seleccionados`"
+    >
+      <template v-slot:item="props">
+        <div
+          class="q-pa-md col-12 col-md-6 col-lg-4 transition-card-contacto"
+          :style="props.selected ? 'transform: scale(0.95);' : ''"
+        >
+          <q-card flat bordered class="full-height cursor-pointer card-grupo">
+            <q-card-section class="q-pb-xs row items-center no-wrap">
+              <q-icon
+                name="fa-regular fa-folder-open"
+                color="green-5"
+                size="18px"
+                class="q-mr-sm"
+              />
+              <div class="ellipsis text-h6">{{ props.row.Nombre }}</div>
+              <q-space />
+              <q-btn-dropdown
+                flat
+                round
+                dense
+                no-icon-animation
+                dropdown-icon="fa-solid fa-ellipsis-vertical"
+                size="10px"
+              >
+                <q-list dense>
+                  <q-item clickable v-close-popup>
+                    <q-item-section side>
+                      <q-icon name="fa-solid fa-trash-can" size="13px" color="red" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label class="text-red">Eliminar</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
+            </q-card-section>
 
-    <div class="row q-col-gutter-lg">
-      <div v-for="group in groups" :key="group.nombre" class="col-12 col-md-6 col-lg-4">
-        <q-card flat bordered class="full-height cursor-pointer card-grupo">
-          <q-card-section class="q-pb-xs row items-center no-wrap">
-            <q-icon name="fa-regular fa-folder-open" color="green-5" size="18px" class="q-mr-sm" />
-            <div class="ellipsis text-h6">{{ group.nombre }}</div>
-            <q-space />
-            <q-btn-dropdown
-              flat
-              round
-              dense
-              no-icon-animation
-              dropdown-icon="fa-solid fa-ellipsis-vertical"
-              size="10px"
-            >
-              <q-list dense>
-                <q-item clickable v-close-popup>
-                  <q-item-section side>
-                    <q-icon name="fa-solid fa-trash-can" size="13px" color="red" />
-                  </q-item-section>
-                  <q-item-section>
-                    <q-item-label class="text-red">Eliminar</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-btn-dropdown>
-          </q-card-section>
+            <q-card-section class="q-py-none">
+              <q-chip
+                dense
+                color="grey-2"
+                size="13px"
+                text-color="grey-8"
+                :label="props.row.TotalContactos + ' contactos'"
+              />
+              <div class="q-pt-xs">{{ props.row.Descripcion }}</div>
+            </q-card-section>
 
-          <q-card-section class="q-py-none">
-            <q-chip
-              dense
-              color="grey-2"
-              size="13px"
-              text-color="grey-8"
-              :label="group.totalContactos + ' contactos'"
-            />
-            <div class="q-pt-xs">{{ group.descripcion }}</div>
-          </q-card-section>
-
-          <q-card-section class="q-pt-xs text-caption text-grey">
-            <div>
-              Creado: {{ group.fechaCarga }}
-              <q-spinner-tail v-if="!group.fechaCarga" color="blue-grey" />
-            </div>
-            <div v-if="group.fechaModificacion">Actualizado: {{ group.fechaModificacion }}</div>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
+            <q-card-section class="q-pt-xs text-caption text-grey">
+              <div>
+                Creado: {{ props.row.FechaCarga }}
+                <q-spinner-tail v-if="!props.row.FechaCarga" color="blue-grey" />
+              </div>
+              <div v-if="props.row.FechaModificacion">
+                Actualizado: {{ props.row.FechaModificacion }}
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </template>
+      <template v-slot:no-data>
+        <div class="full-width row flex-center text-grey-7 q-gutter-sm q-pa-xl">
+          <q-icon size="2em" name="fa-solid fa-circle-info" />
+          <span>No se encontraron resultados</span>
+        </div>
+      </template>
+    </q-table>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, type ComputedRef } from 'vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import VacioDatos from 'src/components/VacioDatos.vue';
+import type { Grupo } from 'src/types/grupo';
 
-const searchText = ref('');
 const grupoStore = useGrupoStore();
+const searchText = ref('');
 
-const groups = computed(() => {
-  return grupoStore.grupos
-    .filter((g) => g.Nombre.toLowerCase().includes(searchText.value.toLowerCase()))
-    .map((g) => ({
-      nombre: g.Nombre,
-      totalContactos: g.TotalContactos ?? 0,
-      descripcion: g.Descripcion,
-      fechaCarga: g.FechaCarga,
-      fechaModificacion: g.FechaModificacion,
-    }));
+const grupos: ComputedRef<Grupo[]> = computed(() => grupoStore.grupos);
+const gruposSeleccionados = ref([]);
+const paginacion = ref({
+  page: grupoStore.pagina,
+  rowsPerPage: grupoStore.tamano,
 });
+
+interface Columnas {
+  name: string;
+  label: string;
+  field: string;
+}
+
+const columnas: Columnas[] = [
+  { label: 'Nombre', name: 'Nombre', field: 'Nombre' },
+  { label: 'Total de Contactos', name: 'TotalContactos', field: 'TotalContactos' },
+  { label: 'Descripcion', name: 'Descripcion', field: 'Descripcion' },
+  { label: 'Fecha de Creación', name: 'FechaCarga', field: 'FechaCarga' },
+  { label: 'Fecha de Modificación', name: 'FechaModificacion', field: 'FechaModificacion' },
+];
 </script>
 
 <style>

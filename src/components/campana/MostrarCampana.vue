@@ -1,9 +1,12 @@
 <template>
-  <div class="q-pa-md q-pa-lg-lg">
+  <div v-if="campanas.length === 0">
+    <VacioDatos pagina="campana" />
+  </div>
+  <div v-else class="q-pa-md q-pa-lg-lg">
     <div class="row items-center q-mb-md">
       <div>
         <div class="text-h5 text-weight-bold">Campañas Masivas</div>
-        <div class="text-grey-8">{{ contactos.length }} contactos con campos personalizables</div>
+        <div class="text-grey-8">{{ campanas.length }} campañas con campos personalizables</div>
       </div>
       <q-space />
       <q-input
@@ -25,21 +28,19 @@
         default
         class="bg-white soft-text"
         padding="7px 24px"
-        v-if="contactos.length > 0"
+        v-if="campanas.length > 0"
       >
         <q-icon name="fa-solid fa-user-plus" size="15px" class="text-grey-9" />
         <span class="text-weight-bold q-ml-sm text-grey-9">Añadir Contacto</span>
       </q-btn>
     </div>
     <q-table
-      :rows="contactos"
+      :rows="campanas"
       :columns="columnas"
       row-key="id"
       grid
-      :loading="contactoStore.loading"
+      :loading="campanaStore.loading"
       v-model:pagination="pagination"
-      v-model:selected="selectedContacts"
-      selection="multiple"
       :filter="searchText"
       icon-next-page="fa-solid fa-angle-right"
       icon-prev-page="fa-solid fa-angle-left"
@@ -132,33 +133,36 @@
 <script setup lang="ts">
 import type { ComputedRef } from 'vue';
 import { ref, computed } from 'vue';
-import { useContactoStore } from 'src/stores/contacto.store';
-import { type Contacto } from 'src/types/contacto';
-import { type CampoPersonalizadoContacto } from 'src/types/campopersonalizadocontacto';
+import { useCampanaStore } from 'src/stores/campana.store';
+import { type Campana } from 'src/types/campana';
+import VacioDatos from 'src/components/VacioDatos.vue';
 
-const contactoStore = useContactoStore();
+const campanaStore = useCampanaStore();
 const searchText = ref('');
 
-const contactos: ComputedRef<Contacto[]> = computed(() => contactoStore.contactos);
-const selectedContacts = ref([]);
+const campanas: ComputedRef<Campana[]> = computed(() => campanaStore.campanasXAplicacion);
 const pagination = ref({
-  page: contactoStore.pagina,
-  rowsPerPage: contactoStore.tamano,
+  page: campanaStore.pagina,
+  rowsPerPage: campanaStore.tamano,
 });
 
 interface Columnas {
   name: string;
   label: string;
-  field: string | ((row: CampoPersonalizadoContacto[]) => string);
+  field: string;
 }
 
 const columnas: Columnas[] = [
-  { name: 'telefono', label: 'telefono', field: 'telefono' },
-  {
-    name: 'campoPersonalizado',
-    label: 'campoPersonalizado',
-    field: (row: CampoPersonalizadoContacto[]) =>
-      row.map((f: CampoPersonalizadoContacto) => f.valor).join(' '),
-  },
+  { label: 'Nombre de Campaña', name: 'Nombre', field: 'Nombre' },
+  { label: 'Tipo de envio', name: 'TipoEnvio', field: 'TipoEnvio' },
+  { label: 'Tipo de contenido', name: 'TipoContenido', field: 'TipoContenido' },
+  { label: 'Contenido', name: 'Contenido', field: 'Contenido' },
+  { label: 'Plantilla', name: 'IdPlantilla', field: 'IdPlantilla' },
+  { label: 'Grupo', name: 'IdGrupo', field: 'IdGrupo' },
+  { label: 'Fecha de Ejecución', name: 'FechaInicio', field: 'FechaInicio' },
+  { label: 'Fecha de Fin', name: 'FechaFin', field: 'FechaFin' },
+  { label: 'Estado', name: 'IdEstado', field: 'IdEstado' },
+  { label: 'Fecha de Creación', name: 'FechaCreacion', field: 'FechaCreacion' },
+  { label: 'Fecha de Modificación', name: 'FechaModificacion', field: 'FechaModificacion' },
 ];
 </script>

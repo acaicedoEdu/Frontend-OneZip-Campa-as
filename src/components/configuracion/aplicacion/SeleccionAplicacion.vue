@@ -21,21 +21,24 @@
 
 <script setup lang="ts">
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-const modelAplicacion = ref();
 const aplicacionStore = useAplicacionStore();
 
-onMounted(async () => {
-  try {
-    await aplicacionStore.fetchAplicaciones();
-    if (aplicacionStore.aplicaciones.length > 0) {
-      aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
-    }
-  } catch (error) {
-    console.error('Error al cargar aplicaciones', error);
+const aplicacionEscogida = computed(() => {
+  const app = aplicacionStore.aplicaciones.find(
+    (app) => app.IdAplicacion === aplicacionStore.IdAplicacionEscogida,
+  );
+  if (app) {
+    return {
+      label: app.Nombre,
+      value: app.IdAplicacion,
+    };
   }
+  return null;
 });
+
+const modelAplicacion = ref(aplicacionEscogida);
 
 const opcionesAplicacion = computed(() => {
   return aplicacionStore.aplicaciones.map((app) => ({
@@ -48,7 +51,7 @@ watch(
   modelAplicacion,
   (newAppId) => {
     if (newAppId) {
-      aplicacionStore.setIdAplicacionEscogida(newAppId);
+      aplicacionStore.setIdAplicacionEscogida(newAppId.value);
     }
   },
   { immediate: true },
