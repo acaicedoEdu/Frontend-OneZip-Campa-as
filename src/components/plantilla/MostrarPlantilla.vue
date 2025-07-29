@@ -3,25 +3,41 @@
     <q-table
       :rows="plantillas"
       :columns="columnas"
-      row-key="IdGrupo"
+      row-key="idPlantilla"
       grid
       :loading="false"
       v-model:pagination="paginacion"
       v-model:selected="plantillasSeleccionada"
       selection="single"
       :filter="textoBusqueda"
+      class="my-sticky-header-table"
       icon-next-page="fa-solid fa-angle-right"
       icon-prev-page="fa-solid fa-angle-left"
       :rows-per-page-options="[6]"
       :selected-rows-label="(numberOfRows) => `${numberOfRows} plantilla seleccionada`"
     >
       <template v-slot:item="props">
-        <div class="q-pa-md col-12 col-md-6 col-lg-4 transition-card-contacto">
-          <MostrarMensajePlantilla
-            :header-text="props.row.textoEncabezado"
-            :message-body="props.row.mensajePrincipal"
-            :footer-text="props.row.textoFooter"
-          />
+        <div class="q-pa-md col-12 col-md-6 col-lg-4">
+          <div
+            class="cursor-pointer transition-card-plantilla card-plantilla"
+            :style="
+              props.selected
+                ? 'transform: scale(0.95); margin: -2px; border: 2px solid #22c55e;'
+                : ''
+            "
+            @click="
+              () => {
+                props.selected = true;
+              }
+            "
+          >
+            <MostrarMensajePlantilla
+              :nombre="props.row.nombre"
+              :header-text="props.row.contenido.textoEncabezado"
+              :message-body="props.row.contenido.mensajePrincipal"
+              :footer-text="props.row.contenido.textoFooter"
+            />
+          </div>
         </div>
       </template>
     </q-table>
@@ -29,40 +45,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import MostrarMensajePlantilla from 'src/components/plantilla/MostrarMensajePlantilla.vue';
 
 const plantillas = ref([
   {
-    textoEncabezado: 'Encabezado',
-    mensajePrincipal: 'Contenido {{1}}',
-    textoFooter: 'Footer',
-    FechaCreacion: '2022-01-01',
-    FechaModificacion: '2022-01-01',
-  },
-  {
-    textoEncabezado: '',
-    mensajePrincipal: 'Contenido',
-    textoFooter: 'Footer',
-    FechaCreacion: '2022-01-01',
-    FechaModificacion: '2022-01-01',
-  },
-  {
-    textoEncabezado: 'Encabezado',
-    mensajePrincipal: 'Contenido {{1}}',
-    textoFooter: '',
-    FechaCreacion: '2022-01-01',
-    FechaModificacion: '2022-01-01',
-  },
-  {
-    textoEncabezado: '',
-    mensajePrincipal: 'Contenido {{1}}',
-    textoFooter: '',
+    idPlantilla: 1,
+    nombre: 'Prueba',
+    contenido: {
+      textoEncabezado: 'Encabezado',
+      mensajePrincipal: 'Contenido {{1}}',
+      textoFooter: 'Footer',
+    },
     FechaCreacion: '2022-01-01',
     FechaModificacion: '2022-01-01',
   },
 ]);
-const plantillasSeleccionada = ref([]);
+
+const props = defineProps({
+  plantillasSeleccionada: Array,
+});
+
+const emit = defineEmits(['update:plantillasSeleccionada']);
+
+const plantillasSeleccionada = ref(props.plantillasSeleccionada);
 const textoBusqueda = ref('');
 const paginacion = ref({
   rowsPerPage: 6,
@@ -81,4 +87,31 @@ const columnas: Columnas[] = [
   { label: 'Fecha de Creación', name: 'FechaCreacion', field: 'FechaCreacion' },
   { label: 'Fecha de Modificación', name: 'FechaModificacion', field: 'FechaModificacion' },
 ];
+
+watch(
+  plantillasSeleccionada,
+  (newVal) => {
+    emit('update:plantillasSeleccionada', newVal);
+  },
+  { deep: true },
+);
 </script>
+
+<style>
+.transition-card-plantilla {
+  transition:
+    transform 0.28s,
+    box-shadow 0.28s,
+    border 0.28s !important;
+}
+
+.card-plantilla {
+  border-radius: 12px;
+}
+
+.card-plantilla:hover {
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+</style>

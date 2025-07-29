@@ -51,10 +51,8 @@
               </q-btn>
             </div>
             <MostrarPlantilla
-              class="q-mt-lg"
-                header-text="Recordatorio"
-                message-body="Hola [Nombre], te recordamos tu cita para el [Fecha] a las [Hora]. ¡Te esperamos!"
-                footer-text="Gracias por tu confianza"
+              :plantillasSeleccionada="plantillasSeleccionada"
+              @update:plantillasSeleccionada="actualizarPlantillas"
             />
           </q-step>
 
@@ -117,6 +115,7 @@
                 no-caps
                 class="verde-principal text-white"
                 padding="8px 24px"
+                :disable="step == 1 && !modelNombreCampana && !plantillasSeleccionada"
                 @click="step++"
               >
                 <span class="text-white text-subtitle2">Siguiente</span>
@@ -139,13 +138,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch, type Ref } from 'vue';
 import MostrarPlantilla from 'src/components/plantilla/MostrarPlantilla.vue';
 
 const step = ref(1);
 const modelNombreCampana = ref('');
+const plantillasSeleccionada: Ref<Array<object>> = ref([]);
+
+const actualizarPlantillas = (nuevasPlantillas: object[]) => {
+  plantillasSeleccionada.value = nuevasPlantillas;
+};
 
 function launchCampaign() {
   console.log('Lanzando campaña...');
 }
+
+watch(
+  plantillasSeleccionada,
+  (newvalor) => {
+    console.log('Nuevo valor desde el padre:', newvalor);
+  },
+  { deep: true },
+);
 </script>

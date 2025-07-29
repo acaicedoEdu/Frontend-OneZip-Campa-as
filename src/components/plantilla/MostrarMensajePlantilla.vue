@@ -1,9 +1,9 @@
 <template>
-  <q-card flat bordered class="bg-grey-1">
+  <q-card flat bordered style="border-radius: 12px">
     <q-card-section class="q-pb-sm row items-center justify-between">
       <div class="text-weight-medium text-h6 text-dark">
-        Prueba plantilla:
-        <span class="text-weight-regular text-subtitle1 verde-texto">Vista previa</span>
+        {{ props.nombre }}:
+        <span class="text-weight-regular text-subtitle1 text-green-5">Vista previa</span>
       </div>
     </q-card-section>
 
@@ -38,6 +38,7 @@
 import { computed } from 'vue';
 
 const props = defineProps({
+  nombre: String,
   headerText: String,
   messageBody: {
     type: String,
@@ -70,7 +71,7 @@ const messageParts = computed(() => {
 
 <style scoped>
 .whatsapp-container {
-  background-color: #e5ddd5;
+  background-color: #e5ddd5a2;
   padding: 16px;
   border-radius: 8px;
 }
