@@ -1,26 +1,28 @@
 <template>
   <q-page>
-    <div v-if="aplicacionStore.aplicaciones.length === 0">
+    <!-- <div v-if="aplicacionStore.aplicaciones.length === 0">
       <div v-if="aplicacionStore.loading" class="flex flex-center" style="height: 80vh">
         <q-spinner-oval color="primary" size="4em" />
       </div>
       <VacioDatos v-else pagina="aplicacion" />
-    </div>
-    <div class="q-pl-md" v-else>
+    </div> -->
+    <div class="q-pl-md">
       <SeleccionAplicacion />
     </div>
-    <MostrarCampana v-if="aplicacionStore.aplicaciones.length > 0" />
+    <MostrarCampana />
   </q-page>
 </template>
 
 <script setup lang="ts">
 import { type Ref, ref, watch, onMounted } from 'vue';
 import SeleccionAplicacion from 'src/components/configuracion/aplicacion/SeleccionAplicacion.vue';
-import VacioDatos from 'src/components/VacioDatos.vue';
+// import VacioDatos from 'src/components/VacioDatos.vue';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
+import { useCampanaStore } from 'src/stores/campana.store';
 import MostrarCampana from 'src/components/campana/MostrarCampana.vue';
 
 const aplicacionStore = useAplicacionStore();
+const campanaStore = useCampanaStore();
 const IdAplicacionEscogida: Ref<number> = ref(aplicacionStore.IdAplicacionEscogida);
 
 onMounted(async () => {
@@ -36,9 +38,9 @@ onMounted(async () => {
 
 watch(
   IdAplicacionEscogida,
-  (newAppId) => {
+  async (newAppId) => {
     if (newAppId) {
-      console.log('Holaaaaaa');
+      await campanaStore.fetchcampanasXAplicacion(newAppId);
     }
   },
   { immediate: true },

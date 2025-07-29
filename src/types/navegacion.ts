@@ -9,6 +9,7 @@ export interface LinkNavegacion {
 interface BotonNavegacion {
   titulo: string;
   icono: string;
+  link?: string;
   principal: boolean;
   opciones?: OpcionBotonNavegacion[];
 }

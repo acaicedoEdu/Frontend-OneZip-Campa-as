@@ -10,7 +10,7 @@
         </div>
         <div class="row items-center justify-center">
           <div v-for="boton in botonesActual" :key="boton.titulo">
-            <div v-if="useAplicacionStore().aplicaciones.length > 0">
+            <div>
               <q-btn
                 v-if="!boton.opciones"
                 class="flex items-center justify-center"
@@ -18,6 +18,7 @@
                 unelevated
                 :outline="!boton.principal"
                 no-caps
+                :to="boton.link"
                 default
                 @click="!boton.principal ? (importDialog = true) : null"
               >
@@ -114,7 +115,7 @@ import AgregarGrupo from 'src/components/grupo/AgregarGrupo.vue';
 import AgregarContacto from 'src/components/contacto/AgregarContacto.vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 // import { useContactoStore } from 'src/stores/contacto.store';
-import { useAplicacionStore } from 'src/stores/aplicacion.store';
+// import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
 const navigationStore = ref(true);
 const importDialog = ref(false);

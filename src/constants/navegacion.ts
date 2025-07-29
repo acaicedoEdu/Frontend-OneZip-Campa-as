@@ -22,6 +22,7 @@ export const NAVEGACION_PRINCIPAL: LinkNavegacion[] = [
     botones: [
       {
         titulo: 'Nueva campaña',
+        link: '/campana/nueva',
         icono: 'fa-solid fa-plus',
         principal: true,
       },
