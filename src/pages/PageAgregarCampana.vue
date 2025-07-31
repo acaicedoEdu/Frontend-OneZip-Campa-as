@@ -66,7 +66,11 @@
             :done="step > 2"
             :disable="step < 2"
           >
-            <div class="text-h6 q-mb-md">Nueva Campaña: Selección de Destinatarios</div>
+            <PadreMostrarGrupo
+              :componentePadre="'agregarCampana'"
+              :contactoSeleccionado="contactoSeleccionado"
+              @update:contactoSeleccionado="actualizarContactos"
+            />
           </q-step>
 
           <q-step
@@ -92,7 +96,85 @@
             :done="step > 4"
             :disable="step < 4"
           >
-            <div class="text-h6 q-mb-md">Resumen de la Campaña</div>
+            <div>
+              <div class="text-center q-mb-lg">
+                <q-icon name="fa-solid fa-check-circle" color="positive" size="64px" />
+                <div class="text-h5 text-weight-bold q-mt-sm">Resumen de la Campaña</div>
+                <p class="text-grey-7">Revisa todos los detalles antes de lanzar</p>
+              </div>
+
+              <q-separator />
+
+              <div class="row q-col-gutter-y-lg q-py-lg">
+                <div class="col-12 col-sm-6">
+                  <div class="text-caption text-grey-7">Nombre de la Campaña</div>
+                  <div class="text-weight-bold">{{ modelNombreCampana }}</div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="text-caption text-grey-7">Plantilla</div>
+                  <div class="text-weight-bold">{{ plantillasSeleccionada[0]?.nombre }}</div>
+                </div>
+
+                <div class="col-12 col-sm-6">
+                  <div class="text-caption text-grey-7">Total de Destinatarios</div>
+                  <div class="text-positive text-weight-bold" style="font-size: 1.1rem">
+                    {{
+                      (obtenerContactosGrupo?.TotalContactos || 0) +
+                      (contactoSeleccionado.contactosSeleccionados?.length || 0)
+                    }}
+                    contactos
+                  </div>
+                </div>
+              </div>
+
+              <q-separator />
+
+              <div class="q-py-lg">
+                <div class="text-caption text-grey-7">Destinatarios Seleccionados</div>
+
+                <div class="q-mt-sm">
+                  <div class="text-weight-medium q-mb-xs">
+                    {{
+                      contactoSeleccionado.idGrupo
+                        ? 'Grupo '
+                        : contactoSeleccionado.contactosSeleccionados &&
+                            contactoSeleccionado.contactosSeleccionados?.length > 0
+                          ? 'Contactos Individuales'
+                          : ''
+                    }}
+                  </div>
+                  <q-chip
+                    v-if="contactoSeleccionado.idGrupo"
+                    outline
+                    color="primary"
+                    :label="`${obtenerContactosGrupo?.Nombre} (${obtenerContactosGrupo?.TotalContactos})`"
+                    class="q-mr-sm"
+                  />
+                  <q-chip
+                    v-if="
+                      contactoSeleccionado.contactosSeleccionados &&
+                      contactoSeleccionado.contactosSeleccionados?.length > 0
+                    "
+                    outline
+                    color="primary"
+                    :label="`(${contactoSeleccionado.contactosSeleccionados?.length})`"
+                  />
+                </div>
+              </div>
+
+              <q-separator />
+
+              <div class="q-py-lg">
+                <div class="text-caption text-grey-7">
+                  <MostrarMensajePlantilla
+                    :nombre="plantillasSeleccionada[0]?.nombre || ''"
+                    :headerText="plantillasSeleccionada[0]?.contenido.textoEncabezado || ''"
+                    :messageBody="plantillasSeleccionada[0]?.contenido.mensajePrincipal || ''"
+                    :footerText="plantillasSeleccionada[0]?.contenido.textoFooter || ''"
+                  />
+                </div>
+              </div>
+            </div>
           </q-step>
 
           <template v-slot:navigation>
@@ -101,7 +183,7 @@
                 v-if="step > 1"
                 unelevated
                 outline
-                @click="step--"
+                @click="step === 4 ? (step -= 2) : step--"
                 padding="8px 24px"
                 class="q-mr-sm bg-white soft-text"
                 no-caps
@@ -115,20 +197,23 @@
                 no-caps
                 class="verde-principal text-white"
                 padding="8px 24px"
-                :disable="step == 1 && !modelNombreCampana && !plantillasSeleccionada"
-                @click="step++"
+                :disable="disableBotonSiguiente"
+                @click="step !== 2 ? step++ : (step += 2)"
               >
                 <span class="text-white text-subtitle2">Siguiente</span>
                 <q-icon name="fa-solid fa-angle-right text-white" class="q-ml-sm" size="13px" />
               </q-btn>
               <q-btn
                 v-if="step === 4"
-                @click="launchCampaign"
-                color="green-1"
-                icon="fa-solid fa-rocket"
-                label="Lanzar Campaña"
+                unelevated
                 no-caps
-              />
+                class="verde-principal text-white"
+                padding="8px 24px"
+                @click="ejecutarCampana"
+              >
+                <q-icon name="fa-solid fa-rocket" size="13px" />
+                <span class="text-white text-subtitle2 q-ml-sm">Lanzar Campaña</span>
+              </q-btn>
             </q-stepper-navigation>
           </template>
         </q-stepper>
@@ -138,26 +223,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, type Ref } from 'vue';
+import { ref, type Ref, computed } from 'vue';
 import MostrarPlantilla from 'src/components/plantilla/MostrarPlantilla.vue';
+import PadreMostrarGrupo from 'src/components/grupo/PadreMostrarGrupo.vue';
+import { type ContactosSeleccionados } from 'src/types/contactosSeleccionados';
+import { type Plantilla } from 'src/types/plantilla';
+import { useGrupoStore } from 'src/stores/grupo.store';
+import MostrarMensajePlantilla from 'src/components/plantilla/MostrarMensajePlantilla.vue';
+
+const grupoStore = useGrupoStore();
 
 const step = ref(1);
 const modelNombreCampana = ref('');
-const plantillasSeleccionada: Ref<Array<object>> = ref([]);
+const plantillasSeleccionada: Ref<Plantilla[]> = ref([]);
+const contactoSeleccionado: Ref<ContactosSeleccionados> = ref({});
 
-const actualizarPlantillas = (nuevasPlantillas: object[]) => {
+const actualizarPlantillas = (nuevasPlantillas: Plantilla[]) => {
   plantillasSeleccionada.value = nuevasPlantillas;
 };
 
-function launchCampaign() {
-  console.log('Lanzando campaña...');
-}
+const actualizarContactos = (nuevosContactos: ContactosSeleccionados) => {
+  contactoSeleccionado.value = nuevosContactos;
+};
 
-watch(
-  plantillasSeleccionada,
-  (newvalor) => {
-    console.log('Nuevo valor desde el padre:', newvalor);
-  },
-  { deep: true },
-);
+const disableBotonSiguiente = computed(() => {
+  return step.value === 1 && (!modelNombreCampana.value || !plantillasSeleccionada.value.length);
+});
+
+const obtenerContactosGrupo = computed(() => {
+  return contactoSeleccionado.value.idGrupo
+    ? grupoStore.getGrupoById(contactoSeleccionado.value.idGrupo)
+    : null;
+});
+
+const ejecutarCampana = () => {
+  console.log('Lanzando campaña...');
+};
 </script>

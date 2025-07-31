@@ -4,12 +4,12 @@
       <VacioDatos pagina="grupo" />
     </div>
     <div v-else class="row items-center q-mb-lg">
-      <div>
+      <div v-if="proops.componentePadre === 'PageGrupo'">
         <div class="text-h5 text-weight-bold">Grupos de Contactos</div>
         <div class="text-grey-8">{{ grupos.length }} grupos disponibles</div>
       </div>
 
-      <q-space />
+      <q-space v-if="proops.componentePadre === 'PageGrupo'" />
 
       <q-input
         outlined
@@ -25,6 +25,7 @@
       </q-input>
     </div>
     <q-table
+      v-if="grupos.length > 0"
       :rows="grupos"
       :columns="columnas"
       row-key="IdGrupo"
@@ -32,7 +33,7 @@
       :loading="grupoStore.loading"
       v-model:pagination="paginacion"
       v-model:selected="gruposSeleccionados"
-      selection="multiple"
+      selection="single"
       :filter="searchText"
       icon-next-page="fa-solid fa-angle-right"
       icon-prev-page="fa-solid fa-angle-left"
@@ -55,6 +56,7 @@
               <div class="ellipsis text-h6">{{ props.row.Nombre }}</div>
               <q-space />
               <q-btn-dropdown
+                v-if="proops.componentePadre === 'PageGrupo'"
                 flat
                 round
                 dense
@@ -73,6 +75,7 @@
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
+              <q-checkbox v-model="props.selected" />
             </q-card-section>
 
             <q-card-section class="q-py-none">
@@ -109,16 +112,56 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type ComputedRef } from 'vue';
+import { ref, computed, type ComputedRef, watch } from 'vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import VacioDatos from 'src/components/VacioDatos.vue';
 import type { Grupo } from 'src/types/grupo';
+import type { ContactosSeleccionados } from 'src/types/contactosSeleccionados';
 
 const grupoStore = useGrupoStore();
 const searchText = ref('');
 
-const grupos: ComputedRef<Grupo[]> = computed(() => grupoStore.grupos);
-const gruposSeleccionados = ref([]);
+interface LocalContactoSeleccionado {
+  componentePadre: string;
+  contactoSeleccionado?: ContactosSeleccionados;
+}
+
+const proops = defineProps<LocalContactoSeleccionado>();
+
+const emit = defineEmits(['update:contactoSeleccionado']);
+
+const obtenerContactosGrupo = computed(() => {
+  return proops.contactoSeleccionado?.idGrupo
+    ? grupoStore.getGrupoById(proops.contactoSeleccionado.idGrupo)
+      ? ([grupoStore.getGrupoById(proops.contactoSeleccionado.idGrupo)] as Grupo[])
+      : ([] as Grupo[])
+    : ([] as Grupo[]);
+});
+
+const gruposSeleccionados = ref<Grupo[]>(obtenerContactosGrupo.value || []);
+
+const grupos: ComputedRef<Grupo[]> = computed(() => {
+  return [
+    {
+      IdGrupo: 423423423,
+      Nombre: 'Grupo 1',
+      TotalContactos: 10,
+      Descripcion: 'Descripcion 1',
+      FechaCarga: new Date(),
+      FechaModificacion: new Date(),
+      IdAplicacion: 1,
+    },
+    {
+      IdGrupo: 423423424,
+      Nombre: 'Grupo 2',
+      TotalContactos: 10,
+      Descripcion: 'Descripcion 2',
+      FechaCarga: new Date(),
+      FechaModificacion: new Date(),
+      IdAplicacion: 1,
+    },
+  ];
+});
 const paginacion = ref({
   page: grupoStore.pagina,
   rowsPerPage: grupoStore.tamano,
@@ -137,6 +180,16 @@ const columnas: Columnas[] = [
   { label: 'Fecha de Creación', name: 'FechaCarga', field: 'FechaCarga' },
   { label: 'Fecha de Modificación', name: 'FechaModificacion', field: 'FechaModificacion' },
 ];
+
+watch(
+  gruposSeleccionados,
+  (newVal) => {
+    emit('update:contactoSeleccionado', {
+      idGrupo: newVal?.[0]?.IdGrupo,
+    });
+  },
+  { deep: true },
+);
 </script>
 
 <style>

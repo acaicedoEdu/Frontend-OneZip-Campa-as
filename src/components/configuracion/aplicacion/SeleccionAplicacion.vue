@@ -2,7 +2,7 @@
   <q-select
     class="bg-white"
     outlined
-    dense
+    dense 
     v-model="modelAplicacion"
     label="Aplicación"
     dropdown-icon="fa-solid fa-chevron-down"

@@ -34,7 +34,7 @@
     <q-table
       :rows="contactos"
       :columns="columnas"
-      row-key="id"
+      row-key="telefono"
       grid
       :loading="contactoStore.loading"
       v-model:pagination="pagination"
@@ -57,7 +57,13 @@
             class="full-height card-contacto"
             :class="props.selected ? 'bg-blue-1' : ''"
           >
-            <q-card-section class="row items-center no-wrap q-pb-none">
+            <q-card-section
+              :class="
+                props.row.campoPersonalizado && props.row.campoPersonalizado.length > 0
+                  ? 'row items-center no-wrap q-pb-none'
+                  : 'row items-center no-wrap q-pb-md'
+              "
+            >
               <q-checkbox v-model="props.selected" />
               <q-avatar
                 color="blue-grey-1"
@@ -68,7 +74,7 @@
               />
               <div class="q-ml-md">
                 <div class="text-primary text-weight-medium" style="font-size: 16px">
-                  {{ props.row.phone }}
+                  {{ props.row.telefono }}
                 </div>
               </div>
               <q-space />
@@ -89,33 +95,34 @@
                 </q-menu>
               </q-btn>
             </q-card-section>
+            <div v-if="props.row.campoPersonalizado && props.row.campoPersonalizado.length > 0">
+              <q-separator class="q-my-md" />
 
-            <q-separator class="q-my-md" />
+              <q-card-section class="q-pt-none q-px-md">
+                <div
+                  v-for="campoPersonalizado in props.row.campoPersonalizado"
+                  :key="campoPersonalizado.id"
+                  class="row fit q-mb-sm"
+                  style="font-size: 14px"
+                >
+                  <div class="col-4 text-grey-7">{{ campoPersonalizado.nombre }}</div>
+                  <div class="col-8 text-grey-9 ellipsis">{{ campoPersonalizado.valor }}</div>
+                </div>
+              </q-card-section>
 
-            <q-card-section class="q-pt-none q-px-md">
-              <div
-                v-for="field in props.row.fields"
-                :key="field.label"
-                class="row fit q-mb-sm"
-                style="font-size: 14px"
-              >
-                <div class="col-4 text-grey-7">{{ field.label }}</div>
-                <div class="col-8 text-grey-9 ellipsis">{{ field.value }}</div>
-              </div>
-            </q-card-section>
-
-            <q-space />
-
-            <q-card-section class="row items-center q-pt-none">
-              <q-chip
-                outline
-                square
-                color="grey-7"
-                size="sm"
-                :label="props.row.fields.length + ' campos'"
-              />
               <q-space />
-            </q-card-section>
+
+              <q-card-section class="row items-center q-pt-none">
+                <q-chip
+                  outline
+                  square
+                  color="grey-7"
+                  size="sm"
+                  :label="props.row.campoPersonalizado?.length + ' campos'"
+                />
+                <q-space />
+              </q-card-section>
+            </div>
           </q-card>
         </div>
       </template>
@@ -131,16 +138,49 @@
 
 <script setup lang="ts">
 import type { ComputedRef } from 'vue';
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useContactoStore } from 'src/stores/contacto.store';
 import { type Contacto } from 'src/types/contacto';
 import { type CampoPersonalizadoContacto } from 'src/types/campopersonalizadocontacto';
+import type { ContactosSeleccionados } from 'src/types/contactosSeleccionados';
 
 const contactoStore = useContactoStore();
 const searchText = ref('');
 
-const contactos: ComputedRef<Contacto[]> = computed(() => contactoStore.contactos);
-const selectedContacts = ref([]);
+interface LocalContactoSeleccionado {
+  componentePadre: string;
+  contactoSeleccionado?: ContactosSeleccionados;
+}
+
+const props = defineProps<LocalContactoSeleccionado>();
+
+const emit = defineEmits(['update:contactoSeleccionado']);
+
+const contactosSeleccionadosExistentes = computed(
+  () => props.contactoSeleccionado?.contactosSeleccionados || ([] as Contacto[]),
+);
+
+const selectedContacts = ref<Contacto[]>(contactosSeleccionadosExistentes.value);
+
+const contactos: ComputedRef<Contacto[]> = computed(() => [
+  {
+    telefono: '123456789',
+    campoPersonalizado: [
+      { nombre: 'Nombre', valor: 'Juan' },
+      { nombre: 'Apellido', valor: 'Perez' },
+    ],
+  },
+  {
+    telefono: '987654321',
+    campoPersonalizado: [
+      { nombre: 'Nombre', valor: 'Pedro' },
+      { nombre: 'Apellido', valor: 'Garcia' },
+    ],
+  },
+  {
+    telefono: '123456785',
+  },
+]);
 const pagination = ref({
   page: contactoStore.pagina,
   rowsPerPage: contactoStore.tamano,
@@ -149,18 +189,36 @@ const pagination = ref({
 interface Columnas {
   name: string;
   label: string;
-  field: string | ((row: CampoPersonalizadoContacto[]) => string);
+  field: string | ((row: Contacto) => string);
 }
 
 const columnas: Columnas[] = [
-  { name: 'telefono', label: 'telefono', field: 'telefono' },
+  { name: 'Telefono', label: 'telefono', field: 'telefono' },
   {
-    name: 'campoPersonalizado',
-    label: 'campoPersonalizado',
-    field: (row: CampoPersonalizadoContacto[]) =>
-      row.map((f: CampoPersonalizadoContacto) => f.valor).join(' '),
+    name: 'Nombre',
+    label: 'nombre',
+    field: (row: Contacto): string =>
+      row.campoPersonalizado && row.campoPersonalizado.length > 0
+        ? row.campoPersonalizado.map((f: CampoPersonalizadoContacto) => f.nombre).join(' ')
+        : '',
+  },
+  {
+    name: 'Valor',
+    label: 'valor',
+    field: (row: Contacto) =>
+      row.campoPersonalizado && row.campoPersonalizado.length > 0
+        ? row.campoPersonalizado.map((f: CampoPersonalizadoContacto) => f.valor).join(' ')
+        : '',
   },
 ];
+
+watch(
+  selectedContacts,
+  (newVal) => {
+    emit('update:contactoSeleccionado', { contactosSeleccionados: newVal });
+  },
+  { deep: true },
+);
 </script>
 
 <style>
