@@ -28,7 +28,7 @@ export const useContactoStore = defineStore('contactos', {
     getContactoById:
       (state) =>
       (id: number): Contacto | undefined => {
-        return state.contactos.find((contacto) => contacto.idContacto === id);
+        return state.contactos.find((contacto) => contacto.IdContacto === id);
       },
     hasData: (state) => state.contactos.length > 0,
   },

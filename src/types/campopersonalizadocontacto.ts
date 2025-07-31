@@ -1,5 +1,5 @@
 export interface CampoPersonalizadoContacto {
   id?: number;
-  nombre: string;
-  valor: string;
+  Nombre: string;
+  Valor: string;
 }

@@ -102,5 +102,20 @@ export const useCampanaStore = defineStore('campanas', {
         this.loading = false;
       }
     },
+
+    async ejecutarCampana(nuevaCampana: object) {
+      try {
+        const response = await axios.post('/campana', nuevaCampana);
+        const data = response.data;
+        if (!data.IsExito) {
+          showErrorNotification(data.Mensaje);
+        } else {
+          showErrorNotification('Campaña Ejecutada.');
+        }
+      } catch (error) {
+        showErrorNotification('Algo salió mal al ejcutar la campaña.');
+        console.error('Error al crear la campaña:', error);
+      }
+    },
   },
 });

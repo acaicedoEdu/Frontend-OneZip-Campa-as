@@ -1,5 +1,5 @@
 <template>
-  <!-- <div v-if="aplicacionStore.aplicaciones.length === 0">
+  <div v-if="aplicacionStore.aplicaciones.length === 0">
     <div
       v-if="aplicacionStore.loading"
       class="flex flex-center"
@@ -8,9 +8,12 @@
       <q-spinner-oval color="primary" size="4em" />
     </div>
     <VacioDatos v-else pagina="aplicacion" />
-  </div> -->
-  <div>
-    <div class="row items-center justify-between q-mb-md">
+  </div>
+  <div v-else>
+    <div
+      v-if="props.componentePadre == 'agregarCampana'"
+      class="row items-center justify-between q-mb-md"
+    >
       <span class="text-h6 text-weight-medium">Seleccion de Destinatarios</span>
       <span class="text-subtitle2 text-grey-8">
         <q-icon name="fa-solid fa-user-group" size="12px" />
@@ -61,6 +64,7 @@
     </div>
   </div>
   <q-tab-panels
+    v-if="aplicacionStore.aplicaciones.length > 0"
     v-model="tab"
     :class="props.componentePadre === 'PageGrupo' ? 'q-ma-md' : 'q-mt-md'"
     animated
@@ -84,7 +88,6 @@
 </template>
 
 <script setup lang="ts">
-import type { Ref } from 'vue';
 import { ref, watch, onMounted, computed } from 'vue';
 import MostrarGrupo from 'src/components/grupo/MostrarGrupo.vue';
 import MostrarContactos from 'src/components/contacto/MostrarContacto.vue';
@@ -93,7 +96,7 @@ import { useGrupoStore } from 'src/stores/grupo.store';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
 import { useContactoStore } from 'src/stores/contacto.store';
 import { type ContactosSeleccionados } from 'src/types/contactosSeleccionados';
-// import VacioDatos from 'src/components/VacioDatos.vue';
+import VacioDatos from 'src/components/VacioDatos.vue';
 
 const grupoStore = useGrupoStore();
 
@@ -128,31 +131,29 @@ const mostrarContactosSeleccionados = computed(() => {
 const tab = ref('grupos');
 const aplicacionStore = useAplicacionStore();
 const contactoStore = useContactoStore();
-const IdAplicacionEscogida: Ref<number> = ref(aplicacionStore.IdAplicacionEscogida);
+const IdAplicacionEscogida = computed(() => aplicacionStore.IdAplicacionEscogida);
 
-if (props.componentePadre === 'PageGrupo') {
-  onMounted(async () => {
-    try {
-      await aplicacionStore.fetchAplicaciones();
-      if (aplicacionStore.aplicaciones.length > 0) {
-        aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
-      }
-    } catch (error) {
-      console.error('Error al cargar aplicaciones', error);
+onMounted(async () => {
+  try {
+    await aplicacionStore.fetchAplicaciones();
+    if (aplicacionStore.aplicaciones.length > 0) {
+      aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
     }
-  });
+  } catch (error) {
+    console.error('Error al cargar aplicaciones', error);
+  }
+});
 
-  watch(
-    IdAplicacionEscogida,
-    async (newAppId) => {
-      if (newAppId) {
-        await grupoStore.fetchGrupos();
-        await contactoStore.fetchContactos();
-      }
-    },
-    { immediate: true },
-  );
-}
+watch(
+  IdAplicacionEscogida,
+  async (newAppId) => {
+    if (newAppId) {
+      await grupoStore.fetchGrupos();
+      await contactoStore.fetchContactos();
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>

@@ -75,7 +75,7 @@
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
-              <q-checkbox v-model="props.selected" />
+              <q-checkbox v-else v-model="props.selected" />
             </q-card-section>
 
             <q-card-section class="q-py-none">
@@ -140,28 +140,7 @@ const obtenerContactosGrupo = computed(() => {
 
 const gruposSeleccionados = ref<Grupo[]>(obtenerContactosGrupo.value || []);
 
-const grupos: ComputedRef<Grupo[]> = computed(() => {
-  return [
-    {
-      IdGrupo: 423423423,
-      Nombre: 'Grupo 1',
-      TotalContactos: 10,
-      Descripcion: 'Descripcion 1',
-      FechaCarga: new Date(),
-      FechaModificacion: new Date(),
-      IdAplicacion: 1,
-    },
-    {
-      IdGrupo: 423423424,
-      Nombre: 'Grupo 2',
-      TotalContactos: 10,
-      Descripcion: 'Descripcion 2',
-      FechaCarga: new Date(),
-      FechaModificacion: new Date(),
-      IdAplicacion: 1,
-    },
-  ];
-});
+const grupos: ComputedRef<Grupo[]> = computed(() => grupoStore.grupos);
 const paginacion = ref({
   page: grupoStore.pagina,
   rowsPerPage: grupoStore.tamano,

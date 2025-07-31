@@ -94,7 +94,7 @@ export const VACIO_DATOS: VacioDatos[] = [
         titulo: 'Ejecutar mi primer campaña',
         icono: 'fa-solid fa-rocket',
         color: 'green',
-        link: '/crear',
+        link: '/campana/nueva',
       },
     ],
   },

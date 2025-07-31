@@ -34,7 +34,7 @@
     <q-table
       :rows="contactos"
       :columns="columnas"
-      row-key="telefono"
+      row-key="Telefono"
       grid
       :loading="contactoStore.loading"
       v-model:pagination="pagination"
@@ -46,25 +46,25 @@
       :rows-per-page-options="[6]"
       :selected-rows-label="(numberOfRows) => `${numberOfRows} contactos seleccionados`"
     >
-      <template v-slot:item="props">
+      <template v-slot:item="contacto">
         <div
           class="q-pa-md col-12 col-md-6 col-lg-4 transition-card-contacto"
-          :style="props.selected ? 'transform: scale(0.95);' : ''"
+          :style="contacto.selected ? 'transform: scale(0.95);' : ''"
         >
           <q-card
             flat
             bordered
             class="full-height card-contacto"
-            :class="props.selected ? 'bg-blue-1' : ''"
+            :class="contacto.selected ? 'bg-blue-1' : ''"
           >
             <q-card-section
               :class="
-                props.row.campoPersonalizado && props.row.campoPersonalizado.length > 0
+                contacto.row.CampoPersonalizado && contacto.row.CampoPersonalizado.length > 0
                   ? 'row items-center no-wrap q-pb-none'
                   : 'row items-center no-wrap q-pb-md'
               "
             >
-              <q-checkbox v-model="props.selected" />
+              <q-checkbox v-model="contacto.selected" />
               <q-avatar
                 color="blue-grey-1"
                 text-color="grey"
@@ -74,7 +74,7 @@
               />
               <div class="q-ml-md">
                 <div class="text-primary text-weight-medium" style="font-size: 16px">
-                  {{ props.row.telefono }}
+                  {{ contacto.row.Telefono }}
                 </div>
               </div>
               <q-space />
@@ -95,18 +95,20 @@
                 </q-menu>
               </q-btn>
             </q-card-section>
-            <div v-if="props.row.campoPersonalizado && props.row.campoPersonalizado.length > 0">
+            <div
+              v-if="contacto.row.CampoPersonalizado && contacto.row.CampoPersonalizado.length > 0"
+            >
               <q-separator class="q-my-md" />
 
               <q-card-section class="q-pt-none q-px-md">
                 <div
-                  v-for="campoPersonalizado in props.row.campoPersonalizado"
-                  :key="campoPersonalizado.id"
-                  class="row fit q-mb-sm"
+                  v-for="CampoPersonalizado in contacto.row.CampoPersonalizado"
+                  :key="CampoPersonalizado.id"
+                  class="row justify-between fit q-mb-sm"
                   style="font-size: 14px"
                 >
-                  <div class="col-4 text-grey-7">{{ campoPersonalizado.nombre }}</div>
-                  <div class="col-8 text-grey-9 ellipsis">{{ campoPersonalizado.valor }}</div>
+                  <div class="text-grey-7">{{ CampoPersonalizado.Nombre }}</div>
+                  <div class="text-grey-9 ellipsis">{{ CampoPersonalizado.Valor }}</div>
                 </div>
               </q-card-section>
 
@@ -118,7 +120,7 @@
                   square
                   color="grey-7"
                   size="sm"
-                  :label="props.row.campoPersonalizado?.length + ' campos'"
+                  :label="contacto.row.CampoPersonalizado?.length + ' campos'"
                 />
                 <q-space />
               </q-card-section>
@@ -162,25 +164,8 @@ const contactosSeleccionadosExistentes = computed(
 
 const selectedContacts = ref<Contacto[]>(contactosSeleccionadosExistentes.value);
 
-const contactos: ComputedRef<Contacto[]> = computed(() => [
-  {
-    telefono: '123456789',
-    campoPersonalizado: [
-      { nombre: 'Nombre', valor: 'Juan' },
-      { nombre: 'Apellido', valor: 'Perez' },
-    ],
-  },
-  {
-    telefono: '987654321',
-    campoPersonalizado: [
-      { nombre: 'Nombre', valor: 'Pedro' },
-      { nombre: 'Apellido', valor: 'Garcia' },
-    ],
-  },
-  {
-    telefono: '123456785',
-  },
-]);
+const contactos: ComputedRef<Contacto[]> = computed(() => contactoStore.contactos);
+
 const pagination = ref({
   page: contactoStore.pagina,
   rowsPerPage: contactoStore.tamano,
@@ -193,21 +178,21 @@ interface Columnas {
 }
 
 const columnas: Columnas[] = [
-  { name: 'Telefono', label: 'telefono', field: 'telefono' },
+  { name: 'Telefono', label: 'Telefono', field: 'Telefono' },
   {
     name: 'Nombre',
     label: 'nombre',
     field: (row: Contacto): string =>
-      row.campoPersonalizado && row.campoPersonalizado.length > 0
-        ? row.campoPersonalizado.map((f: CampoPersonalizadoContacto) => f.nombre).join(' ')
+      row.CampoPersonalizado && row.CampoPersonalizado.length > 0
+        ? row.CampoPersonalizado.map((f: CampoPersonalizadoContacto) => f.Nombre).join(' ')
         : '',
   },
   {
     name: 'Valor',
     label: 'valor',
     field: (row: Contacto) =>
-      row.campoPersonalizado && row.campoPersonalizado.length > 0
-        ? row.campoPersonalizado.map((f: CampoPersonalizadoContacto) => f.valor).join(' ')
+      row.CampoPersonalizado && row.CampoPersonalizado.length > 0
+        ? row.CampoPersonalizado.map((f: CampoPersonalizadoContacto) => f.Valor).join(' ')
         : '',
   },
 ];

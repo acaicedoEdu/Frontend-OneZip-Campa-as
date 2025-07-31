@@ -10,7 +10,7 @@
         </div>
         <div class="row items-center justify-center">
           <div v-for="boton in botonesActual" :key="boton.titulo">
-            <div>
+            <div v-if="useAplicacionStore().IdAplicacionEscogida > 0">
               <q-btn
                 v-if="!boton.opciones"
                 class="flex items-center justify-center"
@@ -115,7 +115,7 @@ import AgregarGrupo from 'src/components/grupo/AgregarGrupo.vue';
 import AgregarContacto from 'src/components/contacto/AgregarContacto.vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 // import { useContactoStore } from 'src/stores/contacto.store';
-// import { useAplicacionStore } from 'src/stores/aplicacion.store';
+import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
 const navigationStore = ref(true);
 const importDialog = ref(false);

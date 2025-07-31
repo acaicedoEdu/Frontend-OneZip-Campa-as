@@ -230,13 +230,20 @@ import { type ContactosSeleccionados } from 'src/types/contactosSeleccionados';
 import { type Plantilla } from 'src/types/plantilla';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import MostrarMensajePlantilla from 'src/components/plantilla/MostrarMensajePlantilla.vue';
+import { useAplicacionStore } from 'src/stores/aplicacion.store';
+import { useCampanaStore } from 'src/stores/campana.store';
+import { useRouter } from 'vue-router';
 
 const grupoStore = useGrupoStore();
+const aplicacionStore = useAplicacionStore();
+const campanaStore = useCampanaStore();
+const router = useRouter();
 
 const step = ref(1);
 const modelNombreCampana = ref('');
 const plantillasSeleccionada: Ref<Plantilla[]> = ref([]);
 const contactoSeleccionado: Ref<ContactosSeleccionados> = ref({});
+const IdAplicacionEscogida = computed(() => aplicacionStore.IdAplicacionEscogida);
 
 const actualizarPlantillas = (nuevasPlantillas: Plantilla[]) => {
   plantillasSeleccionada.value = nuevasPlantillas;
@@ -256,7 +263,37 @@ const obtenerContactosGrupo = computed(() => {
     : null;
 });
 
-const ejecutarCampana = () => {
-  console.log('Lanzando campaña...');
+const ejecutarCampana = async () => {
+  let tipoEnvio: string;
+
+  if (contactoSeleccionado.value.idGrupo && contactoSeleccionado.value.idGrupo > 0) {
+    tipoEnvio = 'Masivo';
+  } else {
+    if (
+      contactoSeleccionado.value.contactosSeleccionados &&
+      contactoSeleccionado.value.contactosSeleccionados?.length == 1
+    ) {
+      tipoEnvio = 'Unico';
+    } else {
+      tipoEnvio = 'Masivo';
+    }
+  }
+
+  const campanaEjecutar: object = {
+    IdAplicacion: IdAplicacionEscogida.value,
+    IdPlantilla: plantillasSeleccionada.value[0]?.idPlantilla || 0,
+    IdGrupo: contactoSeleccionado.value.idGrupo,
+    Contactos: contactoSeleccionado.value.contactosSeleccionados,
+    TipoEnvio: tipoEnvio,
+    Nombre: modelNombreCampana.value,
+  };
+
+  try {
+    await router.push('/campana');
+  } catch (error) {
+    console.log('Error redirigiendo a campañas:', error);
+  }
+
+  await campanaStore.ejecutarCampana(campanaEjecutar);
 };
 </script>

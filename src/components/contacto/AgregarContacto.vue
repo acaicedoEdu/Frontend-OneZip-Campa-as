@@ -35,7 +35,7 @@
         >
           <div class="col">
             <q-input
-              v-model="columna.nombre"
+              v-model="columna.Nombre"
               outlined
               no-error-icon
               dense
@@ -47,7 +47,7 @@
 
           <div class="col">
             <q-input
-              v-model="columna.valor"
+              v-model="columna.Valor"
               outlined
               no-error-icon
               dense
@@ -123,7 +123,7 @@ const props = defineProps<{
 
 if (props.idGrupo && props.idGrupo > 0) {
   camposPersonalizados.value =
-    contactoStore.getContactoById(props.idGrupo)?.campoPersonalizado || [];
+    contactoStore.getContactoById(props.idGrupo)?.CampoPersonalizado || [];
 }
 
 const modelValue = ref(computed(() => contactoStore.estadoAgregarContacto));
@@ -131,8 +131,8 @@ const modelValue = ref(computed(() => contactoStore.estadoAgregarContacto));
 const agregarCampoPersonalizado = () => {
   const newRow: CampoPersonalizadoContacto = {
     id: Date.now(),
-    nombre: '',
-    valor: '',
+    Nombre: '',
+    Valor: '',
   };
   camposPersonalizados.value.push(newRow);
 };
@@ -145,10 +145,10 @@ const eliminarCampoPersonalizado = (columnaid: number) => {
 
 const contacto: ComputedRef<Contacto> = computed(() => {
   return {
-    telefono: telefono.value,
-    campoPersonalizado: camposPersonalizados.value,
-    idAplicacion: IdAplicacion.value,
-    idGrupo: props.idGrupo || 0,
+    Telefono: telefono.value,
+    CampoPersonalizado: camposPersonalizados.value,
+    IdAplicacion: IdAplicacion.value,
+    IdGrupo: props.idGrupo || 0,
   };
 });
 
@@ -159,6 +159,7 @@ const resetForm = () => {
 
 const agregarContacto = async () => {
   contactoStore.toggleAgregarContacto();
+  console.log(contacto.value);
   await contactoStore.agregarContacto(contacto.value);
   resetForm();
 };
