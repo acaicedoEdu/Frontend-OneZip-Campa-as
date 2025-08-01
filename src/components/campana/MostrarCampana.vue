@@ -6,14 +6,14 @@
     <div class="row items-center q-mb-md">
       <div>
         <div class="text-h5 text-weight-bold">Campañas Masivas</div>
-        <div class="text-grey-8">{{ campanas.length }} campañas con campos personalizables</div>
+        <div class="text-grey-8">{{ campanas.length }} campañas masivas</div>
       </div>
       <q-space />
       <q-input
         outlined
         dense
         v-model="searchText"
-        placeholder="Buscar contactos..."
+        placeholder="Buscar campañas..."
         class="q-mr-sm"
         style="width: 250px"
       >
@@ -21,7 +21,7 @@
           ><q-icon name="fa-solid fa-magnifying-glass" size="18px"
         /></template>
       </q-input>
-      <q-btn
+      <!-- <q-btn
         unelevated
         outline
         no-caps
@@ -32,13 +32,12 @@
       >
         <q-icon name="fa-solid fa-user-plus" size="15px" class="text-grey-9" />
         <span class="text-weight-bold q-ml-sm text-grey-9">Añadir Contacto</span>
-      </q-btn>
+      </q-btn> -->
     </div>
     <q-table
       :rows="campanas"
       :columns="columnas"
-      row-key="id"
-      grid
+      row-key="IdCampana"
       :loading="campanaStore.loading"
       v-model:pagination="pagination"
       :filter="searchText"
@@ -47,79 +46,6 @@
       :rows-per-page-options="[6]"
       :selected-rows-label="(numberOfRows) => `${numberOfRows} contactos seleccionados`"
     >
-      <template v-slot:item="props">
-        <div
-          class="q-pa-md col-12 col-md-6 col-lg-4 transition-card-contacto"
-          :style="props.selected ? 'transform: scale(0.95);' : ''"
-        >
-          <q-card
-            flat
-            bordered
-            class="full-height card-contacto"
-            :class="props.selected ? 'bg-blue-1' : ''"
-          >
-            <q-card-section class="row items-center no-wrap q-pb-none">
-              <q-checkbox v-model="props.selected" />
-              <q-avatar
-                color="blue-grey-1"
-                text-color="grey"
-                icon="fa-solid fa-user"
-                size="md"
-                class="q-ml-sm"
-              />
-              <div class="q-ml-md">
-                <div class="text-primary text-weight-medium" style="font-size: 16px">
-                  {{ props.row.phone }}
-                </div>
-              </div>
-              <q-space />
-              <q-btn flat round dense color="grey-7" icon="fa-solid fa-ellipsis-vertical">
-                <q-menu anchor="bottom right" self="top right">
-                  <q-list dense style="min-width: 150px">
-                    <q-item clickable v-close-popup
-                      ><q-item-section>Editar Campos</q-item-section></q-item
-                    >
-                    <q-item clickable v-close-popup
-                      ><q-item-section>Añadir a Grupo</q-item-section></q-item
-                    >
-                    <q-separator />
-                    <q-item clickable v-close-popup class="text-negative"
-                      ><q-item-section>Eliminar</q-item-section></q-item
-                    >
-                  </q-list>
-                </q-menu>
-              </q-btn>
-            </q-card-section>
-
-            <q-separator class="q-my-md" />
-
-            <q-card-section class="q-pt-none q-px-md">
-              <div
-                v-for="field in props.row.fields"
-                :key="field.label"
-                class="row fit q-mb-sm"
-                style="font-size: 14px"
-              >
-                <div class="col-4 text-grey-7">{{ field.label }}</div>
-                <div class="col-8 text-grey-9 ellipsis">{{ field.value }}</div>
-              </div>
-            </q-card-section>
-
-            <q-space />
-
-            <q-card-section class="row items-center q-pt-none">
-              <q-chip
-                outline
-                square
-                color="grey-7"
-                size="sm"
-                :label="props.row.fields.length + ' campos'"
-              />
-              <q-space />
-            </q-card-section>
-          </q-card>
-        </div>
-      </template>
       <template v-slot:no-data>
         <div class="full-width row flex-center text-grey-7 q-gutter-sm q-pa-xl">
           <q-icon size="2em" name="fa-solid fa-circle-info" />
@@ -155,8 +81,6 @@ interface Columnas {
 const columnas: Columnas[] = [
   { label: 'Nombre de Campaña', name: 'Nombre', field: 'Nombre' },
   { label: 'Tipo de envio', name: 'TipoEnvio', field: 'TipoEnvio' },
-  { label: 'Tipo de contenido', name: 'TipoContenido', field: 'TipoContenido' },
-  { label: 'Contenido', name: 'Contenido', field: 'Contenido' },
   { label: 'Plantilla', name: 'IdPlantilla', field: 'IdPlantilla' },
   { label: 'Grupo', name: 'IdGrupo', field: 'IdGrupo' },
   { label: 'Fecha de Ejecución', name: 'FechaInicio', field: 'FechaInicio' },
