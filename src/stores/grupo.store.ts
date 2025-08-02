@@ -47,7 +47,7 @@ export const useGrupoStore = defineStore('grupos', {
         const response = await axios.get('/grupo');
         const data = response.data;
 
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         }
 
@@ -57,7 +57,12 @@ export const useGrupoStore = defineStore('grupos', {
         this.pagina = data.Pagina;
         this.lastFetch = Date.now();
       } catch (error) {
-        showErrorNotification('Algo salió mal al obtener los grupos.');
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al obtener los grupos.');
+        }
+
         console.error('Error al obtener los grupos:', error);
       } finally {
         this.loading = false;
@@ -75,7 +80,7 @@ export const useGrupoStore = defineStore('grupos', {
         const response = await axios.get(`/grupo/${id}`);
         const data = response.data;
 
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
           return null;
         }
@@ -87,7 +92,12 @@ export const useGrupoStore = defineStore('grupos', {
 
         return fetchedGrupo;
       } catch (error) {
-        showErrorNotification('Algo salió mal al obtener el grupo.');
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al obtener el grupo.');
+        }
+
         console.error('Error al obtener el grupo:', error);
         return null;
       } finally {
@@ -113,7 +123,12 @@ export const useGrupoStore = defineStore('grupos', {
           }
         }
       } catch (error) {
-        showErrorNotification('Algo salió mal al crear el grupo.');
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al crear el grupo.');
+        }
+
         console.error('Error al crear el grupo:', error);
         this.grupos = this.grupos.filter((g) => g.IdGrupo !== tempId);
       }

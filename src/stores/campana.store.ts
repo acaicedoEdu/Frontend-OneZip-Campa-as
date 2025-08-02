@@ -47,7 +47,7 @@ export const useCampanaStore = defineStore('campanas', {
         const response = await axios.get('/campana');
         const data = response.data;
 
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         }
 
@@ -57,7 +57,12 @@ export const useCampanaStore = defineStore('campanas', {
         this.pagina = data.Pagina;
         this.lastFetch = Date.now();
       } catch (error) {
-        showErrorNotification('Algo salió mal al obtener las campañas.');
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al obtener las campañas.');
+        }
+
         console.error('Error obteniendo las campañas:', error);
       } finally {
         this.loading = false;
@@ -89,7 +94,7 @@ export const useCampanaStore = defineStore('campanas', {
         );
         const data = response.data;
 
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         }
 

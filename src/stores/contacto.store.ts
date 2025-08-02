@@ -11,6 +11,7 @@ interface ContactoState {
   totalPaginas: number;
   pagina: number;
   loading: boolean;
+  loadingImportarContacto: boolean;
   lastFetch: number | null;
 }
 
@@ -23,6 +24,7 @@ export const useContactoStore = defineStore('contactos', {
     totalPaginas: 0,
     pagina: 0,
     loading: false,
+    loadingImportarContacto: false,
     lastFetch: null,
   }),
 
@@ -49,7 +51,7 @@ export const useContactoStore = defineStore('contactos', {
         const response = await axios.get('/contacto');
         const data = response.data;
 
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         }
 
@@ -59,7 +61,12 @@ export const useContactoStore = defineStore('contactos', {
         this.pagina = data.Pagina;
         this.lastFetch = Date.now();
       } catch (error) {
-        showErrorNotification('Algo salió mal al obtener los contactos.');
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al obtener los contactos.');
+        }
+
         console.error('Error al obtener los contactos:', error);
       } finally {
         this.loading = false;
@@ -71,7 +78,7 @@ export const useContactoStore = defineStore('contactos', {
         const response = await axios.post('/contacto', contacto);
         const data = response.data;
 
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
           return;
         }
@@ -79,25 +86,38 @@ export const useContactoStore = defineStore('contactos', {
         this.contactos.push(data.Dato);
         showErrorNotification('Contacto agregado correctamente.');
       } catch (error) {
-        showErrorNotification('Algo salió mal al agregar el contacto.');
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al agregar el contacto.');
+        }
+
         console.error('Error al agregar el contacto:', error);
       }
     },
 
     async importarContacto(datos: FormData) {
+      this.loadingImportarContacto = true;
       try {
         const response = await axios.post('/contacto/importeMasivo', datos);
         const data = response.data;
 
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
           return;
         }
 
-        showErrorNotification('Contacto agregado correctamente.');
-      } catch (error) {
-        showErrorNotification('Algo salió mal al agregar el contacto.');
-        console.error('Error al agregar el contacto:', error);
+        showErrorNotification('Contactos importados.');
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al importar los contactos.');
+        }
+
+        console.error('Error al importar los contactos:', error);
+      } finally {
+        this.loadingImportarContacto = false;
       }
     },
 

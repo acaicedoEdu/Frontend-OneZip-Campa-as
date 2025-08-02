@@ -89,15 +89,58 @@
               <div class="q-pt-xs">{{ props.row.Descripcion }}</div>
             </q-card-section>
 
-            <q-card-section class="q-pt-xs text-caption text-grey">
-              <div>
-                Creado: {{ props.row.FechaCarga }}
-                <q-spinner-tail v-if="!props.row.FechaCarga" color="blue-grey" />
-              </div>
-              <div v-if="props.row.FechaModificacion">
-                Actualizado: {{ props.row.FechaModificacion }}
-              </div>
+            <q-card-section
+              class="column flex-center"
+              v-if="!props.row.FuenteCarga || !useContactoStore().loadingImportarContacto"
+            >
+              <q-avatar
+                size="55px"
+                color="green-1"
+                text-color="green-7"
+                icon="fa-solid fa-message"
+              />
+              <span class="text-subtitle2">¡Tu grupo está vacío!</span>
+              <span class="text-caption text-grey-8 q-my-sm"
+                >Agrega contactos para ejecutar tus campañas masivas</span
+              >
+              <q-btn
+                unelevated
+                no-caps
+                class="verde-principal text-white"
+                padding="6px 24px"
+                @click="useContactoStore().toggleImportarContacto()"
+              >
+                <q-icon name="fa-solid fa-user text-white" class="q-mr-md" size="13px" />
+                <span class="text-white text-subtitle2">Agregar contactos</span>
+              </q-btn>
             </q-card-section>
+
+            <q-spinner-tail v-if="useContactoStore().loadingImportarContacto" color="blue-grey" />
+            <q-separator class="q-mt-md" />
+
+            <div class="row justify-between">
+              <q-card-section class="q-pt-sm text-caption text-grey">
+                <div>
+                  Creado: {{ props.row.FechaCarga }}
+                  <q-spinner-tail v-if="!props.row.FechaCarga" color="blue-grey" />
+                </div>
+                <div v-if="props.row.FechaModificacion">
+                  Actualizado: {{ props.row.FechaModificacion }}
+                </div>
+              </q-card-section>
+              <q-card-section class="q-pt-sm">
+                <div
+                  v-if="props.row.FuenteCarga || useContactoStore().loadingImportarContacto"
+                  class="text-caption text-grey"
+                >
+                  Fuente de carga: {{ props.row.FuenteCarga }}
+                  <q-spinner-tail
+                    v-if="useContactoStore().loadingImportarContacto"
+                    color="blue-grey"
+                  />
+                </div>
+              </q-card-section>
+            </div>
           </q-card>
         </div>
       </template>
@@ -117,6 +160,7 @@ import { useGrupoStore } from 'src/stores/grupo.store';
 import VacioDatos from 'src/components/VacioDatos.vue';
 import type { Grupo } from 'src/types/grupo';
 import type { ContactosSeleccionados } from 'src/types/contactosSeleccionados';
+import { useContactoStore } from 'src/stores/contacto.store';
 
 const grupoStore = useGrupoStore();
 const searchText = ref('');

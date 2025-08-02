@@ -1,5 +1,9 @@
 <template>
-  <q-dialog :model-value="modelValue" @hide="resetForm">
+  <q-dialog
+    :model-value="modelValue"
+    @hide="resetForm"
+    @before-hide="contactoStore.estadoImportarContacto && contactoStore.toggleImportarContacto()"
+  >
     <q-card style="min-width: 550px; border-radius: 12px">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6 text-weight-bold">Importar Contactos</div>
@@ -43,6 +47,10 @@
           El archivo debe tener las siguientes columnas:
           <div class="q-pa-sm bg-white" style="border-radius: 4px; margin-top: 4px">
             <code style="color: #444">telefono | Columnas adicionales</code>
+          </div>
+          Formato esparado de telefono:
+          <div class="q-pa-sm bg-white" style="border-radius: 4px; margin-top: 4px">
+            <code style="color: #444">3118031630</code>
           </div>
         </q-banner>
       </q-card-section>

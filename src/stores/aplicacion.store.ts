@@ -40,15 +40,19 @@ export const useAplicacionStore = defineStore('aplicaciones', {
       try {
         const response = await axios.get('/aplicacion');
         const data = response.data;
-
-        if (!data.IsEstado) {
+        if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         }
 
         this.aplicaciones = data.Dato || [];
         this.lastFetch = Date.now();
       } catch (error) {
-        showErrorNotification('Algo salió mal al obtener las aplicaciones.');
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al obtener las aplicaciones.');
+        }
+
         console.error('Error al obtener las aplicaciones:', error);
       } finally {
         this.loading = false;

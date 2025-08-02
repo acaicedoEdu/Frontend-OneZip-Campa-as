@@ -5,7 +5,7 @@ export const showErrorNotification = (message: string) => {
     message,
     color: 'grey-9',
     position: 'bottom-right',
-    timeout: 5000,
+    timeout: 30000,
     icon: 'fa-solid fa-exclamation-triangle',
     actions: [{ icon: 'fa-solid fa-xmark', color: 'white', round: true }],
   };
