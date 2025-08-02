@@ -17,7 +17,6 @@
               <NumberFlow
                 class="text-h4 text-weight-bold q-mt-sm"
                 :value="stat.value"
-                :format="{ notation: 'standard' }"
                 :duration="1000"
               />
               <div :class="stat.changeSign === '+' ? 'text-positive' : 'text-negative'">
@@ -105,7 +104,7 @@ import NumberFlow from '@number-flow/vue';
 const stats = ref([
   {
     title: 'Mensajes Enviados Hoy',
-    value: 2441,
+    value: 2141,
     change: 0.12,
     icon: 'fa-solid fa-message',
     color: 'blue',

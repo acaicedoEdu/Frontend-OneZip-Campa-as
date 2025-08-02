@@ -1,9 +1,5 @@
 <template>
-  <q-dialog
-    :model-value="modelValue"
-    @update:model-value="(value) => emit('update:modelValue', value)"
-    @hide="resetForm"
-  >
+  <q-dialog :model-value="modelValue" @hide="resetForm">
     <q-card style="min-width: 550px; border-radius: 12px">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6 text-weight-bold">Importar Contactos</div>
@@ -13,7 +9,7 @@
 
       <q-card-section class="q-pt-md">
         <q-file
-          v-model="selectedFile"
+          v-model="archivo"
           outlined
           dense
           label="Seleccionar archivo Excel (.xlsx)"
@@ -26,21 +22,27 @@
         </q-file>
 
         <q-select
-          v-model="importDestination"
-          :options="destinationOptions"
+          v-model="nombreGrupoEscogido"
+          :options="opcionesGrupo"
           label="Importar a:"
           options-dense
           dense
           outlined
           class="q-mt-md"
           dropdown-icon="fa-solid fa-angle-down"
-        />
+        >
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey"> No tienes grupos </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
 
         <q-banner rounded class="bg-blue-1 text-blue-9 q-mt-lg">
           <div class="text-weight-bold">Formato esperado:</div>
           El archivo debe tener las siguientes columnas:
           <div class="q-pa-sm bg-white" style="border-radius: 4px; margin-top: 4px">
-            <code style="color: #444">Telefono | Columnas adicionales</code>
+            <code style="color: #444">telefono | Columnas adicionales</code>
           </div>
         </q-banner>
       </q-card-section>
@@ -52,8 +54,8 @@
           class="verde-principal text-white flex items-center justify-center"
           no-caps
           default
-          :disable="!selectedFile || !importDestination"
-          @click="handleImport"
+          :disable="!archivo || !nombreGrupoEscogido"
+          @click="importarContactos"
         >
           <q-icon name="fa-solid fa-arrow-up-from-bracket" size="13px" />
           <span class="text-weight-regular q-ml-sm">Importar</span>
@@ -64,38 +66,39 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useGrupoStore } from 'src/stores/grupo.store';
+import { useContactoStore } from 'src/stores/contacto.store';
+import type { Grupo } from 'src/types/grupo';
 
-defineProps<{
-  modelValue: boolean;
-}>();
+const grupoStore = useGrupoStore();
+const contactoStore = useContactoStore();
+const modelValue = ref(computed(() => contactoStore.estadoImportarContacto));
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'import', payload: { file: File; destination: string }): void;
-}>();
+const archivo = ref<File | null>(null);
+const nombreGrupoEscogido = ref<string | null>(null);
 
-const selectedFile = ref<File | null>(null);
-const importDestination = ref<string | null>(null);
+const opcionesGrupo = computed<string[]>(() =>
+  grupoStore.grupos.map((grupo: Grupo) => {
+    return grupo.Nombre;
+  }),
+);
 
-const destinationOptions = [
-  'Lista de Clientes Potenciales',
-  'Grupo de Marketing Q3',
-  'Base de Datos General',
-];
-
-const handleImport = () => {
-  if (selectedFile.value && importDestination.value) {
-    emit('import', {
-      file: selectedFile.value,
-      destination: importDestination.value,
-    });
+const importarContactos = async () => {
+  const grupoEscogido =
+    grupoStore.grupos.find((g: Grupo) => g.Nombre === nombreGrupoEscogido.value) || 0;
+  if (archivo.value && grupoEscogido) {
+    const formData = new FormData();
+    formData.append('archivo', archivo.value);
+    formData.append('IdGrupo', String(grupoEscogido.IdGrupo));
+    contactoStore.estadoImportarContacto = false;
+    await contactoStore.importarContacto(formData);
   }
 };
 
 const resetForm = () => {
-  selectedFile.value = null;
-  importDestination.value = null;
+  archivo.value = null;
+  nombreGrupoEscogido.value = null;
 };
 </script>
 

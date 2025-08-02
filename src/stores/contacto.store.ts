@@ -6,6 +6,7 @@ import { showErrorNotification } from 'src/components/notificacion/notificacion'
 interface ContactoState {
   contactos: Contacto[];
   estadoAgregarContacto: boolean;
+  estadoImportarContacto: boolean;
   tamano: number;
   totalPaginas: number;
   pagina: number;
@@ -17,6 +18,7 @@ export const useContactoStore = defineStore('contactos', {
   state: (): ContactoState => ({
     contactos: [],
     estadoAgregarContacto: false,
+    estadoImportarContacto: false,
     tamano: 0,
     totalPaginas: 0,
     pagina: 0,
@@ -82,8 +84,29 @@ export const useContactoStore = defineStore('contactos', {
       }
     },
 
+    async importarContacto(datos: FormData) {
+      try {
+        const response = await axios.post('/contacto/importeMasivo', datos);
+        const data = response.data;
+
+        if (!data.IsEstado) {
+          showErrorNotification(data.Mensaje);
+          return;
+        }
+
+        showErrorNotification('Contacto agregado correctamente.');
+      } catch (error) {
+        showErrorNotification('Algo salió mal al agregar el contacto.');
+        console.error('Error al agregar el contacto:', error);
+      }
+    },
+
     toggleAgregarContacto() {
       this.estadoAgregarContacto = !this.estadoAgregarContacto;
+    },
+
+    toggleImportarContacto() {
+      this.estadoImportarContacto = !this.estadoImportarContacto;
     },
   },
 });

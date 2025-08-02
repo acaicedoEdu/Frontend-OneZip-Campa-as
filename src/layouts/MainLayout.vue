@@ -20,7 +20,7 @@
                 no-caps
                 :to="boton.link"
                 default
-                @click="!boton.principal ? (importDialog = true) : null"
+                @click="!boton.principal ? useContactoStore().toggleImportarContacto() : null"
               >
                 <q-icon
                   :name="boton.icono"
@@ -100,7 +100,7 @@
     </q-page-container>
   </q-layout>
 
-  <ImportarContactos v-model="importDialog" />
+  <ImportarContactos />
   <AgregarGrupo />
   <AgregarContacto v-model="addContactDialog" />
 </template>
@@ -114,11 +114,10 @@ import ImportarContactos from 'src/components/contacto/ImportarContactos.vue';
 import AgregarGrupo from 'src/components/grupo/AgregarGrupo.vue';
 import AgregarContacto from 'src/components/contacto/AgregarContacto.vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
-// import { useContactoStore } from 'src/stores/contacto.store';
+import { useContactoStore } from 'src/stores/contacto.store';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
 
 const navigationStore = ref(true);
-const importDialog = ref(false);
 const addContactDialog = ref(false);
 const rutaActual = useRoute();
 

@@ -2,7 +2,7 @@
   <q-select
     class="bg-white"
     outlined
-    dense 
+    dense
     v-model="modelAplicacion"
     label="Aplicación"
     dropdown-icon="fa-solid fa-chevron-down"
@@ -13,7 +13,7 @@
   >
     <template v-slot:no-option>
       <q-item>
-        <q-item-section class="text-grey"> No results </q-item-section>
+        <q-item-section class="text-grey"> No tienes aplicaciones </q-item-section>
       </q-item>
     </template>
   </q-select>
