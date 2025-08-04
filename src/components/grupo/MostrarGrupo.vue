@@ -155,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type ComputedRef, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import VacioDatos from 'src/components/VacioDatos.vue';
 import type { Grupo } from 'src/types/grupo';
@@ -184,7 +184,8 @@ const obtenerContactosGrupo = computed(() => {
 
 const gruposSeleccionados = ref<Grupo[]>(obtenerContactosGrupo.value || []);
 
-const grupos: ComputedRef<Grupo[]> = computed(() => grupoStore.grupos);
+const grupos = computed<Grupo[]>(() => grupoStore.grupos);
+
 const paginacion = ref({
   page: grupoStore.pagina,
   rowsPerPage: grupoStore.tamano,
