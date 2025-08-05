@@ -82,6 +82,7 @@ const grupo: ComputedRef<Grupo> = computed(() => {
     Nombre: nombre.value,
     Descripcion: descripcion.value,
     IdAplicacion: IdAplicacion.value,
+    TotalContactos: 0,
   };
 });
 

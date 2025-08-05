@@ -145,7 +145,7 @@ const eliminarCampoPersonalizado = (columnaid: number) => {
 
 const contacto: ComputedRef<Contacto> = computed(() => {
   return {
-    Telefono: telefono.value,
+    Telefono: telefono.value.replace(/\s+/g, ''),
     CampoPersonalizado: camposPersonalizados.value,
     IdAplicacion: IdAplicacion.value,
     IdGrupo: props.idGrupo || 0,
@@ -159,7 +159,6 @@ const resetForm = () => {
 
 const agregarContacto = async () => {
   contactoStore.toggleAgregarContacto();
-  console.log(contacto.value);
   await contactoStore.agregarContacto(contacto.value);
   resetForm();
 };

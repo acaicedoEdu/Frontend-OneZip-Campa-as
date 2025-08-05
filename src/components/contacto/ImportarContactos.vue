@@ -37,7 +37,7 @@
         >
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey"> No tienes grupos </q-item-section>
+              <q-item-section class="text-grey"> No tienes grupos vacios </q-item-section>
             </q-item>
           </template>
         </q-select>
@@ -87,11 +87,12 @@ const archivo = ref<File | null>(null);
 const nombreGrupoEscogido = ref<string | null>(null);
 
 const opcionesGrupo = computed<string[]>(() =>
-  grupoStore.grupos.map((grupo: Grupo) => {
-    return grupo.Nombre;
-  }),
+  grupoStore.grupos
+    .filter((grupo: Grupo) => !grupo.FuenteCarga)
+    .map((grupo: Grupo) => grupo.Nombre),
 );
 
+console.log(opcionesGrupo.value);
 const importarContactos = async () => {
   const grupoEscogido =
     grupoStore.grupos.find((g: Grupo) => g.Nombre === nombreGrupoEscogido.value) || 0;

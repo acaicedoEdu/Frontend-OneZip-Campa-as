@@ -31,7 +31,7 @@
       row-key="IdGrupo"
       grid
       :loading="grupoStore.loading"
-      v-model:pagination="paginacion"
+      :pagination="paginacion"
       v-model:selected="gruposSeleccionados"
       selection="single"
       :filter="searchText"
@@ -91,14 +91,9 @@
 
             <q-card-section
               class="column flex-center"
-              v-if="!props.row.FuenteCarga || !useContactoStore().loadingImportarContacto"
+              v-if="!props.row.FuenteCarga && !useContactoStore().loadingImportarContacto"
             >
-              <q-avatar
-                size="55px"
-                color="green-1"
-                text-color="green-7"
-                icon="fa-solid fa-message"
-              />
+              <q-avatar size="55px" color="green-1" text-color="green-7" icon="fa-solid fa-user" />
               <span class="text-subtitle2">¡Tu grupo está vacío!</span>
               <span class="text-caption text-grey-8 q-my-sm"
                 >Agrega contactos para ejecutar tus campañas masivas</span

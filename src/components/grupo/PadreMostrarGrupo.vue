@@ -148,8 +148,9 @@ watch(
   IdAplicacionEscogida,
   async (newAppId) => {
     if (newAppId) {
-      await grupoStore.fetchGrupos();
-      await contactoStore.fetchContactos();
+      await grupoStore.fetchGruposXAplicacion();
+      console.log(grupoStore.grupos);
+      await contactoStore.fetchContactosXAplicacion();
     }
   },
   { immediate: true },

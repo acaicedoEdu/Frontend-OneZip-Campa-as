@@ -40,7 +40,7 @@ watch(
   IdAplicacionEscogida,
   async (newAppId) => {
     if (newAppId) {
-      await campanaStore.fetchcampanasXAplicacion(newAppId);
+      await campanaStore.fetchCampanasXAplicacion();
     }
   },
   { immediate: true },

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Campana } from 'src/types/campana';
 import { showErrorNotification } from 'src/components/notificacion/notificacion';
+import { useAplicacionStore } from './aplicacion.store';
 
 interface CampanaState {
   campanas: Campana[];
@@ -69,12 +70,7 @@ export const useCampanaStore = defineStore('campanas', {
       }
     },
 
-    async fetchcampanasXAplicacion(
-      idAplicacion: number,
-      forceRefresh = false,
-      pagina: number = 1,
-      tamano: number = 10,
-    ) {
+    async fetchCampanasXAplicacion(forceRefresh = false, pagina: number = 1, tamano: number = 10) {
       const now = Date.now();
       const cacheDuration = 5 * 60 * 1000;
 
@@ -86,7 +82,7 @@ export const useCampanaStore = defineStore('campanas', {
       ) {
         return;
       }
-
+      const idAplicacion = useAplicacionStore().IdAplicacionEscogida;
       this.loading = true;
       try {
         const response = await axios.get(
