@@ -56,6 +56,18 @@
               <q-card-section>
                 <div class="text-h6">Detalles de la Campaña</div>
               </q-card-section>
+              <q-card-section>
+                <q-list>
+                  <q-item v-for="detalle in cardDetallesCampana" :key="detalle.titulo">
+                    <q-item-section>
+                      <q-item-label>{{ detalle.titulo }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>{{ detalle.valor }}</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card-section>
             </q-card>
             <q-card flat bordered>
               <q-card-section>
@@ -109,6 +121,7 @@ import { graficoDonuChart, seriesDonuChart } from 'src/constants/graficoDonuChar
 import { graficoTimeline, seriesTimeline } from 'src/constants/graficoTimelineMostrarIdCampana';
 import { useRoute } from 'vue-router';
 import CardEstadisticas from 'src/components/principal/CardEstadisticas.vue';
+import { cardDetallesCampana } from 'src/constants/cardDetallesCampana';
 
 const route = useRoute();
 
