@@ -179,30 +179,30 @@ const obtenerContactosGrupo = computed(() => {
 
 const gruposSeleccionados = ref<Grupo[]>(obtenerContactosGrupo.value || []);
 
-// const grupos = computed<Grupo[]>(() => grupoStore.grupos);
+const grupos = computed<Grupo[]>(() => grupoStore.grupos);
 
-const grupos = ref<Grupo[]>([
-  {
-    IdGrupo: 1,
-    Nombre: 'Grupo 1',
-    Descripcion: 'Descripcion 1',
-    IdAplicacion: 1,
-    TotalContactos: 1,
-    FechaCarga: new Date(),
-    FechaModificacion: new Date(),
-    FuenteCarga: 'Manual',
-  },
-  {
-    IdGrupo: 2,
-    Nombre: 'Grupo 2',
-    Descripcion: 'Descripcion 2',
-    IdAplicacion: 1,
-    TotalContactos: 2,
-    FechaCarga: new Date(),
-    FechaModificacion: new Date(),
-    FuenteCarga: 'Manual',
-  },
-]);
+// const grupos = ref<Grupo[]>([
+//   {
+//     IdGrupo: 1,
+//     Nombre: 'Grupo 1',
+//     Descripcion: 'Descripcion 1',
+//     IdAplicacion: 1,
+//     TotalContactos: 1,
+//     FechaCarga: new Date(),
+//     FechaModificacion: new Date(),
+//     FuenteCarga: 'Manual',
+//   },
+//   {
+//     IdGrupo: 2,
+//     Nombre: 'Grupo 2',
+//     Descripcion: 'Descripcion 2',
+//     IdAplicacion: 1,
+//     TotalContactos: 2,
+//     FechaCarga: new Date(),
+//     FechaModificacion: new Date(),
+//     FuenteCarga: 'Manual',
+//   },
+// ]);
 
 const paginacion = ref<Paginacion>({
   page: grupoStore.pagina,

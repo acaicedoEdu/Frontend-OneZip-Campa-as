@@ -1,5 +1,5 @@
 <template>
-  <!-- <div v-if="aplicacionStore.aplicaciones.length === 0">
+  <div v-if="aplicacionStore.aplicaciones.length === 0">
     <div
       v-if="aplicacionStore.loading"
       class="flex flex-center"
@@ -8,8 +8,8 @@
       <q-spinner-oval color="primary" size="4em" />
     </div>
     <VacioDatos v-else pagina="aplicacion" />
-  </div> -->
-  <div>
+  </div>
+  <div v-else>
     <div
       v-if="props.componentePadre == 'agregarCampana'"
       class="row items-center justify-between q-mb-md"
@@ -64,6 +64,7 @@
     </div>
   </div>
   <q-tab-panels
+    v-if="aplicacionStore.aplicaciones.length > 0"
     v-model="tab"
     :class="props.componentePadre === 'PageGrupo' ? 'q-ma-md' : 'q-mt-md'"
     animated
@@ -95,7 +96,7 @@ import { useGrupoStore } from 'src/stores/grupo.store';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
 import { useContactoStore } from 'src/stores/contacto.store';
 import { type ContactosSeleccionados } from 'src/types/contactosSeleccionados';
-// import VacioDatos from 'src/components/VacioDatos.vue';
+import VacioDatos from 'src/components/VacioDatos.vue';
 
 const grupoStore = useGrupoStore();
 
@@ -148,7 +149,6 @@ watch(
   async (newAppId) => {
     if (newAppId) {
       await grupoStore.fetchGruposXAplicacion();
-      console.log(grupoStore.grupos);
       await contactoStore.fetchContactosXAplicacion();
     }
   },

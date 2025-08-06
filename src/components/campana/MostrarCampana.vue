@@ -1,6 +1,9 @@
 <template>
   <div v-if="campanas.length === 0">
-    <VacioDatos pagina="campana" />
+    <div v-if="campanaStore.loading" class="flex flex-center" style="height: 80vh">
+      <q-spinner-oval color="primary" size="4em" />
+    </div>
+    <VacioDatos v-else pagina="campana" />
   </div>
   <div v-else class="q-pa-md q-pa-lg-lg">
     <div class="row items-center q-mb-md">
@@ -44,30 +47,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useCampanaStore } from 'src/stores/campana.store';
-// import { type Campana } from 'src/types/campana';
+import { type Campana } from 'src/types/campana';
 import VacioDatos from 'src/components/VacioDatos.vue';
 
 const campanaStore = useCampanaStore();
 const searchText = ref('');
 
-// const campanas: ComputedRef<Campana[]> = computed(() => campanaStore.campanasXAplicacion);
+const campanas = computed<Campana[]>(() => campanaStore.campanasXAplicacion);
 
-const campanas = ref([
-  {
-    IdCampana: 1,
-    Nombre: 'Campaña 1',
-    TipoEnvio: 'Tipo de envio 1',
-    IdPlantilla: 1,
-    IdGrupo: 1,
-    FechaInicio: '2022-01-01',
-    FechaFin: '2022-01-01',
-    IdEstado: 1,
-    FechaCreacion: '2022-01-01',
-    FechaModificacion: '2022-01-01',
-  },
-]);
+// const campanas = ref([
+//   {
+//     IdCampana: 1,
+//     Nombre: 'Campaña 1',
+//     TipoEnvio: 'Tipo de envio 1',
+//     IdPlantilla: 1,
+//     IdGrupo: 1,
+//     FechaInicio: '2022-01-01',
+//     FechaFin: '2022-01-01',
+//     IdEstado: 1,
+//     FechaCreacion: '2022-01-01',
+//     FechaModificacion: '2022-01-01',
+//   },
+// ]);
+
 const pagination = ref({
   page: campanaStore.pagina,
   rowsPerPage: campanaStore.tamano,
