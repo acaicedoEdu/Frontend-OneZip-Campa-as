@@ -16,7 +16,6 @@
         dense
         v-model="searchText"
         placeholder="Buscar grupos..."
-        class="q-mr-sm"
         style="width: 250px"
       >
         <template v-slot:prepend>
@@ -35,10 +34,10 @@
       v-model:selected="gruposSeleccionados"
       selection="single"
       :filter="searchText"
-      icon-next-page="fa-solid fa-angle-right"
-      icon-prev-page="fa-solid fa-angle-left"
-      :rows-per-page-options="[6]"
       :selected-rows-label="(numberOfRows) => `${numberOfRows} contactos seleccionados`"
+      rows-per-page-label="Filas por página"
+      :rows-per-page-options="[10]"
+      @request="onRequest"
     >
       <template v-slot:item="props">
         <div
@@ -154,6 +153,7 @@ import { ref, computed, watch } from 'vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import VacioDatos from 'src/components/VacioDatos.vue';
 import type { Grupo } from 'src/types/grupo';
+import type { Paginacion, RequestProps } from 'src/types/paginacion';
 import type { ContactosSeleccionados } from 'src/types/contactosSeleccionados';
 import { useContactoStore } from 'src/stores/contacto.store';
 
@@ -179,11 +179,37 @@ const obtenerContactosGrupo = computed(() => {
 
 const gruposSeleccionados = ref<Grupo[]>(obtenerContactosGrupo.value || []);
 
-const grupos = computed<Grupo[]>(() => grupoStore.grupos);
+// const grupos = computed<Grupo[]>(() => grupoStore.grupos);
 
-const paginacion = ref({
+const grupos = ref<Grupo[]>([
+  {
+    IdGrupo: 1,
+    Nombre: 'Grupo 1',
+    Descripcion: 'Descripcion 1',
+    IdAplicacion: 1,
+    TotalContactos: 1,
+    FechaCarga: new Date(),
+    FechaModificacion: new Date(),
+    FuenteCarga: 'Manual',
+  },
+  {
+    IdGrupo: 2,
+    Nombre: 'Grupo 2',
+    Descripcion: 'Descripcion 2',
+    IdAplicacion: 1,
+    TotalContactos: 2,
+    FechaCarga: new Date(),
+    FechaModificacion: new Date(),
+    FuenteCarga: 'Manual',
+  },
+]);
+
+const paginacion = ref<Paginacion>({
   page: grupoStore.pagina,
   rowsPerPage: grupoStore.tamano,
+  rowsNumber: grupoStore.totalPaginas,
+  sortBy: '',
+  descending: false,
 });
 
 interface Columnas {
@@ -209,6 +235,10 @@ watch(
   },
   { deep: true },
 );
+
+const onRequest = (props: RequestProps) => {
+  console.log('onRequest', props);
+};
 </script>
 
 <style>

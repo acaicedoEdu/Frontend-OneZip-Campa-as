@@ -1,41 +1,7 @@
 <template>
   <q-page>
     <div class="q-pa-md q-pa-lg-lg">
-      <div class="row q-col-gutter-lg">
-        <div v-for="stat in stats" :key="stat.title" class="col-12 col-sm-6 col-md-3">
-          <q-card flat bordered>
-            <q-card-section>
-              <div class="row items-start justify-between">
-                <div class="text-grey-8">{{ stat.title }}</div>
-                <q-avatar
-                  :icon="stat.icon"
-                  :color="`${stat.color}-1`"
-                  :text-color="`${stat.color}-7`"
-                  size="md"
-                />
-              </div>
-              <NumberFlow
-                class="text-h4 text-weight-bold q-mt-sm"
-                :value="stat.value"
-                :duration="1000"
-              />
-              <div :class="stat.changeSign === '+' ? 'text-positive' : 'text-negative'">
-                {{ stat.changeSign }}
-                <NumberFlow
-                  locales="es-ES"
-                  :value="stat.change"
-                  :format="{
-                    style: stat.styleNumberFlow === 'percent' ? 'percent' : 'decimal',
-                    notation: 'standard',
-                  }"
-                  :duration="1000"
-                />
-                desde ayer
-              </div>
-            </q-card-section>
-          </q-card>
-        </div>
-      </div>
+      <CardEstadisticas :stats="estadisticas" componentePadre="PagePrincipal" />
 
       <div class="row q-col-gutter-lg q-mt-md">
         <div class="col-12 col-lg-7">
@@ -45,7 +11,12 @@
               <div class="text-grey-7">Mensajes enviados por día</div>
             </q-card-section>
             <q-card-section>
-              <MostrarGrafico />
+              <MostrarGrafico
+                :type="grafico.chart.type"
+                :height="grafico.chart.height"
+                :options="grafico"
+                :series="series"
+              />
             </q-card-section>
           </q-card>
         </div>
@@ -99,44 +70,45 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import MostrarGrafico from 'src/components/MostrarGrafico.vue';
-import NumberFlow from '@number-flow/vue';
+import { grafico, series } from 'src/constants/graficoPrincipal';
+import CardEstadisticas from 'src/components/principal/CardEstadisticas.vue';
 
-const stats = ref([
+const estadisticas = ref([
   {
-    title: 'Mensajes Enviados Hoy',
-    value: 2141,
-    change: 0.12,
-    icon: 'fa-solid fa-message',
+    titulo: 'Mensajes Enviados Hoy',
+    valor: 2141,
+    cambio: 0.12,
+    icono: 'fa-solid fa-message',
     color: 'blue',
-    styleNumberFlow: 'percent',
-    changeSign: '+',
+    estiloCambio: 'percent',
+    signoCambio: '+',
   },
   {
-    title: 'Tasa de Entrega',
-    value: 94.2,
-    change: 0.02,
-    icon: 'fa-solid fa-arrow-trend-up',
+    titulo: 'Tasa de Entrega',
+    valor: 94.2,
+    cambio: 0.02,
+    icono: 'fa-solid fa-arrow-trend-up',
     color: 'green',
-    styleNumberFlow: 'percent',
-    changeSign: '+',
+    estiloCambio: 'percent',
+    signoCambio: '+',
   },
   {
-    title: 'Campañas Activas',
-    value: 8,
-    change: 3,
-    icon: 'fa-solid fa-rocket',
+    titulo: 'Campañas Activas',
+    valor: 8,
+    cambio: 3,
+    icono: 'fa-solid fa-rocket',
     color: 'purple',
-    styleNumberFlow: 'standard',
-    changeSign: '+',
+    estiloCambio: 'standard',
+    signoCambio: '+',
   },
   {
-    title: 'Errores',
-    value: 23,
-    change: 5,
-    icon: 'fa-solid fa-exclamation-triangle',
+    titulo: 'Errores',
+    valor: 23,
+    cambio: 5,
+    icono: 'fa-solid fa-exclamation-triangle',
     color: 'red',
-    styleNumberFlow: 'standard',
-    changeSign: '-',
+    estiloCambio: 'standard',
+    signoCambio: '-',
   },
 ]);
 
