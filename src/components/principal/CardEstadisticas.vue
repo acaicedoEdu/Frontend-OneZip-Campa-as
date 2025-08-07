@@ -54,19 +54,10 @@
 
 <script setup lang="ts">
 import NumberFlow from '@number-flow/vue';
+import { type CardEstadisticas } from 'src/types/cardEstadisticas';
 
 defineProps<{
-  stats: {
-    titulo: string;
-    valor: number;
-    cambio: number;
-    signoCambio?: string;
-    estiloCambio: string;
-    icono: string;
-    color: string;
-    totalDestinatarios?: number;
-    labelCambio?: string;
-  }[];
+  stats: CardEstadisticas[];
   componentePadre: string;
 }>();
 </script>

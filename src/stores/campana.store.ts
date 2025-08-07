@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Campana } from 'src/types/campana';
+import type { IdCampana } from 'src/types/idCampana';
 import { showErrorNotification } from 'src/components/notificacion/notificacion';
 import { useAplicacionStore } from './aplicacion.store';
 
 interface CampanaState {
   campanas: Campana[];
   campanasXAplicacion: Campana[];
+  campana: IdCampana | null;
   tamano: number;
   totalPaginas: number;
   pagina: number;
@@ -18,6 +20,7 @@ export const useCampanaStore = defineStore('campanas', {
   state: (): CampanaState => ({
     campanas: [],
     campanasXAplicacion: [],
+    campana: null,
     tamano: 0,
     totalPaginas: 0,
     pagina: 0,
@@ -99,6 +102,27 @@ export const useCampanaStore = defineStore('campanas', {
       } catch (error) {
         showErrorNotification('Algo salió mal al obtener las campañas por grupo.');
         console.error('Error obteniendo las campañas por grupo:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchIdCampana(forceRefresh = false, IdCampana: number) {
+      if (this.campana?.Campana?.IdCampana == IdCampana && !forceRefresh) {
+        return;
+      }
+      this.loading = true;
+      try {
+        const response = await axios.get(`/campana/${IdCampana}`);
+        const data = response.data;
+
+        this.campana = data.Dato || null;
+        if (this.campana) {
+          this.campana.MensajeError = data.Mensaje;
+        }
+      } catch (error) {
+        showErrorNotification('Algo salió mal al obtener la campaña.');
+        console.error('Error obteniendo la campaña:', error);
       } finally {
         this.loading = false;
       }
