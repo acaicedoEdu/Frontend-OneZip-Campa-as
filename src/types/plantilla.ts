@@ -1,7 +1,7 @@
 export interface Plantilla {
   idPlantilla?: number;
-  nombre: string;
-  contenido: {
+  Nombre: string;
+  Contenido: {
     textoEncabezado: string;
     mensajePrincipal: string;
     textoFooter: string;

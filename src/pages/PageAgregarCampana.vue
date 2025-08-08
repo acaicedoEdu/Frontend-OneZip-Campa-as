@@ -112,7 +112,7 @@
                 </div>
                 <div class="col-12 col-sm-6">
                   <div class="text-caption text-grey-7">Plantilla</div>
-                  <div class="text-weight-bold">{{ plantillasSeleccionada[0]?.nombre }}</div>
+                  <div class="text-weight-bold">{{ plantillasSeleccionada[0]?.Nombre }}</div>
                 </div>
 
                 <div class="col-12 col-sm-6">
@@ -167,10 +167,10 @@
               <div class="q-py-lg">
                 <div class="text-caption text-grey-7">
                   <MostrarMensajePlantilla
-                    :nombre="plantillasSeleccionada[0]?.nombre || ''"
-                    :headerText="plantillasSeleccionada[0]?.contenido.textoEncabezado || ''"
-                    :messageBody="plantillasSeleccionada[0]?.contenido.mensajePrincipal || ''"
-                    :footerText="plantillasSeleccionada[0]?.contenido.textoFooter || ''"
+                    :nombre="plantillasSeleccionada[0]?.Nombre || ''"
+                    :headerText="plantillasSeleccionada[0]?.Contenido.textoEncabezado || ''"
+                    :messageBody="plantillasSeleccionada[0]?.Contenido.mensajePrincipal || ''"
+                    :footerText="plantillasSeleccionada[0]?.Contenido.textoFooter || ''"
                   />
                 </div>
               </div>

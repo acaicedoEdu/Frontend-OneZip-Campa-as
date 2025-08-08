@@ -1,5 +1,7 @@
 import { type Campana } from './campana';
 import { type Plantilla } from './plantilla';
+import { type Grupo } from './grupo';
+import { type Contacto } from './contacto';
 
 interface DatosNumerosMensaje {
   TotalEnviados: number;
@@ -14,4 +16,6 @@ export interface IdCampana {
   DatosNumerosMensaje: DatosNumerosMensaje;
   Plantilla: Plantilla;
   MensajeError: string;
+  Grupo: Grupo;
+  ContactosIndividuales: Contacto[];
 }

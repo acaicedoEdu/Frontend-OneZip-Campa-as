@@ -1,7 +1,5 @@
 import type { OptionsDonut } from 'src/types/optionsGrafico';
 
-export const seriesDonuChart: number[] = [1178, 892, 72, 12];
-
 export const graficoDonuChart: OptionsDonut = {
   chart: {
     type: 'donut',

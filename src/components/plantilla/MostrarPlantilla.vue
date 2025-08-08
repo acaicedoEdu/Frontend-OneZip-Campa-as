@@ -48,8 +48,8 @@ import type { Plantilla } from 'src/types/plantilla';
 const plantillas = ref<Plantilla[]>([
   {
     idPlantilla: 1,
-    nombre: 'Prueba',
-    contenido: {
+    Nombre: 'Prueba',
+    Contenido: {
       textoEncabezado: 'Encabezado',
       mensajePrincipal: 'Contenido {{1}}',
       textoFooter: 'Footer',

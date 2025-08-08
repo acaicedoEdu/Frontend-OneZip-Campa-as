@@ -116,9 +116,17 @@ export const useCampanaStore = defineStore('campanas', {
         const response = await axios.get(`/campana/${IdCampana}`);
         const data = response.data;
 
-        this.campana = data.Dato || null;
+        this.campana = data.Dato || {
+          MensajeError: '',
+        };
+
         if (this.campana) {
           this.campana.MensajeError = data.Mensaje;
+          this.campana.Plantilla.Contenido = {
+            textoEncabezado: '',
+            mensajePrincipal: data.Dato.Plantilla.Contenido,
+            textoFooter: '',
+          };
         }
       } catch (error) {
         showErrorNotification('Algo salió mal al obtener la campaña.');

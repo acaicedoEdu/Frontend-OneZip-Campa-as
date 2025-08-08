@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import { type OptionsBar, type OptionsDonut, type OptionsLine } from 'src/types/optionsGrafico';
 import { type Series, type SeriesTimeLine } from 'src/types/seriesGrafico';
@@ -26,7 +26,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const series = ref(props.series);
+const series = computed(() => props.series);
 
 const chartOptions = ref(props.options);
 </script>

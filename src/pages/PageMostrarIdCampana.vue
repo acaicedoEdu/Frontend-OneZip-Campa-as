@@ -1,6 +1,6 @@
 <template>
   <q-page class="q-px-md q-pt-none">
-    <div v-if="campanaStore.campana?.MensajeError != null" class="row flex-center">
+    <div v-if="mensajeError != null" class="row flex-center">
       <span>No existe la campaña</span>
     </div>
     <div v-else>
@@ -16,30 +16,34 @@
             icon="fa-solid fa-arrow-left"
           />
           <div class="column item-start justify-center q-ml-sm">
-            <div class="text-h5 text-weight-bold row items-center q-gutter-sm">
+            <div class="text-h5 text-weight-bold row q-gutter-sm">
               <span>{{ campana?.Nombre }}</span>
               <q-chip
                 dense
-                color="green-2"
-                text-color="green-8"
+                :color="`${colorEstado}-2`"
+                :text-color="`${colorEstado}-8`"
                 size="15px"
                 class="text-weight-medium"
-                label="Completada"
+                :label="estado"
               />
             </div>
             <div class="text-grey-7">
-              {{ campana?.FechaCreacion }} · Completada: 2024-01-15 12:45
+              Creada: {{ fechaCreacionFormateada }} · Completada: {{ fechaFinFormateada }}
             </div>
           </div>
         </div>
-        <div class="q-gutter-sm self-end">
-          <q-btn unelevated no-caps class="soft-text bg-white" outline padding="8px 13px">
-            <q-icon name="fa-solid fa-file-arrow-down text-dark" size="13px" />
-            <span class="text-subtitle2 q-ml-sm text-dark">Exportar Reporte</span>
-          </q-btn>
-          <q-btn unelevated no-caps class="verde-principal text-white" padding="8px 13px">
-            <q-icon name="fa-solid fa-arrows-rotate text-white" size="13px" />
-            <span class="text-white text-subtitle2 q-ml-sm">Actualizar</span>
+        <div class="q-gutter-x-sm row items-center justify-between">
+          <q-btn
+            v-for="boton in botonesMostrarIdCampana.filter((d) => d.IdEstado == campana?.IdEstado)"
+            :key="boton.IdBoton"
+            unelevated
+            no-caps
+            :class="boton.clase"
+            padding="5px 8px"
+            :outline="boton.outline"
+          >
+            <q-icon :name="boton.icono" size="13px" />
+            <span :class="boton.span.clase">{{ boton.span.valor }}</span>
           </q-btn>
         </div>
       </div>
@@ -59,30 +63,44 @@
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="resumen" class="q-pa-none q-pt-lg">
-          <div class="row q-col-gutter-lg">
-            <div class="col-12 col-lg-7 q-gutter-y-lg">
-              <q-card flat bordered>
-                <q-card-section>
-                  <div class="text-h6">Detalles de la Campaña</div>
-                </q-card-section>
-                <q-card-section>
-                  <q-list>
-                    <q-item v-for="detalle in cardDetallesCampana" :key="detalle.titulo">
-                      <q-item-section>
-                        <q-item-label>{{ detalle.titulo }}</q-item-label>
-                      </q-item-section>
-                      <q-item-section>
-                        <q-item-label>{{ detalle.valor }}</q-item-label>
-                      </q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-card-section>
-              </q-card>
-              <q-card flat bordered>
-                <q-card-section>
-                  <div class="text-h6">Mensaje enviado:</div>
-                </q-card-section>
-              </q-card>
+          <div class="column q-col-gutter-md">
+            <div class="row col-5 q-col-gutter-md">
+              <div class="col-12 col-md-6 column">
+                <DetallesXCampana />
+                <q-card flat bordered class="q-mt-md">
+                  <q-card-section class="q-pb-none">
+                    <div class="text-h6">Mensaje de la plantilla:</div>
+                  </q-card-section>
+                  <q-card-section>
+                    <MostrarMensajePlantilla
+                      :nombre="campanaStore.campana?.Plantilla.Nombre || ''"
+                      :headerText="campanaStore.campana?.Plantilla.Contenido.textoEncabezado || ''"
+                      :messageBody="
+                        campanaStore.campana?.Plantilla.Contenido.mensajePrincipal || ''
+                      "
+                      :footerText="campanaStore.campana?.Plantilla.Contenido.textoFooter || ''"
+                    />
+                  </q-card-section>
+                </q-card>
+              </div>
+              <div class="col-12 col-md-6">
+                <q-card flat bordered class="full-height">
+                  <q-card-section>
+                    <div class="text-h6">Distribución de Estados</div>
+                  </q-card-section>
+                  <q-card-section>
+                    <MostrarGrafico
+                      :type="graficoDonuChart.chart.type"
+                      :height="graficoDonuChart.chart.height"
+                      :options="graficoDonuChart"
+                      :series="obtenerSeriesDonuChart()"
+                    />
+                  </q-card-section>
+                </q-card>
+              </div>
+            </div>
+
+            <div class="col-12">
               <q-card flat bordered>
                 <q-card-section>
                   <div class="text-h6">Timeline de Entrega</div>
@@ -100,22 +118,6 @@
                 </q-card-section>
               </q-card>
             </div>
-
-            <div class="col-12 col-lg-5">
-              <q-card flat bordered>
-                <q-card-section>
-                  <div class="text-h6">Distribución de Estados</div>
-                </q-card-section>
-                <q-card-section>
-                  <MostrarGrafico
-                    :type="graficoDonuChart.chart.type"
-                    :height="graficoDonuChart.chart.height"
-                    :options="graficoDonuChart"
-                    :series="seriesDonuChart"
-                  />
-                </q-card-section>
-              </q-card>
-            </div>
           </div>
         </q-tab-panel>
         <q-tab-panel name="mensajes"> ... </q-tab-panel>
@@ -127,15 +129,18 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import MostrarGrafico from 'src/components/MostrarGrafico.vue';
-import { graficoDonuChart, seriesDonuChart } from 'src/constants/graficoDonuChartMostrarIdCampana';
+import { graficoDonuChart } from 'src/constants/graficoDonuChartMostrarIdCampana';
 import { graficoTimeline, seriesTimeline } from 'src/constants/graficoTimelineMostrarIdCampana';
 import { useRoute, useRouter } from 'vue-router';
 import CardEstadisticas from 'src/components/principal/CardEstadisticas.vue';
-import { cardDetallesCampana } from 'src/constants/cardDetallesCampana';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
 import { useCampanaStore } from 'src/stores/campana.store';
 import { obtenerDatosCardEstadisticas } from 'src/composables/campana/cardEstadisticas';
 import type { Campana } from 'src/types/campana';
+import { botonesMostrarIdCampana } from 'src/constants/botonMostrarIdCampana';
+import DetallesXCampana from 'src/components/campana/DetallesXCampana.vue';
+import MostrarMensajePlantilla from 'src/components/plantilla/MostrarMensajePlantilla.vue';
+import { obtenerSeriesDonuChart } from 'src/composables/campana/graficoDonuChartMostrarIdCampana';
 
 const route = useRoute();
 const aplicacionStore = useAplicacionStore();
@@ -144,6 +149,74 @@ const campanaStore = useCampanaStore();
 const tab = ref('resumen');
 
 const campana = computed<Campana | null>(() => campanaStore.campana?.Campana || null);
+const mensajeError = computed<string | null>(() => campanaStore.campana?.MensajeError || null);
+const fechaCreacionFormateada = computed(() => {
+  const fecha = campana.value?.FechaCreacion ? new Date(campana.value?.FechaCreacion) : null;
+
+  const formateada = fecha
+    ? {
+        anio: fecha.getFullYear(),
+        mes: String(fecha.getMonth() + 1).padStart(2, '0'),
+        dia: String(fecha.getDate()).padStart(2, '0'),
+        hora: String(fecha.getHours()).padStart(2, '0'),
+        minutos: String(fecha.getMinutes()).padStart(2, '0'),
+      }
+    : null;
+
+  return `${formateada?.anio}-${formateada?.mes}-${formateada?.dia} ${formateada?.hora}:${formateada?.minutos}`;
+});
+const fechaFinFormateada = computed(() => {
+  const fecha = campana.value?.FechaFin ? new Date(campana.value?.FechaFin) : null;
+
+  const formateada = fecha
+    ? {
+        anio: fecha.getFullYear(),
+        mes: String(fecha.getMonth() + 1).padStart(2, '0'),
+        dia: String(fecha.getDate()).padStart(2, '0'),
+        hora: String(fecha.getHours()).padStart(2, '0'),
+        minutos: String(fecha.getMinutes()).padStart(2, '0'),
+      }
+    : null;
+
+  return formateada
+    ? `${formateada?.anio}-${formateada?.mes}-${formateada?.dia} ${formateada?.hora}:${formateada?.minutos}`
+    : '...';
+});
+const estado = computed(() => {
+  const estado = campana.value?.IdEstado;
+
+  return estado == 3
+    ? 'Procesando'
+    : estado == 6
+      ? 'Programada'
+      : estado == 7
+        ? 'Pausada'
+        : estado == 9
+          ? 'Cancelada'
+          : estado == 8
+            ? 'Completada'
+            : estado == 10
+              ? 'Error'
+              : '...';
+});
+const colorEstado = computed(() => {
+  const estado = campana.value?.IdEstado;
+
+  return estado == 3
+    ? 'blue'
+    : estado == 6
+      ? 'yellow'
+      : estado == 7
+        ? 'orange'
+        : estado == 9
+          ? 'red'
+          : estado == 8
+            ? 'green'
+            : estado == 10
+              ? 'negative'
+              : 'grey';
+});
+
 const idCampana = ref('');
 onMounted(async () => {
   idCampana.value = route.params.id as string;
