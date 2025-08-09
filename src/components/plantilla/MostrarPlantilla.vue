@@ -28,10 +28,10 @@
             "
           >
             <MostrarMensajePlantilla
-              :nombre="props.row.nombre"
-              :header-text="props.row.contenido.textoEncabezado"
-              :message-body="props.row.contenido.mensajePrincipal"
-              :footer-text="props.row.contenido.textoFooter"
+              :nombre="props.row.Nombre"
+              :header-text="props.row.Contenido.textoEncabezado"
+              :message-body="props.row.Contenido.mensajePrincipal"
+              :footer-text="props.row.Contenido.textoFooter"
             />
           </div>
         </div>
