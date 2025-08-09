@@ -92,7 +92,6 @@ const opcionesGrupo = computed<string[]>(() =>
     .map((grupo: Grupo) => grupo.Nombre),
 );
 
-console.log(opcionesGrupo.value);
 const importarContactos = async () => {
   const grupoEscogido =
     grupoStore.grupos.find((g: Grupo) => g.Nombre === nombreGrupoEscogido.value) || 0;

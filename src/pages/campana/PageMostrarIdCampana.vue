@@ -55,9 +55,15 @@
 
       <q-tabs v-model="tab" align="left" class="q-mt-lg" no-caps>
         <q-tab name="resumen" label="Resumen" />
-        <q-tab name="mensajes" label="Mensajes (3)" />
+        <q-tab
+          name="mensajes"
+          :label="`Mensajes (${campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios})`"
+        />
         <q-tab name="analisis" label="Análisis" />
-        <q-tab name="errores" label="Errores (72)" />
+        <q-tab
+          name="errores"
+          :label="`Errores${campanaStore.campana && campanaStore.campana?.DatosNumerosMensaje.TotalFallidos > 0 ? ` (${campanaStore.campana.DatosNumerosMensaje.TotalFallidos})` : ''}`"
+        />
       </q-tabs>
       <q-separator />
 
