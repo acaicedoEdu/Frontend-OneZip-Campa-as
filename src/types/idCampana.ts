@@ -11,6 +11,13 @@ interface DatosNumerosMensaje {
   TotalDestinatarios: number;
 }
 
+interface DatosTimeLineMensaje {
+  Enviados: { Item1: string; Item2: number }[];
+  Entregados: { Item1: string; Item2: number }[];
+  Leidos: { Item1: string; Item2: number }[];
+  Fallidos: { Item1: string; Item2: number }[];
+}
+
 export interface IdCampana {
   Campana: Campana;
   DatosNumerosMensaje: DatosNumerosMensaje;
@@ -18,4 +25,5 @@ export interface IdCampana {
   MensajeError: string;
   Grupo: Grupo;
   ContactosIndividuales: Contacto[];
+  DatosTimeLineMensaje: DatosTimeLineMensaje;
 }

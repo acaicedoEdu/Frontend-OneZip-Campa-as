@@ -113,7 +113,7 @@
                     :type="graficoTimeline.chart.type"
                     :height="graficoTimeline.chart.height"
                     :options="graficoTimeline"
-                    :series="seriesTimeline"
+                    :series="obtenerDatosseriesTimeline()"
                   />
                 </q-card-section>
               </q-card>
@@ -130,7 +130,8 @@
 import { ref, onMounted, computed } from 'vue';
 import MostrarGrafico from 'src/components/MostrarGrafico.vue';
 import { graficoDonuChart } from 'src/constants/graficoDonuChartMostrarIdCampana';
-import { graficoTimeline, seriesTimeline } from 'src/constants/graficoTimelineMostrarIdCampana';
+import { graficoTimeline } from 'src/constants/graficoTimelineMostrarIdCampana';
+import { obtenerDatosseriesTimeline } from 'src/composables/campana/graficoTimelineMostrarIdCampana';
 import { useRoute, useRouter } from 'vue-router';
 import CardEstadisticas from 'src/components/principal/CardEstadisticas.vue';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
