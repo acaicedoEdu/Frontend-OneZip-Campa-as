@@ -126,7 +126,15 @@
             </div>
           </div>
         </q-tab-panel>
-        <q-tab-panel name="mensajes"> ... </q-tab-panel>
+        <q-tab-panel name="mensajes">
+          <MostrarMensajes />
+        </q-tab-panel>
+        <q-tab-panel name="analisis">
+          <MostrarAnalisisXIdCampana />
+        </q-tab-panel>
+        <q-tab-panel name="errores">
+          <DetallesErrorMensaje />
+        </q-tab-panel>
       </q-tab-panels>
     </div>
   </q-page>
@@ -148,6 +156,9 @@ import { botonesMostrarIdCampana } from 'src/constants/botonMostrarIdCampana';
 import DetallesXCampana from 'src/components/campana/DetallesXCampana.vue';
 import MostrarMensajePlantilla from 'src/components/plantilla/MostrarMensajePlantilla.vue';
 import { obtenerSeriesDonuChart } from 'src/composables/campana/graficoDonuChartMostrarIdCampana';
+import MostrarMensajes from 'src/components/mensaje/MostrarMensajes.vue';
+import MostrarAnalisisXIdCampana from 'src/components/campana/MostrarAnalisisXIdCampana.vue';
+import DetallesErrorMensaje from 'src/components/mensaje/DetallesErrorMensaje.vue';
 
 const route = useRoute();
 const aplicacionStore = useAplicacionStore();

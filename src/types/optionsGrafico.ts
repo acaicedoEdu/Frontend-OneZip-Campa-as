@@ -9,14 +9,16 @@ export interface OptionsBar {
   plotOptions: {
     bar: {
       horizontal: boolean;
-      columnWidth: string;
-      borderRadius: number;
+      columnWidth?: string;
+      borderRadius?: number;
+      distributed?: boolean;
     };
   };
   dataLabels: {
     enabled: boolean;
   };
-  stroke: {
+  colors?: string[];
+  stroke?: {
     show: boolean;
     width: number;
     colors: string[];
@@ -25,17 +27,22 @@ export interface OptionsBar {
     categories: string[];
   };
   yaxis: {
-    title: {
+    title?: {
       text: string;
     };
   };
-  fill: {
+  fill?: {
     opacity: number;
   };
-  tooltip: {
+  tooltip?: {
     y: {
       formatter: (val: number) => string;
     };
+  };
+  legend?: {
+    position?: string;
+    horizontalAlign?: string;
+    show?: boolean;
   };
 }
 
