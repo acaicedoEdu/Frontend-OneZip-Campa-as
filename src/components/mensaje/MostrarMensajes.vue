@@ -8,7 +8,6 @@
       <q-input
         outlined
         dense
-        rounded
         debounce="300"
         v-model="searchText"
         placeholder="Buscar por nombre o teléfono..."
@@ -23,14 +22,12 @@
         multiple
         dense
         outlined
-        rounded
         v-model="statusFilter"
         :options="statusOptions"
         label="Filtrar por estado"
         style="width: 220px"
         emit-value
         map-options
-        options-cover
       >
         <template v-slot:option="{ itemProps, opt, selected, toggleOption }">
           <q-item v-bind="itemProps">
@@ -65,10 +62,11 @@
     <template v-slot:body-cell-status="props">
       <q-td :props="props">
         <q-chip
-          square
-          size="sm"
-          :color="statusMap[props.row.status as keyof typeof statusMap].color"
-          text-color="white"
+          rounde
+          class="text-weight-medium"
+          size="12px"
+          :color="`${statusMap[props.row.status as keyof typeof statusMap].color}-1`"
+          :text-color="`${statusMap[props.row.status as keyof typeof statusMap].color}`"
           :icon="statusMap[props.row.status as keyof typeof statusMap].icon"
           :label="props.row.status"
         />
@@ -78,7 +76,7 @@
     <template v-slot:body-cell-error="props">
       <q-td :props="props">
         <div v-if="props.row.error" class="row items-center text-negative no-wrap">
-          <q-icon name="o_warning" class="q-mr-xs" size="xs" />
+          <q-icon name="warning" class="q-mr-xs" size="xs" />
           <span>{{ props.row.error }}</span>
         </div>
         <span v-else class="text-grey-6">-</span>
@@ -89,13 +87,14 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { QTableProps } from 'quasar';
+import { type QTableProps } from 'quasar';
 
 const searchText = ref('');
 const statusFilter = ref([] as string[]);
 
 const columns: QTableProps['columns'] = [
   { name: 'name', label: 'Destinatario', field: 'name', align: 'left' },
+  { name: 'phone', label: 'Celular', field: 'phone', align: 'left' },
   { name: 'status', label: 'Estado', field: 'status', align: 'left' },
   { name: 'sent', label: 'Enviado', field: 'sent', align: 'left' },
   { name: 'delivered', label: 'Entregado', field: 'delivered', align: 'left' },
@@ -104,10 +103,10 @@ const columns: QTableProps['columns'] = [
 ];
 
 const statusMap = {
-  Leído: { color: 'purple-5', icon: 'o_visibility' },
-  Entregado: { color: 'positive', icon: 'o_done_all' },
-  Enviado: { color: 'primary', icon: 'o_send' },
-  Fallido: { color: 'negative', icon: 'o_error_outline' },
+  Leído: { color: 'purple', icon: 'fa-solid fa-eye' },
+  Entregado: { color: 'green', icon: 'fa-solid fa-check' },
+  Enviado: { color: 'blue', icon: 'fa-solid fa-paper-plane' },
+  Fallido: { color: 'red', icon: 'fa-solid fa-xmark' },
 };
 
 const statusOptions = Object.keys(statusMap).map((status) => ({
