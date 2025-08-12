@@ -46,7 +46,7 @@
   <q-table
     :rows="filteredMessages"
     :columns="columns"
-    row-key="id"
+    row-key="IdMensaje"
     flat
     bordered
     :hide-bottom="true"
@@ -93,13 +93,13 @@ const searchText = ref('');
 const statusFilter = ref([] as string[]);
 
 const columns: QTableProps['columns'] = [
-  { name: 'name', label: 'Destinatario', field: 'name', align: 'left' },
-  { name: 'phone', label: 'Celular', field: 'phone', align: 'left' },
-  { name: 'status', label: 'Estado', field: 'status', align: 'left' },
-  { name: 'sent', label: 'Enviado', field: 'sent', align: 'left' },
-  { name: 'delivered', label: 'Entregado', field: 'delivered', align: 'left' },
-  { name: 'read', label: 'Leído', field: 'read', align: 'left' },
-  { name: 'error', label: 'Error', field: 'error', align: 'left' },
+  { name: 'Telefono', label: 'Celular', field: 'Telefono', align: 'left' },
+  { name: 'IdEstado', label: 'Estado', field: 'IdEstado', align: 'left' },
+  { name: 'FechaEnvio', label: 'Enviado', field: 'FechaEnvio', align: 'left' },
+  { name: 'FechaEntrega', label: 'Entregado', field: 'FechaEntrega', align: 'left' },
+  { name: 'FechaLectura', label: 'Leído', field: 'rFechaLecturaead', align: 'left' },
+  { name: 'FechaCreacion', label: 'Error', field: 'FechaCreacion', align: 'left' },
+  { name: 'Intentos', label: 'Intentos', field: 'Intentos', align: 'left' },
 ];
 
 const statusMap = {
@@ -110,7 +110,7 @@ const statusMap = {
 };
 
 const statusOptions = Object.keys(statusMap).map((status) => ({
-  label: `<span class="row items-center"><i class='q-icon on-left ${statusMap[status as keyof typeof statusMap].icon} text-${statusMap[status as keyof typeof statusMap].color}'></i> ${status}</span>`,
+  label: `${status}`,
   value: status,
 }));
 
