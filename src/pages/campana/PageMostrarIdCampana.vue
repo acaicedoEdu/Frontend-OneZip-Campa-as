@@ -141,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import MostrarGrafico from 'src/components/MostrarGrafico.vue';
 import { graficoDonuChart } from 'src/constants/graficoDonuChartMostrarIdCampana';
 import { graficoTimeline } from 'src/constants/graficoTimelineMostrarIdCampana';
@@ -159,12 +159,15 @@ import { obtenerSeriesDonuChart } from 'src/composables/campana/graficoDonuChart
 import MostrarMensajes from 'src/components/mensaje/MostrarMensajes.vue';
 import MostrarAnalisisXIdCampana from 'src/components/campana/MostrarAnalisisXIdCampana.vue';
 import DetallesErrorMensaje from 'src/components/mensaje/DetallesErrorMensaje.vue';
+import { useMensajeStore } from 'src/stores/mensaje.store';
+import { formatearFecha } from 'src/composables/campana/formatearFecha';
 
 const route = useRoute();
 const aplicacionStore = useAplicacionStore();
 const campanaStore = useCampanaStore();
 
 const tab = ref('resumen');
+
 
 const campana = computed<Campana | null>(() => campanaStore.campana?.Campana || null);
 const mensajeError = computed<string | null>(() => campanaStore.campana?.MensajeError || null);
@@ -186,19 +189,9 @@ const fechaCreacionFormateada = computed(() => {
 const fechaFinFormateada = computed(() => {
   const fecha = campana.value?.FechaFin ? new Date(campana.value?.FechaFin) : null;
 
-  const formateada = fecha
-    ? {
-        anio: fecha.getFullYear(),
-        mes: String(fecha.getMonth() + 1).padStart(2, '0'),
-        dia: String(fecha.getDate()).padStart(2, '0'),
-        hora: String(fecha.getHours()).padStart(2, '0'),
-        minutos: String(fecha.getMinutes()).padStart(2, '0'),
-      }
-    : null;
+  const formateada = formatearFecha(fecha);
 
-  return formateada
-    ? `${formateada?.anio}-${formateada?.mes}-${formateada?.dia} ${formateada?.hora}:${formateada?.minutos}`
-    : '...';
+  return formateada;
 });
 const estado = computed(() => {
   const estado = campana.value?.IdEstado;
@@ -251,4 +244,18 @@ onMounted(async () => {
     }
   }
 });
+
+watch(
+  tab,
+  async (newTab) => {
+    if (newTab && idCampana.value) {
+      if (newTab == 'mensajes') {
+        const idCampanaNumero = Number(idCampana.value);
+        if (idCampanaNumero != useMensajeStore().mensajes[0]?.IdCampana)
+          await useMensajeStore().fetchMensajes(idCampanaNumero, true);
+      }
+    }
+  },
+  { deep: true },
+);
 </script>

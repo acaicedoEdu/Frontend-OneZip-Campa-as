@@ -9,8 +9,8 @@
         outlined
         dense
         debounce="300"
-        v-model="searchText"
-        placeholder="Buscar por nombre o teléfono..."
+        v-model="textoBuscar"
+        placeholder="Buscar teléfono..."
         style="width: 250px"
       >
         <template v-slot:prepend>
@@ -22,8 +22,8 @@
         multiple
         dense
         outlined
-        v-model="statusFilter"
-        :options="statusOptions"
+        v-model="estadoFiltro"
+        :options="opcionesEstado"
         label="Filtrar por estado"
         style="width: 220px"
         emit-value
@@ -44,31 +44,31 @@
   </div>
 
   <q-table
-    :rows="filteredMessages"
+    :rows="filtroMensajes"
     :columns="columns"
-    row-key="IdMensaje"
+    row-key="idMensaje"
     flat
+    :pagination="paginacion"
+    :loading="mensajeStore.loading"
     bordered
-    :hide-bottom="true"
     :table-header-style="{ fontWeight: 'normal' }"
   >
-    <template v-slot:body-cell-recipient="props">
+    <template v-slot:body-cell-telefono="props">
       <q-td :props="props">
-        <div class="text-weight-bold">{{ props.row.name }}</div>
-        <div class="text-caption text-grey-7">{{ props.row.phone }}</div>
+        <div class="text-subtitle2 text-grey-9">{{ props.row.telefono }}</div>
       </q-td>
     </template>
 
-    <template v-slot:body-cell-status="props">
+    <template v-slot:body-cell-estado="props">
       <q-td :props="props">
         <q-chip
           rounde
           class="text-weight-medium"
           size="12px"
-          :color="`${statusMap[props.row.status as keyof typeof statusMap].color}-1`"
-          :text-color="`${statusMap[props.row.status as keyof typeof statusMap].color}`"
-          :icon="statusMap[props.row.status as keyof typeof statusMap].icon"
-          :label="props.row.status"
+          :color="`${statusMap[props.row.estado as keyof typeof statusMap].color}-1`"
+          :text-color="`${statusMap[props.row.estado as keyof typeof statusMap].color}`"
+          :icon="statusMap[props.row.estado as keyof typeof statusMap].icon"
+          :label="props.row.estado"
         />
       </q-td>
     </template>
@@ -82,105 +82,95 @@
         <span v-else class="text-grey-6">-</span>
       </q-td>
     </template>
+
+    <template v-slot:no-data>
+      <div class="full-width row flex-center text-grey-7 q-gutter-sm q-pa-xl">
+        <q-icon size="2em" name="fa-solid fa-circle-info" />
+        <span>No se encontraron resultados</span>
+      </div>
+    </template>
   </q-table>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { type Paginacion } from 'src/types/paginacion';
 import { type QTableProps } from 'quasar';
+import { useMensajeStore } from 'src/stores/mensaje.store';
+import { formatearFecha } from 'src/composables/campana/formatearFecha';
 
-const searchText = ref('');
-const statusFilter = ref([] as string[]);
+const mensajeStore = useMensajeStore();
+const textoBuscar = ref('');
+const estadoFiltro = ref([] as string[]);
+
+const paginacion = computed<Paginacion>(() => ({
+  page: mensajeStore.pagina,
+  rowsPerPage: mensajeStore.tamano,
+  rowsNumber: mensajeStore.total,
+  sortBy: '',
+  descending: false,
+}));
+
+console.log(mensajeStore.tamano);
 
 const columns: QTableProps['columns'] = [
-  { name: 'Telefono', label: 'Celular', field: 'Telefono', align: 'left' },
-  { name: 'IdEstado', label: 'Estado', field: 'IdEstado', align: 'left' },
-  { name: 'FechaEnvio', label: 'Enviado', field: 'FechaEnvio', align: 'left' },
-  { name: 'FechaEntrega', label: 'Entregado', field: 'FechaEntrega', align: 'left' },
-  { name: 'FechaLectura', label: 'Leído', field: 'rFechaLecturaead', align: 'left' },
-  { name: 'FechaCreacion', label: 'Error', field: 'FechaCreacion', align: 'left' },
-  { name: 'Intentos', label: 'Intentos', field: 'Intentos', align: 'left' },
+  { name: 'telefono', label: 'Celular', field: 'telefono', align: 'left' },
+  { name: 'estado', label: 'Estado', field: 'estado', align: 'left' },
+  { name: 'envio', label: 'Enviado', field: 'envio', align: 'left' },
+  { name: 'entrega', label: 'Entregado', field: 'entrega', align: 'left' },
+  { name: 'lectura', label: 'Leído', field: 'lectura', align: 'left' },
+  { name: 'error', label: 'Error', field: 'error', align: 'left' },
+  { name: 'intentos', label: 'Intentos', field: 'intentos', align: 'left' },
 ];
 
 const statusMap = {
-  Leído: { color: 'purple', icon: 'fa-solid fa-eye' },
-  Entregado: { color: 'green', icon: 'fa-solid fa-check' },
-  Enviado: { color: 'blue', icon: 'fa-solid fa-paper-plane' },
-  Fallido: { color: 'red', icon: 'fa-solid fa-xmark' },
+  Leído: { color: 'purple', icon: 'fa-solid fa-eye', nombreColumna: '' },
+  Entregado: { color: 'green', icon: 'fa-solid fa-check', nombreColumna: '' },
+  Enviado: { color: 'blue', icon: 'fa-solid fa-paper-plane', nombreColumna: '' },
+  Fallido: { color: 'red', icon: 'fa-solid fa-xmark', nombreColumna: '' },
 };
 
-const statusOptions = Object.keys(statusMap).map((status) => ({
+const opcionesEstado = Object.keys(statusMap).map((status) => ({
   label: `${status}`,
   value: status,
 }));
 
-const allMessages = ref([
-  {
-    id: 1,
-    name: 'Juan Pérez',
-    phone: '+34 600 123 456',
-    status: 'Leído',
-    sent: '2024-01-15 10:32:15',
-    delivered: '2024-01-15 10:32:18',
-    read: '2024-01-15 10:45:22',
-    error: null,
-  },
-  {
-    id: 2,
-    name: 'María García',
-    phone: '+34 600 234 567',
-    status: 'Entregado',
-    sent: '2024-01-15 10:32:16',
-    delivered: '2024-01-15 10:32:19',
-    read: '-',
-    error: null,
-  },
-  {
-    id: 3,
-    name: 'Carlos López',
-    phone: '+34 600 345 678',
-    status: 'Fallido',
-    sent: '2024-01-15 10:32:17',
-    delivered: '-',
-    read: '-',
-    error: 'Número inválido o fuera de servicio',
-  },
-  {
-    id: 4,
-    name: 'Ana Martín',
-    phone: '+34 600 456 789',
-    status: 'Leído',
-    sent: '2024-01-15 10:32:18',
-    delivered: '2024-01-15 10:32:21',
-    read: '2024-01-15 11:15:33',
-    error: null,
-  },
-  {
-    id: 5,
-    name: 'Luis Rodríguez',
-    phone: '+34 600 567 890',
-    status: 'Enviado',
-    sent: '2024-01-15 10:32:19',
-    delivered: '-',
-    read: '-',
-    error: null,
-  },
-]);
+const Todosmensajes = computed(() => {
+  const mensajesTrans = mensajeStore.mensajes.map((msj) => ({
+    idMensaje: msj.IdMensaje,
+    telefono: msj.Contacto.Telefono,
+    estado:
+      msj.MensajeError != null
+        ? 'Fallido'
+        : msj.FechaLectura != null
+          ? 'Leído'
+          : msj.FechaEntrega != null
+            ? 'Entregado'
+            : msj.FechaEnvio != null
+              ? 'Enviado'
+              : 'none',
+    envio: formatearFecha(msj.FechaEnvio),
+    entrega: formatearFecha(msj.FechaEntrega),
+    lectura: formatearFecha(msj.FechaLectura),
+    error: msj.MensajeError && '-',
+    intentos: msj.Intentos <= 1 ? 1 : msj.Intentos,
+  }));
 
-const filteredMessages = computed(() => {
-  let messages = allMessages.value;
+  return mensajesTrans;
+});
 
-  if (statusFilter.value.length > 0) {
-    messages = messages.filter((msg) => statusFilter.value.includes(msg.status));
+const filtroMensajes = computed(() => {
+  let mensajes = Todosmensajes.value;
+
+  if (estadoFiltro.value.length > 0) {
+    mensajes = mensajes.filter((msg) => estadoFiltro.value.includes(msg.estado));
   }
 
-  if (searchText.value.trim()) {
-    const search = searchText.value.toLowerCase().trim();
-    messages = messages.filter(
-      (msg) => msg.name.toLowerCase().includes(search) || msg.phone.includes(search),
-    );
+  if (textoBuscar.value.trim()) {
+    const busqueda = textoBuscar.value.toLowerCase().trim();
+    mensajes = mensajes.filter((msg) => msg.telefono.includes(busqueda));
   }
 
-  return messages;
+  return mensajes;
 });
 </script>

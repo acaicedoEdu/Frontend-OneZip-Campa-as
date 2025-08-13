@@ -29,7 +29,7 @@ export const useMensajeStore = defineStore('mensajes', {
   },
 
   actions: {
-    async fetchCampanas(id: number, forceRefresh = false, pagina: number = 1, tamano: number = 10) {
+    async fetchMensajes(id: number, forceRefresh = false, pagina: number = 1, tamano: number = 10) {
       const now = Date.now();
       const cacheDuration = 5 * 60 * 1000;
 
