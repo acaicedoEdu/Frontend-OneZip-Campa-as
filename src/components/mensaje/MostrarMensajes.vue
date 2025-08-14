@@ -98,10 +98,13 @@ import { type Paginacion } from 'src/types/paginacion';
 import { type QTableProps } from 'quasar';
 import { useMensajeStore } from 'src/stores/mensaje.store';
 import { formatearFecha } from 'src/composables/campana/formatearFecha';
+// import { useRoute } from 'vue-router';
 
 const mensajeStore = useMensajeStore();
 const textoBuscar = ref('');
 const estadoFiltro = ref([] as string[]);
+// const route = useRoute();
+// const timeoutId: ReturnType<typeof setTimeout> | null = null;
 
 const paginacion = computed<Paginacion>(() => ({
   page: mensajeStore.pagina,
@@ -110,8 +113,6 @@ const paginacion = computed<Paginacion>(() => ({
   sortBy: '',
   descending: false,
 }));
-
-console.log(mensajeStore.tamano);
 
 const columns: QTableProps['columns'] = [
   { name: 'telefono', label: 'Celular', field: 'telefono', align: 'left' },
@@ -166,11 +167,27 @@ const filtroMensajes = computed(() => {
     mensajes = mensajes.filter((msg) => estadoFiltro.value.includes(msg.estado));
   }
 
-  if (textoBuscar.value.trim()) {
-    const busqueda = textoBuscar.value.toLowerCase().trim();
-    mensajes = mensajes.filter((msg) => msg.telefono.includes(busqueda));
-  }
+  // if (textoBuscar.value.trim()) {
+  //   const busqueda = textoBuscar.value.toLowerCase().trim();
+  //   mensajes = mensajes.filter((msg) => msg.telefono.includes(busqueda));
+  // }
 
   return mensajes;
 });
+
+// watch(
+//   () => textoBuscar.value,
+//   () => {
+//     if (timeoutId) clearTimeout(timeoutId);
+
+//     timeoutId = setTimeout(async () => {
+//       const idCampanaNumero = Number(route.params.id as string);
+//       const busqueda = textoBuscar.value.toLowerCase().trim();
+
+//       if (busqueda) {
+//         await mensajeStore.buscarMensajes(idCampanaNumero, busqueda);
+//       }
+//     }, 500);
+//   },
+// );
 </script>
