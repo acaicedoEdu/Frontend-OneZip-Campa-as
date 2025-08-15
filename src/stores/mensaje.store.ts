@@ -118,5 +118,55 @@ export const useMensajeStore = defineStore('mensajes', {
         this.loading = false;
       }
     },
+
+    async filtroMensajes(
+      id: number,
+      filtro: string,
+      forceRefresh = false,
+      pagina: number = 1,
+      tamano: number = 10,
+    ) {
+      const now = Date.now();
+      const cacheDuration = 5 * 60 * 1000;
+
+      if (this.hasData && !forceRefresh && this.lastFetch && now - this.lastFetch < cacheDuration) {
+        return;
+      }
+
+      if (this.cacheBusqueda[filtro]) {
+        this.mensajes = this.cacheBusqueda[filtro];
+        return;
+      }
+
+      this.loading = true;
+      try {
+        const response = await axios.get(
+          `/mensaje/campana/${id}/filtro/${filtro}?pagina=${pagina}&tamano=${tamano}`,
+        );
+        const data = response.data;
+
+        if (!data.IsExito) {
+          showErrorNotification(data.Mensaje);
+        }
+
+        this.mensajes = data.Dato || [];
+        this.cacheBusqueda[filtro] = data.Dato || [];
+        this.tamano = data.Tamano;
+        this.totalPaginas = data.TotalPaginas;
+        this.pagina = data.Pagina;
+        this.total = data.TotalDatos;
+        this.lastFetch = Date.now();
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
+          showErrorNotification(error.response.data.Mensaje);
+        } else {
+          showErrorNotification('Algo salió mal al obtener los mensajes.');
+        }
+
+        console.error('Error obteniendo los mensajes:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
   },
 });

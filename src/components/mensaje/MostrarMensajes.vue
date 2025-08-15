@@ -49,9 +49,10 @@
     row-key="idMensaje"
     flat
     :pagination="paginacion"
-    :loading="mensajeStore.loading"
+    :loading="mensajeStore.loading || loadingTimeout"
     bordered
     :table-header-style="{ fontWeight: 'normal' }"
+    :rows-per-page-options="[mensajeStore.tamano]"
   >
     <template v-slot:body-cell-telefono="props">
       <q-td :props="props">
@@ -62,7 +63,7 @@
     <template v-slot:body-cell-estado="props">
       <q-td :props="props">
         <q-chip
-          rounde
+          rounded
           class="text-weight-medium"
           size="12px"
           :color="`${statusMap[props.row.estado as keyof typeof statusMap].color}-1`"
@@ -93,18 +94,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { type Paginacion } from 'src/types/paginacion';
 import { type QTableProps } from 'quasar';
 import { useMensajeStore } from 'src/stores/mensaje.store';
 import { formatearFecha } from 'src/composables/campana/formatearFecha';
-// import { useRoute } from 'vue-router';
+import { useRoute } from 'vue-router';
 
 const mensajeStore = useMensajeStore();
 const textoBuscar = ref('');
 const estadoFiltro = ref([] as string[]);
-// const route = useRoute();
-// const timeoutId: ReturnType<typeof setTimeout> | null = null;
+const route = useRoute();
+let timeoutId: ReturnType<typeof setTimeout> | null = null;
+const loadingTimeout = ref(false);
 
 const paginacion = computed<Paginacion>(() => ({
   page: mensajeStore.pagina,
@@ -175,19 +177,23 @@ const filtroMensajes = computed(() => {
   return mensajes;
 });
 
-// watch(
-//   () => textoBuscar.value,
-//   () => {
-//     if (timeoutId) clearTimeout(timeoutId);
-
-//     timeoutId = setTimeout(async () => {
-//       const idCampanaNumero = Number(route.params.id as string);
-//       const busqueda = textoBuscar.value.toLowerCase().trim();
-
-//       if (busqueda) {
-//         await mensajeStore.buscarMensajes(idCampanaNumero, busqueda);
-//       }
-//     }, 500);
-//   },
-// );
+watch(
+  () => textoBuscar.value,
+  () => {
+    if (timeoutId) clearTimeout(timeoutId);
+    loadingTimeout.value = true;
+    timeoutId = setTimeout(() => {
+      void (async () => {
+        const idCampanaNumero = Number(route.params.id as string);
+        const busqueda = textoBuscar.value.toLowerCase().trim();
+        loadingTimeout.value = false;
+        if (busqueda) {
+          await mensajeStore.buscarMensajes(idCampanaNumero, busqueda, true);
+        } else {
+          await mensajeStore.fetchMensajes(idCampanaNumero, true);
+        }
+      })();
+    }, 500);
+  },
+);
 </script>
