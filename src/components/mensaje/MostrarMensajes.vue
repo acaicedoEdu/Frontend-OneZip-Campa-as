@@ -52,7 +52,8 @@
     :loading="mensajeStore.loading || loadingTimeout"
     bordered
     :table-header-style="{ fontWeight: 'normal' }"
-    :rows-per-page-options="[mensajeStore.tamano]"
+    :rows-per-page-options="[10]"
+    @request="activarPaginado"
   >
     <template v-slot:body-cell-telefono="props">
       <q-td :props="props">
@@ -95,6 +96,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
+import type { RequestProps } from 'src/types/paginacion';
 import { type Paginacion } from 'src/types/paginacion';
 import { type QTableProps } from 'quasar';
 import { useMensajeStore } from 'src/stores/mensaje.store';
@@ -116,8 +118,12 @@ const paginacion = computed<Paginacion>(() => ({
   descending: false,
 }));
 
+const activarPaginado = (props: RequestProps) => {
+  console.log('onRequest', props.pagination);
+};
+
 const columns: QTableProps['columns'] = [
-  { name: 'telefono', label: 'Celular', field: 'telefono', align: 'left' },
+  { name: 'telefono', label: 'Destinatario', field: 'telefono', align: 'left' },
   { name: 'estado', label: 'Estado', field: 'estado', align: 'left' },
   { name: 'envio', label: 'Enviado', field: 'envio', align: 'left' },
   { name: 'entrega', label: 'Entregado', field: 'entrega', align: 'left' },
@@ -166,13 +172,17 @@ const filtroMensajes = computed(() => {
   let mensajes = Todosmensajes.value;
 
   if (estadoFiltro.value.length > 0) {
-    mensajes = mensajes.filter((msg) => estadoFiltro.value.includes(msg.estado));
+    if (mensajeStore.total <= 10) {
+      mensajes = mensajes.filter((msg) => estadoFiltro.value.includes(msg.estado));
+    }
   }
 
-  // if (textoBuscar.value.trim()) {
-  //   const busqueda = textoBuscar.value.toLowerCase().trim();
-  //   mensajes = mensajes.filter((msg) => msg.telefono.includes(busqueda));
-  // }
+  if (textoBuscar.value.trim()) {
+    if (mensajeStore.total <= 10) {
+      const busqueda = textoBuscar.value.toLowerCase().trim();
+      mensajes = mensajes.filter((msg) => msg.telefono.includes(busqueda));
+    }
+  }
 
   return mensajes;
 });
@@ -180,20 +190,44 @@ const filtroMensajes = computed(() => {
 watch(
   () => textoBuscar.value,
   () => {
-    if (timeoutId) clearTimeout(timeoutId);
-    loadingTimeout.value = true;
-    timeoutId = setTimeout(() => {
-      void (async () => {
-        const idCampanaNumero = Number(route.params.id as string);
-        const busqueda = textoBuscar.value.toLowerCase().trim();
-        loadingTimeout.value = false;
-        if (busqueda) {
-          await mensajeStore.buscarMensajes(idCampanaNumero, busqueda, true);
-        } else {
-          await mensajeStore.fetchMensajes(idCampanaNumero, true);
-        }
-      })();
-    }, 500);
+    if (mensajeStore.total >= 10) {
+      if (timeoutId) clearTimeout(timeoutId);
+      loadingTimeout.value = true;
+      timeoutId = setTimeout(() => {
+        void (async () => {
+          const idCampanaNumero = Number(route.params.id as string);
+          const busqueda = textoBuscar.value.toLowerCase().trim();
+          loadingTimeout.value = false;
+          if (busqueda) {
+            await mensajeStore.buscarMensajes(idCampanaNumero, busqueda, true);
+          } else {
+            await mensajeStore.fetchMensajes(idCampanaNumero, true);
+          }
+        })();
+      }, 500);
+    }
+  },
+);
+
+watch(
+  () => estadoFiltro.value,
+  () => {
+    if (mensajeStore.total >= 10) {
+      if (timeoutId) clearTimeout(timeoutId);
+      loadingTimeout.value = true;
+      timeoutId = setTimeout(() => {
+        void (async () => {
+          const idCampanaNumero = Number(route.params.id as string);
+          loadingTimeout.value = false;
+          if (estadoFiltro.value.length > 0) {
+            const estado = String(estadoFiltro.value);
+            await mensajeStore.filtroMensajes(idCampanaNumero, estado, true);
+          } else {
+            await mensajeStore.fetchMensajes(idCampanaNumero, true);
+          }
+        })();
+      }, 500);
+    }
   },
 );
 </script>
