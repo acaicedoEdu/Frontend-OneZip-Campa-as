@@ -3,7 +3,7 @@
     <q-table
       :rows="plantillas"
       :columns="columnas"
-      row-key="idPlantilla"
+      row-key="IdPlantilla"
       grid
       :loading="false"
       v-model:pagination="paginacion"
@@ -30,7 +30,7 @@
             <MostrarMensajePlantilla
               :nombre="props.row.Nombre"
               :header-text="props.row.Contenido.textoEncabezado"
-              :message-body="props.row.Contenido.mensajePrincipal"
+              :message-body="props.row.Contenido"
               :footer-text="props.row.Contenido.textoFooter"
             />
           </div>
@@ -41,23 +41,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import MostrarMensajePlantilla from 'src/components/plantilla/MostrarMensajePlantilla.vue';
 import type { Plantilla } from 'src/types/plantilla';
+import { usePlantillaStore } from 'src/stores/plantilla.store';
 
-const plantillas = ref<Plantilla[]>([
-  {
-    idPlantilla: 1,
-    Nombre: 'Prueba',
-    Contenido: {
-      textoEncabezado: 'Encabezado',
-      mensajePrincipal: 'Contenido {{1}}',
-      textoFooter: 'Footer',
-    },
-    fechaCreacion: '2022-01-01',
-    fechaModificacion: '2022-01-01',
-  },
-]);
+const plantillaStore = usePlantillaStore();
+
+const plantillas = computed<Plantilla[]>(() => plantillaStore.plantillas);
 
 interface Props {
   plantillasSeleccionada: Plantilla[];
@@ -94,6 +85,14 @@ watch(
   },
   { deep: true },
 );
+
+onMounted(async () => {
+  try {
+    await plantillaStore.fetchPlantillasXAplicacion();
+  } catch (error) {
+    console.error('Error al cargar plantillas', error);
+  }
+});
 </script>
 
 <style>

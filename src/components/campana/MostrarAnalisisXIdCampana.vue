@@ -24,7 +24,7 @@
           </q-card-section>
           <q-card-section>
             <div class="q-gutter-y-md">
-              <div v-for="metric in progressMetrics" :key="metric.label">
+              <div v-for="metric in metricasProgreso" :key="metric.label">
                 <div class="row items-center">
                   <div class="col-4 text-grey-8">{{ metric.label }}</div>
                   <div class="col q-px-sm">
@@ -43,7 +43,7 @@
             <q-separator class="q-my-lg" />
 
             <q-list dense separator>
-              <q-item v-for="stat in keyStats" :key="stat.label">
+              <q-item v-for="stat in estadisticas" :key="stat.label">
                 <q-item-section>
                   <q-item-label class="text-grey-8">{{ stat.label }}</q-item-label>
                 </q-item-section>
@@ -60,22 +60,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import MostrarGrafico from 'src/components/MostrarGrafico.vue';
 import {
   graficoBarrasPorHora,
   series,
 } from 'src/composables/campana/graficoBarrasPorHoraMostrarIdCampana';
+import { useCampanaStore } from 'src/stores/campana.store';
 
-// Datos para las métricas con barras de progreso
-const progressMetrics = ref([
-  { label: 'Tasa de Entrega', value: 94.2, color: 'positive' },
-  { label: 'Tasa de Lectura', value: 75.7, color: 'purple' },
-  { label: 'Tasa de Error', value: 5.8, color: 'negative' },
-]);
+const campanaStore = useCampanaStore();
 
-// Datos para la lista de estadísticas
-const keyStats = ref([
+const metricasProgreso = computed(() => {
+  return [
+    {
+      label: 'Tasa de Entrega',
+      value: campanaStore.campana?.DatosNumerosMensaje.TotalEntregados || 0,
+      color: 'green',
+    },
+    {
+      label: 'Tasa de Lectura',
+      value: campanaStore.campana?.DatosNumerosMensaje.TotalLeidos || 0,
+      color: 'purple',
+    },
+    {
+      label: 'Tasa de Error',
+      value: campanaStore.campana?.DatosNumerosMensaje.TotalFallidos || 0,
+      color: 'red',
+    },
+  ];
+});
+
+const estadisticas = ref([
   { label: 'Tiempo promedio de lectura:', value: '15 minutos' },
   { label: 'Mejor hora de entrega:', value: '11:30 AM' },
   { label: 'Velocidad de envío:', value: '9.3 msg/min' },

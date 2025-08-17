@@ -61,7 +61,7 @@ const messageParts = computed(() => {
     lastIndex = regex.lastIndex;
   }
 
-  if (lastIndex < props.messageBody.length) {
+  if (props.messageBody && lastIndex < props.messageBody.length) {
     parts.push({ text: props.messageBody.substring(lastIndex), isVariable: false });
   }
 

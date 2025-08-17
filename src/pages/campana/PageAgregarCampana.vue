@@ -169,7 +169,7 @@
                   <MostrarMensajePlantilla
                     :nombre="plantillasSeleccionada[0]?.Nombre || ''"
                     :headerText="plantillasSeleccionada[0]?.Contenido.textoEncabezado || ''"
-                    :messageBody="plantillasSeleccionada[0]?.Contenido.mensajePrincipal || ''"
+                    :messageBody="String(plantillasSeleccionada[0]?.Contenido) || ''"
                     :footerText="plantillasSeleccionada[0]?.Contenido.textoFooter || ''"
                   />
                 </div>
@@ -281,7 +281,7 @@ const ejecutarCampana = async () => {
 
   const campanaEjecutar: object = {
     IdAplicacion: IdAplicacionEscogida.value,
-    IdPlantilla: plantillasSeleccionada.value[0]?.idPlantilla || 0,
+    IdPlantilla: plantillasSeleccionada.value[0]?.IdPlantilla || 0,
     IdGrupo: contactoSeleccionado.value.idGrupo,
     Contactos: contactoSeleccionado.value.contactosSeleccionados,
     TipoEnvio: tipoEnvio,

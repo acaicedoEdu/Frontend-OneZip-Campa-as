@@ -35,7 +35,7 @@
               <q-checkbox :model-value="selected" @update:model-value="toggleOption(opt.value)" />
             </q-item-section>
             <q-item-section>
-              <q-item-label><div v-html="opt.label"></div></q-item-label>
+              <q-item-label>{{ opt.label }}</q-item-label>
             </q-item-section>
           </q-item>
         </template>
@@ -118,8 +118,29 @@ const paginacion = computed<Paginacion>(() => ({
   descending: false,
 }));
 
-const activarPaginado = (props: RequestProps) => {
-  console.log('onRequest', props.pagination);
+const activarPaginado = async (props: RequestProps) => {
+  const idCampanaNumero = Number(route.params.id as string);
+  if (estadoFiltro.value.length > 0) {
+    const estado = String(estadoFiltro.value);
+    await mensajeStore.filtroMensajes(
+      idCampanaNumero,
+      estado,
+      true,
+      props.pagination.page,
+      props.pagination.rowsPerPage,
+    );
+  } else if (textoBuscar.value.trim()) {
+    const busqueda = textoBuscar.value.toLowerCase().trim();
+    await mensajeStore.buscarMensajes(
+      idCampanaNumero,
+      busqueda,
+      true,
+      props.pagination.page,
+      props.pagination.rowsPerPage,
+    );
+  } else {
+    await mensajeStore.fetchMensajes(idCampanaNumero, true, props.pagination.rowsPerPage);
+  }
 };
 
 const columns: QTableProps['columns'] = [

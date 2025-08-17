@@ -1,5 +1,5 @@
 export interface Plantilla {
-  idPlantilla?: number;
+  IdPlantilla?: number;
   Nombre: string;
   Contenido: {
     textoEncabezado: string;
