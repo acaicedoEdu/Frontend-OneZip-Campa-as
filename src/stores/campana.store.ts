@@ -124,7 +124,7 @@ export const useCampanaStore = defineStore('campanas', {
           this.campana.MensajeError = data.Mensaje;
           this.campana.Plantilla.Contenido = {
             textoEncabezado: '',
-            mensajePrincipal: data.Dato.Plantilla.Contenido,
+            mensajePrincipal: data.Dato.Plantilla.Contenido || '',
             textoFooter: '',
           };
         }

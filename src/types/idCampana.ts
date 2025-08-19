@@ -3,6 +3,11 @@ import { type Plantilla } from './plantilla';
 import { type Grupo } from './grupo';
 import { type Contacto } from './contacto';
 
+interface AnalisisMensaje {
+  MejorMinutoEntrega: string;
+  PromedioLectura: string;
+}
+
 interface DatosNumerosMensaje {
   TotalEnviados: number;
   TotalEntregados: number;
@@ -12,10 +17,10 @@ interface DatosNumerosMensaje {
 }
 
 interface DatosTimeLineMensaje {
-  Enviados: { Item1: string; Item2: number }[];
-  Entregados: { Item1: string; Item2: number }[];
-  Leidos: { Item1: string; Item2: number }[];
-  Fallidos: { Item1: string; Item2: number }[];
+  Enviados: { Item1: Date; Item2: number }[];
+  Entregados: { Item1: Date; Item2: number }[];
+  Leidos: { Item1: Date; Item2: number }[];
+  Fallidos: { Item1: Date; Item2: number }[];
 }
 
 export interface IdCampana {
@@ -26,4 +31,5 @@ export interface IdCampana {
   Grupo: Grupo;
   ContactosIndividuales: Contacto[];
   DatosTimeLineMensaje: DatosTimeLineMensaje;
+  AnalisisMensaje: AnalisisMensaje;
 }

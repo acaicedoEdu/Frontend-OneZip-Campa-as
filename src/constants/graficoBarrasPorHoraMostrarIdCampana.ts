@@ -15,7 +15,7 @@ export const graficoBarrasPorHoraMostrarIdCampana: OptionsBar = {
   dataLabels: {
     enabled: false,
   },
-  colors: ['#10b981', '#8b5cf6'],
+  colors: ['#1e88e5', '#43a047', '#8e24aa'],
   stroke: {
     show: true,
     width: 2,

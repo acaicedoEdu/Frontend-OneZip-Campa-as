@@ -1,10 +1,10 @@
 import { type OptionsBar } from 'src/types/optionsGrafico';
-import { graficoBarrasPorHoraMostrarIdCampana } from 'src/constants/graficoBarrasPorHoraMostrarIdCampana';
+import { graficoErrorMensajesMostrarIdCampana } from 'src/constants/graficoErrorMensajesMostrarIdCampana';
 
 const errorTypes = [
-  { type: 'Número inválido', count: 45, color: '#ef4444' },
-  { type: 'Usuario bloqueado', count: 18, color: '#f97316' },
-  { type: 'Límite de rate', count: 9, color: '#eab308' },
+  { type: 'Número inválido', count: 45 },
+  { type: 'Usuario bloqueado', count: 18 },
+  { type: 'Límite de rate', count: 9 },
 ];
 
 export const series = () => [
@@ -15,7 +15,7 @@ export const series = () => [
 ];
 
 export const graficoErrorMensajes: OptionsBar = {
-  ...graficoBarrasPorHoraMostrarIdCampana,
+  ...graficoErrorMensajesMostrarIdCampana,
   xaxis: {
     categories: errorTypes.map((item) => item.type),
   },

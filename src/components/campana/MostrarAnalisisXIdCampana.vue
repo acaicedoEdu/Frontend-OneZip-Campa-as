@@ -8,9 +8,9 @@
           </q-card-section>
           <q-card-section>
             <MostrarGrafico
-              :type="graficoBarrasPorHora.chart.type"
-              :height="graficoBarrasPorHora.chart.height"
-              :options="graficoBarrasPorHora"
+              :type="graficoBarrasPorHora().chart.type"
+              :height="graficoBarrasPorHora().chart.height"
+              :options="graficoBarrasPorHora()"
               :series="series()"
             />
           </q-card-section>
@@ -60,13 +60,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import MostrarGrafico from 'src/components/MostrarGrafico.vue';
 import {
   graficoBarrasPorHora,
   series,
 } from 'src/composables/campana/graficoBarrasPorHoraMostrarIdCampana';
 import { useCampanaStore } from 'src/stores/campana.store';
+import { diferenciaXHora } from 'src/composables/diferenciaXHora';
 
 const campanaStore = useCampanaStore();
 
@@ -90,9 +91,51 @@ const metricasProgreso = computed(() => {
   ];
 });
 
-const estadisticas = ref([
-  { label: 'Tiempo promedio de lectura:', value: '15 minutos' },
-  { label: 'Mejor hora de entrega:', value: '11:30 AM' },
-  { label: 'Velocidad de envío:', value: '9.3 msg/min' },
-]);
+const convertirDuracion = (duracionStr: string) => {
+  const match = duracionStr.match(/(\d+)\s*(s|min|h)/i);
+  if (!match) return 0;
+  if (match) {
+    const value = parseInt(match[1] ?? '0', 10);
+    const unit = match[2] ?? ' '.toLowerCase();
+
+    switch (unit) {
+      case 's':
+        return value;
+      case 'min':
+        return value * 60;
+      case 'h':
+        return value * 3600;
+      default:
+        return 0;
+    }
+  }
+};
+
+const estadisticas = computed(() => {
+  const duracionStr = diferenciaXHora(
+    campanaStore.campana?.Campana.FechaInicio || new Date(),
+    campanaStore.campana?.Campana.FechaFin || new Date(),
+  );
+
+  const duracionEnSegundos = convertirDuracion(duracionStr) || 0;
+  const totalDestinatarios = campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios || 0;
+
+  const destinatariosPorMinuto =
+    duracionEnSegundos <= 60 ? totalDestinatarios : (totalDestinatarios / duracionEnSegundos) * 60;
+
+  return [
+    {
+      label: 'Tiempo promedio de lectura:',
+      value: `${campanaStore.campana?.AnalisisMensaje.PromedioLectura || '...'}`,
+    },
+    {
+      label: 'Mejor hora de entrega:',
+      value: `${campanaStore.campana?.AnalisisMensaje.MejorMinutoEntrega || '...'}`,
+    },
+    {
+      label: 'Velocidad de envío:',
+      value: `${destinatariosPorMinuto} mensajes/minuto`,
+    },
+  ];
+});
 </script>
