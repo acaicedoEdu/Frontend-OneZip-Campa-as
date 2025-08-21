@@ -3,6 +3,11 @@ import { type Plantilla } from './plantilla';
 import { type Grupo } from './grupo';
 import { type Contacto } from './contacto';
 
+interface DatosMensajeFallido {
+  Tipo: string;
+  Cantidad: number;
+}
+
 interface AnalisisMensaje {
   MejorMinutoEntrega: string;
   PromedioLectura: string;
@@ -32,4 +37,5 @@ export interface IdCampana {
   ContactosIndividuales: Contacto[];
   DatosTimeLineMensaje: DatosTimeLineMensaje;
   AnalisisMensaje: AnalisisMensaje;
+  DatosMensajeFallido: DatosMensajeFallido[];
 }

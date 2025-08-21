@@ -7,6 +7,7 @@ export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
     outline: true,
     clase: 'soft-text bg-white',
     icono: 'fa-solid fa-file-arrow-down text-dark',
+    link: ``,
     span: {
       clase: 'text-subtitle2 q-ml-sm text-dark',
       valor: 'Exportar Reporte',

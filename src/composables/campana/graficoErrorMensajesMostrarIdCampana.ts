@@ -1,22 +1,24 @@
 import { type OptionsBar } from 'src/types/optionsGrafico';
 import { graficoErrorMensajesMostrarIdCampana } from 'src/constants/graficoErrorMensajesMostrarIdCampana';
+import { useCampanaStore } from 'src/stores/campana.store';
+import { computed } from 'vue';
 
-const errorTypes = [
-  { type: 'Número inválido', count: 45 },
-  { type: 'Usuario bloqueado', count: 18 },
-  { type: 'Límite de rate', count: 9 },
-];
+const campanaStore = useCampanaStore();
+const campana = computed(() => campanaStore.campana || null);
+const datosMensajeFallido = computed(() => campana.value?.DatosMensajeFallido || null);
 
 export const series = () => [
   {
     name: 'Cantidad',
-    data: errorTypes.map((item) => item.count),
+    data: datosMensajeFallido.value?.map((item) => item.Cantidad) || [0],
   },
 ];
 
-export const graficoErrorMensajes: OptionsBar = {
-  ...graficoErrorMensajesMostrarIdCampana,
-  xaxis: {
-    categories: errorTypes.map((item) => item.type),
-  },
-};
+export function graficoErrorMensajes(): OptionsBar {
+  return {
+    ...graficoErrorMensajesMostrarIdCampana,
+    xaxis: {
+      categories: datosMensajeFallido.value?.map((item) => item.Tipo) || ['...'],
+    },
+  };
+}

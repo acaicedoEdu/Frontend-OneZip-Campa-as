@@ -9,5 +9,6 @@ export interface BotonMostrarIdCampana {
   outline: boolean;
   clase: string;
   icono: string;
+  link?: string;
   span: spanBotonMostrarIdCampana;
 }

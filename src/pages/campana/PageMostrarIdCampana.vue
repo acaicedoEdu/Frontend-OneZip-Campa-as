@@ -61,8 +61,9 @@
         />
         <q-tab name="analisis" label="Análisis" />
         <q-tab
+          v-if="campanaStore.campana?.DatosNumerosMensaje.TotalFallidos"
           name="errores"
-          :label="`Errores${campanaStore.campana && campanaStore.campana?.DatosNumerosMensaje.TotalFallidos > 0 ? ` (${campanaStore.campana.DatosNumerosMensaje.TotalFallidos})` : ''}`"
+          :label="`Errores (${campanaStore.campana?.DatosNumerosMensaje.TotalFallidos})`"
         />
       </q-tabs>
       <q-separator />
@@ -132,7 +133,7 @@
         <q-tab-panel name="analisis">
           <MostrarAnalisisXIdCampana />
         </q-tab-panel>
-        <q-tab-panel name="errores">
+        <q-tab-panel v-if="campanaStore.campana?.DatosNumerosMensaje.TotalFallidos" name="errores">
           <DetallesErrorMensaje />
         </q-tab-panel>
       </q-tab-panels>
@@ -167,7 +168,6 @@ const aplicacionStore = useAplicacionStore();
 const campanaStore = useCampanaStore();
 
 const tab = ref('resumen');
-
 
 const campana = computed<Campana | null>(() => campanaStore.campana?.Campana || null);
 const mensajeError = computed<string | null>(() => campanaStore.campana?.MensajeError || null);
@@ -228,6 +228,10 @@ const colorEstado = computed(() => {
               : 'grey';
 });
 
+// const exportarReporte = async () => {
+//   await useMensajeStore().exportarReporte(Number(route.params.id));
+// };
+
 const idCampana = ref('');
 onMounted(async () => {
   idCampana.value = route.params.id as string;
@@ -249,10 +253,14 @@ watch(
   tab,
   async (newTab) => {
     if (newTab && idCampana.value) {
+      const idCampanaNumero = Number(idCampana.value);
       if (newTab == 'mensajes') {
-        const idCampanaNumero = Number(idCampana.value);
         if (idCampanaNumero != useMensajeStore().mensajes[0]?.IdCampana)
           await useMensajeStore().fetchMensajes(idCampanaNumero, true);
+      }
+      if (newTab == 'errores') {
+        if (idCampanaNumero != useMensajeStore().mensajesError[0]?.IdCampana)
+          await useMensajeStore().fetchMensajesError(idCampanaNumero, true);
       }
     }
   },

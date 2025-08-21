@@ -139,7 +139,12 @@ const activarPaginado = async (props: RequestProps) => {
       props.pagination.rowsPerPage,
     );
   } else {
-    await mensajeStore.fetchMensajes(idCampanaNumero, true, props.pagination.rowsPerPage);
+    await mensajeStore.fetchMensajes(
+      idCampanaNumero,
+      true,
+      props.pagination.page,
+      props.pagination.rowsPerPage,
+    );
   }
 };
 
