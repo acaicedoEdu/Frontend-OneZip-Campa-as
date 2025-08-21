@@ -2,8 +2,21 @@
   <div class="q-pa-md q-pa-lg-lg">
     <div class="row items-center q-mb-md">
       <div>
-        <div class="text-h5 text-weight-bold">Contactos Individuales</div>
-        <div class="text-grey-8">{{ contactos.length }} contactos con campos personalizables</div>
+        <div class="text-h5 text-weight-bold">
+          {{
+            props.componentePadre == 'PageMostrarIdGrupo'
+              ? 'Contactos del Grupo'
+              : 'Contactos Individuales'
+          }}
+        </div>
+        <div class="text-grey-8">
+          {{ contactos.length }}
+          {{
+            props.componentePadre == 'PageMostrarIdGrupo'
+              ? 'contactos en este grupo'
+              : 'contactos individuales'
+          }}
+        </div>
       </div>
       <q-space />
       <q-input
@@ -11,7 +24,7 @@
         dense
         v-model="searchText"
         placeholder="Buscar contactos..."
-        class="q-mr-sm"
+        class="bg-white"
         style="width: 250px"
       >
         <template v-slot:prepend
@@ -23,7 +36,7 @@
         outline
         no-caps
         default
-        class="bg-white soft-text"
+        class="bg-white soft-text q-ml-sm"
         padding="7px 24px"
         v-if="contactos.length > 0"
       >

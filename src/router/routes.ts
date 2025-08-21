@@ -18,6 +18,10 @@ const routes: RouteRecordRaw[] = [
       { path: 'plantilla', component: () => import('src/pages/PagePlantilla.vue') },
       { path: 'grupo', component: () => import('src/pages/grupo/PageGrupo.vue') },
       {
+        path: 'grupo/:id',
+        component: () => import('src/pages/grupo/PageMostrarIdGrupo.vue'),
+      },
+      {
         path: 'configuracion',
         component: () => import('src/pages/configuracion/PageConfiguracion.vue'),
       },

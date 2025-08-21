@@ -4,7 +4,6 @@
       <span>No existe el grupo</span>
     </div>
     <div>
-      <span class="text-h1">Grupo</span>
       <div class="row items-center justify-between q-mb-md">
         <div class="row items-center">
           <q-btn
@@ -17,19 +16,24 @@
             icon="fa-solid fa-arrow-left"
           />
           <div class="column item-start justify-center q-ml-sm">
-            <div class="text-h5 text-weight-bold row q-gutter-sm">
+            <div class="text-h4 text-weight-bold row q-gutter-sm">
               <span>Grupo</span>
             </div>
-            <div class="text-grey-7"></div>
+            <div class="text-grey-7">Grupo 3</div>
           </div>
         </div>
         <div class="q-gutter-x-sm row items-center justify-between">
-          <q-btn unelevated no-caps padding="5px 8px" color="primary">
-            <q-icon name="fa-solid fa-arrow-left" size="13px" />
-            <span class="text-weight-regular text-subtitle2">Volver</span>
+          <q-btn unelevated no-caps padding="8px 16px" class="verde-principal text-white">
+            <q-icon name="fa-solid fa-user-plus" size="13px" />
+            <span class="text-subtitle2 text-white q-ml-md">Nuevo Contacto</span>
           </q-btn>
         </div>
       </div>
+      <MostrarContacto :componentePadre="'PageMostrarIdGrupo'" />
     </div>
   </q-page>
 </template>
+
+<script setup lang="ts">
+import MostrarContacto from 'src/components/contacto/MostrarContacto.vue';
+</script>
