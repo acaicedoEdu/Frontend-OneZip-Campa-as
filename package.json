@@ -15,6 +15,7 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
+    "@microsoft/signalr": "^9.0.6",
     "@number-flow/vue": "^0.4.8",
     "@quasar/extras": "^1.16.4",
     "@vueuse/core": "^13.5.0",

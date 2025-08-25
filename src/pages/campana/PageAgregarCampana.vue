@@ -223,7 +223,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, type Ref, computed } from 'vue';
+import { ref, type Ref, computed, onMounted, watch } from 'vue';
 import MostrarPlantilla from 'src/components/plantilla/MostrarPlantilla.vue';
 import PadreMostrarGrupo from 'src/components/grupo/PadreMostrarGrupo.vue';
 import { type ContactosSeleccionados } from 'src/types/contactosSeleccionados';
@@ -232,11 +232,15 @@ import { useGrupoStore } from 'src/stores/grupo.store';
 import MostrarMensajePlantilla from 'src/components/plantilla/MostrarMensajePlantilla.vue';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
 import { useCampanaStore } from 'src/stores/campana.store';
+import { usePlantillaStore } from 'src/stores/plantilla.store';
+import { useContactoStore } from 'src/stores/contacto.store';
 import { useRouter } from 'vue-router';
 
 const grupoStore = useGrupoStore();
 const aplicacionStore = useAplicacionStore();
 const campanaStore = useCampanaStore();
+const contactoStore = useContactoStore();
+const plantillaStore = usePlantillaStore();
 const router = useRouter();
 
 const step = ref(1);
@@ -244,6 +248,31 @@ const modelNombreCampana = ref('');
 const plantillasSeleccionada: Ref<Plantilla[]> = ref([]);
 const contactoSeleccionado: Ref<ContactosSeleccionados> = ref({});
 const IdAplicacionEscogida = computed(() => aplicacionStore.IdAplicacionEscogida);
+
+onMounted(async () => {
+  if (IdAplicacionEscogida.value <= 0) {
+    try {
+      await aplicacionStore.fetchAplicaciones();
+      if (aplicacionStore.aplicaciones.length > 0) {
+        aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
+      }
+    } catch (error) {
+      console.error('Error al cargar aplicaciones', error);
+    }
+  }
+});
+
+watch(
+  IdAplicacionEscogida,
+  async (newAppId) => {
+    if (newAppId) {
+      await plantillaStore.fetchPlantillasXAplicacion();
+      await grupoStore.fetchGruposXAplicacion();
+      await contactoStore.fetchContactosXAplicacion();
+    }
+  },
+  { immediate: true },
+);
 
 const actualizarPlantillas = (nuevasPlantillas: Plantilla[]) => {
   plantillasSeleccionada.value = nuevasPlantillas;

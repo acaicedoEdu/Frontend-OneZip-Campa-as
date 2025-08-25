@@ -10,7 +10,7 @@ export function obtenerDatosCardDetallesCampana(): CardDetallesCampana[] {
   const contactosIndividuales = campanaStore.campana?.ContactosIndividuales || null;
   const duracionCampana =
     campana?.FechaInicio && campana.FechaFin
-      ? diferenciaXHora(campana?.FechaInicio, campana?.FechaFin)
+      ? diferenciaXHora(new Date(campana?.FechaInicio), new Date(campana?.FechaFin))
       : null;
 
   return cardDetallesCampana.map((cardDetalleCampana) => {

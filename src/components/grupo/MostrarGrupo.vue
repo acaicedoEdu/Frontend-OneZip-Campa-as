@@ -1,7 +1,8 @@
 <template>
   <div class="q-pa-md">
     <div v-if="grupos.length === 0">
-      <VacioDatos pagina="grupo" />
+      <q-spinner-oval v-if="grupoStore.loading" color="primary" size="4em" />
+      <VacioDatos v-else pagina="grupo" />
     </div>
     <div v-else class="row items-center q-mb-lg">
       <div v-if="proops.componentePadre === 'PageGrupo'">

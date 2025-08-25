@@ -5,11 +5,17 @@
     </div>
     <VacioDatos v-else pagina="campana" />
   </div>
-  <div v-else class="q-pa-md q-pa-lg-lg">
+  <div
+    v-else
+    class="q-pa-md q-ma-md q-pa-lg-lg bg-white"
+    style="border: 1px solid #e4e4e7; border-radius: 8px"
+  >
     <div class="row items-center q-mb-md">
       <div>
-        <div class="text-h5 text-weight-bold">Campañas Masivas</div>
-        <div class="text-grey-8">{{ campanas.length }} campañas masivas</div>
+        <div class="text-h5 text-weight-bold">Todas las Campañas</div>
+        <div class="text-grey-8 text-subtitle1" style="font-size: 14px">
+          {{ campanas.length }} campañas masivas
+        </div>
       </div>
       <q-space />
       <q-input
@@ -18,6 +24,7 @@
         v-model="searchText"
         placeholder="Buscar campañas..."
         style="width: 250px"
+        class="bg-white"
       >
         <template v-slot:prepend
           ><q-icon name="fa-solid fa-magnifying-glass" size="18px"
@@ -29,13 +36,43 @@
       :columns="columnas"
       row-key="IdCampana"
       :loading="campanaStore.loading"
-      v-model:pagination="pagination"
+      v-model:pagination="paginacion"
       :filter="searchText"
       icon-next-page="fa-solid fa-angle-right"
       icon-prev-page="fa-solid fa-angle-left"
       flat
-      bordered
+      :rows-per-page-options="[10]"
     >
+      <template v-slot:body-cell-IdEstado="props">
+        <q-td :props="props">
+          <q-chip
+            dense
+            :color="`${colorEstado(props.row.IdEstado)}-2`"
+            :text-color="`${colorEstado(props.row.IdEstado)}-8`"
+            size="15px"
+            class="text-weight-medium"
+            :label="nombreEstado(props.row.IdEstado)"
+          />
+        </q-td>
+      </template>
+      <template v-slot:body-cell-acciones="props">
+        <q-td :props="props" class="q-gutter-sm">
+          <q-btn
+            v-for="boton in botonesAccion.filter((d) => d.idEstado == props.row.IdEstado)"
+            :key="boton.nombre"
+            dense
+            round
+            flat
+            color="grey-9"
+            size="10px"
+            :to="boton.to && `${boton.to}${props.row.IdCampana}`"
+            :icon="boton.icono"
+            @click="boton.accion && boton.accion(props.row)"
+          >
+            <q-tooltip>{{ boton.mensajeTooltip }}</q-tooltip>
+          </q-btn>
+        </q-td>
+      </template>
       <template v-slot:no-data>
         <div class="full-width row flex-center text-grey-7 q-gutter-sm q-pa-xl">
           <q-icon size="2em" name="fa-solid fa-circle-info" />
@@ -49,55 +86,130 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useCampanaStore } from 'src/stores/campana.store';
-import { type Campana } from 'src/types/campana';
 import VacioDatos from 'src/components/VacioDatos.vue';
+import type { QTableProps } from 'quasar';
+import type { Paginacion } from 'src/types/paginacion';
+import { botonesAccion } from 'src/constants/botonesAccionMostrarCampana';
+import { formatearFecha } from 'src/composables/campana/formatearFecha';
+import type { Campana } from 'src/types/campana';
 
 const campanaStore = useCampanaStore();
 const searchText = ref('');
 
-const campanas = computed<Campana[]>(() => campanaStore.campanasXAplicacion);
+const campanas = computed<Campana[]>(() =>
+  campanaStore.campanasXAplicacion.map((campana) => {
+    const fechaInicioDate = campana.FechaInicio ? new Date(campana.FechaInicio) : null;
+    const fechaFinDate = campana.FechaFin ? new Date(campana.FechaFin) : null;
+    return {
+      ...campana,
+      FechaInicio: formatearFecha(fechaInicioDate),
+      FechaFin: formatearFecha(fechaFinDate),
+    };
+  }),
+);
 
-// const campanas = ref([
-//   {
-//     IdCampana: 1,
-//     Nombre: 'Campaña 1',
-//     TipoEnvio: 'Tipo de envio 1',
-//     IdPlantilla: 1,
-//     IdGrupo: 1,
-//     FechaInicio: '2022-01-01',
-//     FechaFin: '2022-01-01',
-//     IdEstado: 1,
-//     FechaCreacion: '2022-01-01',
-//     FechaModificacion: '2022-01-01',
-//   },
-// ]);
-
-const pagination = ref({
+const paginacion = computed<Paginacion>(() => ({
   page: campanaStore.pagina,
   rowsPerPage: campanaStore.tamano,
-});
+  sortBy: '',
+  descending: false,
+}));
 
-interface Columnas {
-  name: string;
-  label: string;
-  align: 'left' | 'right' | 'center';
-  field: string;
-}
+const nombreEstado = (idEstado: number) => {
+  return idEstado == 3
+    ? 'Procesando'
+    : idEstado == 6
+      ? 'Programada'
+      : idEstado == 7
+        ? 'Pausada'
+        : idEstado == 9
+          ? 'Cancelada'
+          : idEstado == 8
+            ? 'Completada'
+            : idEstado == 10
+              ? 'Error'
+              : '...';
+};
+const colorEstado = (idEstado: number) => {
+  return idEstado == 3
+    ? 'blue'
+    : idEstado == 6
+      ? 'yellow'
+      : idEstado == 7
+        ? 'orange'
+        : idEstado == 9
+          ? 'red'
+          : idEstado == 8
+            ? 'green'
+            : idEstado == 10
+              ? 'negative'
+              : 'grey';
+};
 
-const columnas: Columnas[] = [
-  { label: 'Nombre de Campaña', name: 'Nombre', field: 'Nombre', align: 'left' },
-  { label: 'Tipo de envio', name: 'TipoEnvio', field: 'TipoEnvio', align: 'left' },
-  { label: 'Plantilla', name: 'IdPlantilla', field: 'IdPlantilla', align: 'left' },
-  { label: 'Grupo', name: 'IdGrupo', field: 'IdGrupo', align: 'left' },
-  { label: 'Fecha de Ejecución', name: 'FechaInicio', field: 'FechaInicio', align: 'left' },
-  { label: 'Fecha de Fin', name: 'FechaFin', field: 'FechaFin', align: 'left' },
-  { label: 'Estado', name: 'IdEstado', field: 'IdEstado', align: 'left' },
-  { label: 'Fecha de Creación', name: 'FechaCreacion', field: 'FechaCreacion', align: 'left' },
+const columnas: QTableProps['columns'] = [
   {
-    label: 'Fecha de Modificación',
-    name: 'FechaModificacion',
-    field: 'FechaModificacion',
+    label: 'Nombre de Campaña',
+    name: 'Nombre',
+    field: 'Nombre',
     align: 'left',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
+  },
+  {
+    label: 'Tipo de envio',
+    name: 'TipoEnvio',
+    field: 'TipoEnvio',
+    align: 'left',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
+  },
+  {
+    label: 'Plantilla',
+    name: 'IdPlantilla',
+    field: 'IdPlantilla',
+    align: 'left',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
+  },
+  {
+    label: 'Grupo',
+    name: 'IdGrupo',
+    field: 'IdGrupo',
+    align: 'left',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
+  },
+  {
+    label: 'Fecha de Ejecución',
+    name: 'FechaInicio',
+    field: 'FechaInicio',
+    align: 'left',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
+  },
+  {
+    label: 'Fecha de Fin',
+    name: 'FechaFin',
+    field: 'FechaFin',
+    align: 'left',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
+  },
+  {
+    label: 'Estado',
+    name: 'IdEstado',
+    field: 'IdEstado',
+    align: 'left',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
+  },
+  {
+    label: 'Acciones',
+    name: 'acciones',
+    field: 'acciones',
+    align: 'center',
+    headerClasses: 'text-grey-7',
+    headerStyle: 'font-size: 14px',
   },
 ];
 </script>

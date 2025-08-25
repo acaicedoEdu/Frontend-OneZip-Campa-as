@@ -134,13 +134,15 @@ const contactoStore = useContactoStore();
 const IdAplicacionEscogida = computed(() => aplicacionStore.IdAplicacionEscogida);
 
 onMounted(async () => {
-  try {
-    await aplicacionStore.fetchAplicaciones();
-    if (aplicacionStore.aplicaciones.length > 0) {
-      aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
+  if (IdAplicacionEscogida.value <= 0) {
+    try {
+      await aplicacionStore.fetchAplicaciones();
+      if (aplicacionStore.aplicaciones.length > 0) {
+        aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
+      }
+    } catch (error) {
+      console.error('Error al cargar aplicaciones', error);
     }
-  } catch (error) {
-    console.error('Error al cargar aplicaciones', error);
   }
 });
 
@@ -148,8 +150,8 @@ watch(
   IdAplicacionEscogida,
   async (newAppId) => {
     if (newAppId) {
-      await grupoStore.fetchGruposXAplicacion();
-      await contactoStore.fetchContactosXAplicacion();
+      await grupoStore.fetchGruposXAplicacion(true);
+      await contactoStore.fetchContactosXAplicacion(true);
     }
   },
   { immediate: true },

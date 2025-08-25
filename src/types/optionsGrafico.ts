@@ -94,5 +94,8 @@ export interface OptionsLine {
   };
   xaxis: {
     type: 'datetime';
+    labels: {
+      datetimeUTC: boolean;
+    };
   };
 }

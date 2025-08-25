@@ -26,13 +26,15 @@ const campanaStore = useCampanaStore();
 const IdAplicacionEscogida = computed(() => aplicacionStore.IdAplicacionEscogida);
 
 onMounted(async () => {
-  try {
-    await aplicacionStore.fetchAplicaciones();
-    if (aplicacionStore.aplicaciones.length > 0) {
-      aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
+  if (IdAplicacionEscogida.value <= 0) {
+    try {
+      await aplicacionStore.fetchAplicaciones();
+      if (aplicacionStore.aplicaciones.length > 0) {
+        aplicacionStore.IdAplicacionEscogida = aplicacionStore.aplicaciones[0]!.IdAplicacion;
+      }
+    } catch (error) {
+      console.error('Error al cargar aplicaciones', error);
     }
-  } catch (error) {
-    console.error('Error al cargar aplicaciones', error);
   }
 });
 
@@ -40,7 +42,7 @@ watch(
   IdAplicacionEscogida,
   async (newAppId) => {
     if (newAppId) {
-      await campanaStore.fetchCampanasXAplicacion();
+      await campanaStore.fetchCampanasXAplicacion(true);
     }
   },
   { immediate: true },

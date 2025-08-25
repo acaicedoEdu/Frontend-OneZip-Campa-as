@@ -3,7 +3,7 @@
     class="bg-white"
     outlined
     dense
-    v-model="modelAplicacion"
+    v-model="aplicacionEscogida"
     label="Aplicación"
     dropdown-icon="fa-solid fa-chevron-down"
     :options="opcionesAplicacion"
@@ -24,36 +24,30 @@ import { useAplicacionStore } from 'src/stores/aplicacion.store';
 import { computed, ref, watch } from 'vue';
 
 const aplicacionStore = useAplicacionStore();
+const IdAplicacionEscogida = computed(() => aplicacionStore.IdAplicacionEscogida);
 
-const aplicacionEscogida = computed(() => {
-  const app = aplicacionStore.aplicaciones.find(
-    (app) => app.IdAplicacion === aplicacionStore.IdAplicacionEscogida,
-  );
-  if (app) {
-    return {
-      label: app.Nombre,
-      value: app.IdAplicacion,
-    };
-  }
-  return null;
-});
-
-const modelAplicacion = ref(aplicacionEscogida);
+const aplicacionEscogida = ref(
+  aplicacionStore.aplicaciones.find((app) => app.IdAplicacion == IdAplicacionEscogida.value)
+    ?.Nombre,
+);
 
 const opcionesAplicacion = computed(() => {
-  return aplicacionStore.aplicaciones.map((app) => ({
-    label: app.Nombre,
-    value: app.IdAplicacion,
-  }));
+  return aplicacionStore.aplicaciones.map((app) => app.Nombre);
 });
 
-watch(
-  modelAplicacion,
-  (newAppId) => {
-    if (newAppId) {
-      aplicacionStore.setIdAplicacionEscogida(newAppId.value);
-    }
-  },
-  { immediate: true },
-);
+watch(aplicacionEscogida, (newValue) => {
+  if (newValue) {
+    aplicacionStore.setIdAplicacionEscogida(
+      aplicacionStore.aplicaciones.find((app) => app.Nombre === newValue)?.IdAplicacion || 0,
+    );
+  }
+});
+
+watch(IdAplicacionEscogida, (newValue) => {
+  if (newValue) {
+    aplicacionEscogida.value = aplicacionStore.aplicaciones.find(
+      (app) => app.IdAplicacion == newValue,
+    )?.Nombre;
+  }
+});
 </script>

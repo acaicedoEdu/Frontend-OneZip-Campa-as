@@ -11,4 +11,5 @@ export interface BotonMostrarIdCampana {
   icono: string;
   link?: string;
   span: spanBotonMostrarIdCampana;
+  accion?: (idCampana: number) => Promise<void>;
 }

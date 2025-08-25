@@ -52,6 +52,7 @@
                         round
                         dense
                         icon="fa-solid fa-eye"
+                        size="10px"
                         color="grey-9"
                         class="q-ml-sm"
                       />

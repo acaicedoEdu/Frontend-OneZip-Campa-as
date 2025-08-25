@@ -1,4 +1,10 @@
 import type { BotonMostrarIdCampana } from 'src/types/botonMostrarIdCampana';
+import { useMensajeStore } from 'src/stores/mensaje.store';
+import { useCampanaStore } from 'src/stores/campana.store';
+
+const exportarReporte = async (idCampana: number) => {
+  await useMensajeStore().exportarReporte(idCampana);
+};
 
 export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
   {
@@ -7,37 +13,15 @@ export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
     outline: true,
     clase: 'soft-text bg-white',
     icono: 'fa-solid fa-file-arrow-down text-dark',
-    link: ``,
+    link: `http://localhost:55604/api/mensaje/exportar-reporte/campana/`,
+    accion: exportarReporte,
     span: {
       clase: 'text-subtitle2 q-ml-sm text-dark',
       valor: 'Exportar Reporte',
     },
   },
   {
-    IdBoton: 87879,
-    IdEstado: 3,
-    outline: true,
-    clase: 'bg-white text-green-9',
-    icono: 'fa-solid fa-arrows-rotate',
-    span: {
-      clase: 'text-subtitle2 q-ml-sm',
-      valor: 'Actualizar',
-    },
-  },
-  {
-    IdBoton: 878732,
-    IdEstado: 7,
-    outline: true,
-    clase: 'bg-white text-green-9',
-    icono: 'fa-solid fa-arrows-rotate',
-    span: {
-      clase: 'text-subtitle2 q-ml-sm',
-      valor: 'Actualizar',
-    },
-  },
-  {
     IdBoton: 123231,
-
     IdEstado: 3,
     outline: true,
     clase: 'bg-white text-orange-8',
@@ -45,6 +29,10 @@ export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
     span: {
       clase: 'text-subtitle2 q-ml-sm',
       valor: 'Pausar',
+    },
+    accion: async (idCampana: number) => {
+      if (!idCampana) return;
+      await useCampanaStore().pausarCampana(idCampana);
     },
   },
   {
@@ -57,6 +45,10 @@ export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
       clase: 'text-subtitle2 q-ml-sm',
       valor: 'Seguir',
     },
+    accion: async (idCampana: number) => {
+      if (!idCampana) return;
+      await useCampanaStore().desPausarCampana(idCampana);
+    },
   },
   {
     IdBoton: 34555,
@@ -68,6 +60,10 @@ export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
       clase: 'text-subtitle2 q-ml-sm',
       valor: 'Cancelar',
     },
+    accion: async (idCampana: number) => {
+      if (!idCampana) return;
+      await useCampanaStore().cancelarCampana(idCampana);
+    },
   },
   {
     IdBoton: 2367860,
@@ -78,6 +74,10 @@ export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
     span: {
       clase: 'text-subtitle2 q-ml-sm',
       valor: 'Cancelar',
+    },
+    accion: async (idCampana: number) => {
+      if (!idCampana) return;
+      await useCampanaStore().cancelarCampana(idCampana);
     },
   },
 ];

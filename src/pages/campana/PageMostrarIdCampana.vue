@@ -41,6 +41,7 @@
             :class="boton.clase"
             padding="5px 8px"
             :outline="boton.outline"
+            :href="boton.link ? `${boton.link}${Number(idCampana)}` : undefined"
           >
             <q-icon :name="boton.icono" size="13px" />
             <span :class="boton.span.clase">{{ boton.span.valor }}</span>
@@ -227,10 +228,6 @@ const colorEstado = computed(() => {
               ? 'negative'
               : 'grey';
 });
-
-// const exportarReporte = async () => {
-//   await useMensajeStore().exportarReporte(Number(route.params.id));
-// };
 
 const idCampana = ref('');
 onMounted(async () => {

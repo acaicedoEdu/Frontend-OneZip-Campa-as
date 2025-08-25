@@ -39,5 +39,8 @@ export const graficoTimeline: OptionsLine = {
   },
   xaxis: {
     type: 'datetime',
+    labels: {
+      datetimeUTC: false,
+    },
   },
 };

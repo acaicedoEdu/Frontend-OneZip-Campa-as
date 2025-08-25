@@ -112,16 +112,21 @@ const convertirDuracion = (duracionStr: string) => {
 };
 
 const estadisticas = computed(() => {
-  const duracionStr = diferenciaXHora(
-    campanaStore.campana?.Campana.FechaInicio || new Date(),
-    campanaStore.campana?.Campana.FechaFin || new Date(),
-  );
+  let destinatariosPorMinuto: number = 0;
+  if (campanaStore.campana?.Campana.FechaInicio && campanaStore.campana?.Campana.FechaFin) {
+    const duracionStr = diferenciaXHora(
+      new Date(campanaStore.campana?.Campana.FechaInicio),
+      new Date(campanaStore.campana?.Campana.FechaFin),
+    );
 
-  const duracionEnSegundos = convertirDuracion(duracionStr) || 0;
-  const totalDestinatarios = campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios || 0;
+    const duracionEnSegundos = convertirDuracion(duracionStr) || 0;
+    const totalDestinatarios = campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios || 0;
 
-  const destinatariosPorMinuto =
-    duracionEnSegundos <= 60 ? totalDestinatarios : (totalDestinatarios / duracionEnSegundos) * 60;
+    destinatariosPorMinuto =
+      duracionEnSegundos <= 60
+        ? totalDestinatarios
+        : (totalDestinatarios / duracionEnSegundos) * 60;
+  }
 
   return [
     {
