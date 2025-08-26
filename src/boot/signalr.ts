@@ -9,7 +9,7 @@ declare module '@vue/runtime-core' {
 }
 
 const conexionSignalR: HubConnection = new HubConnectionBuilder()
-  .withUrl('https://localhost:55604/')
+  .withUrl('http://localhost:55604/signalr')
   .withAutomaticReconnect()
   .build();
 
