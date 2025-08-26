@@ -15,7 +15,11 @@ const routes: RouteRecordRaw[] = [
         path: 'campana/nueva',
         component: () => import('src/pages/campana/PageAgregarCampana.vue'),
       },
-      { path: 'plantilla', component: () => import('src/pages/PagePlantilla.vue') },
+      { path: 'plantilla', component: () => import('src/pages/plantilla/PagePlantilla.vue') },
+      {
+        path: 'plantilla/nueva',
+        component: () => import('src/pages/plantilla/PageAgregarPlantilla.vue'),
+      },
       { path: 'grupo', component: () => import('src/pages/grupo/PageGrupo.vue') },
       {
         path: 'grupo/:id',
