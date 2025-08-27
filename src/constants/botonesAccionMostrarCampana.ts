@@ -31,6 +31,13 @@ export const botonesAccion = [
     mensajeTooltip: 'Ver campaña',
   },
   {
+    nombre: 'visualizar',
+    icono: 'fa-solid fa-eye',
+    to: '/campana/',
+    idEstado: 9,
+    mensajeTooltip: 'Ver campaña',
+  },
+  {
     nombre: 'pausar',
     icono: 'fa-solid fa-pause',
     accion: async (campana: Campana) => {
