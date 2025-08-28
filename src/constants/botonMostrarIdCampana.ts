@@ -13,7 +13,7 @@ export const botonesMostrarIdCampana: BotonMostrarIdCampana[] = [
     outline: true,
     clase: 'soft-text bg-white',
     icono: 'fa-solid fa-file-arrow-down text-dark',
-    link: `http://localhost:55604/api/mensaje/exportar-reporte/campana/`,
+    link: `http://localhost:5263/api/Mensaje/exportar-reporte/campana/`,
     accion: exportarReporte,
     span: {
       clase: 'text-subtitle2 q-ml-sm text-dark',

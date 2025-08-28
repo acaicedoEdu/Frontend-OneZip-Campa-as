@@ -38,7 +38,7 @@ export const useAplicacionStore = defineStore('aplicaciones', {
 
       this.loading = true;
       try {
-        const response = await axios.get('/aplicacion');
+        const response = await axios.get('/Aplicacion');
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);

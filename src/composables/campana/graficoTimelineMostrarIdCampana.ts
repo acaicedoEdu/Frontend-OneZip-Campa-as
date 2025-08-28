@@ -8,19 +8,19 @@ export function obtenerDatosseriesTimeline(): SeriesTimeLine[] {
   const datosTimeLineMensaje = campana?.DatosTimeLineMensaje || null;
 
   const dataEntregados: [string, number][] = datosTimeLineMensaje?.Entregados?.map(
-    (data) => [String(data.Item1), data.Item2] as [string, number],
+    (data) => [String(data.Fecha), data.Total] as [string, number],
   ) ?? [['', 0]];
 
   const dataEnviados: [string, number][] = datosTimeLineMensaje?.Enviados?.map(
-    (data) => [String(data.Item1), data.Item2] as [string, number],
+    (data) => [String(data.Fecha), data.Total] as [string, number],
   ) ?? [['', 0]];
 
   const dataLeidos: [string, number][] = datosTimeLineMensaje?.Leidos?.map(
-    (data) => [String(data.Item1), data.Item2] as [string, number],
+    (data) => [String(data.Fecha), data.Total] as [string, number],
   ) ?? [['', 0]];
 
   const dataFallidos: [string, number][] = datosTimeLineMensaje?.Fallidos?.map(
-    (data) => [String(data.Item1), data.Item2] as [string, number],
+    (data) => [String(data.Fecha), data.Total] as [string, number],
   ) ?? [['', 0]];
 
   return seriesTimeline.map((serieTimeline) => {

@@ -10,15 +10,15 @@ const datosTimeLineMensaje = computed(() => campana.value?.DatosTimeLineMensaje 
 export const series = () => [
   {
     name: 'Enviados',
-    data: datosTimeLineMensaje.value?.Enviados?.map((item) => item.Item2) || [],
+    data: datosTimeLineMensaje.value?.Enviados?.map((item) => item.Total) || [],
   },
   {
     name: 'Entregados',
-    data: datosTimeLineMensaje.value?.Entregados?.map((item) => item.Item2) || [],
+    data: datosTimeLineMensaje.value?.Entregados?.map((item) => item.Total) || [],
   },
   {
     name: 'Leídos',
-    data: datosTimeLineMensaje.value?.Leidos?.map((item) => item.Item2) || [],
+    data: datosTimeLineMensaje.value?.Leidos?.map((item) => item.Total) || [],
   },
 ];
 
@@ -27,7 +27,7 @@ export function graficoBarrasPorHora(): OptionsBar {
     ...graficoBarrasPorHoraMostrarIdCampana,
     xaxis: {
       categories: datosTimeLineMensaje.value?.Enviados?.map((item) => {
-        const date = new Date(item.Item1);
+        const date = new Date(item.Fecha);
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${hours}:${minutes}`;

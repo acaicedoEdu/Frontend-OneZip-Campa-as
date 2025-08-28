@@ -14,14 +14,14 @@
       <div>
         <div class="text-h5 text-weight-bold">Todas las Campañas</div>
         <div class="text-grey-8 text-subtitle1" style="font-size: 14px">
-          {{ campanas.length }} campañas masivas
+          {{ campanaStore.total }} campañas masivas
         </div>
       </div>
       <q-space />
       <q-input
         outlined
         dense
-        v-model="searchText"
+        v-model="textoBuscar"
         placeholder="Buscar campañas..."
         style="width: 250px"
         class="bg-white"
@@ -36,12 +36,13 @@
       :columns="columnas"
       row-key="IdCampana"
       :loading="campanaStore.loading"
-      v-model:pagination="paginacion"
-      :filter="searchText"
+      :pagination="paginacion"
+      :filter="textoBuscar"
       icon-next-page="fa-solid fa-angle-right"
       icon-prev-page="fa-solid fa-angle-left"
       flat
       :rows-per-page-options="[10]"
+      @request="activarPaginado"
     >
       <template v-slot:body-cell-IdEstado="props">
         <q-td :props="props">
@@ -88,13 +89,13 @@ import { ref, computed } from 'vue';
 import { useCampanaStore } from 'src/stores/campana.store';
 import VacioDatos from 'src/components/VacioDatos.vue';
 import type { QTableProps } from 'quasar';
-import type { Paginacion } from 'src/types/paginacion';
+import type { Paginacion, RequestProps } from 'src/types/paginacion';
 import { botonesAccion } from 'src/constants/botonesAccionMostrarCampana';
 import { formatearFecha } from 'src/composables/campana/formatearFecha';
 import type { Campana } from 'src/types/campana';
 
 const campanaStore = useCampanaStore();
-const searchText = ref('');
+const textoBuscar = ref('');
 
 const campanas = computed<Campana[]>(() =>
   campanaStore.campanasXAplicacion.map((campana) => {
@@ -114,6 +115,26 @@ const paginacion = computed<Paginacion>(() => ({
   sortBy: '',
   descending: false,
 }));
+
+const activarPaginado = async (props: RequestProps) => {
+  if (textoBuscar.value.trim()) {
+    // const busqueda = textoBuscar.value.toLowerCase().trim();
+    // await mensajeStore.buscarMensajes(
+    //   idCampanaNumero,
+    //   busqueda,
+    //   true,
+    //   props.pagination.page,
+    //   props.pagination.rowsPerPage,
+    //   true,
+    // );
+  } else {
+    await campanaStore.fetchCampanasXAplicacion(
+      true,
+      props.pagination.page,
+      props.pagination.rowsPerPage,
+    );
+  }
+};
 
 const nombreEstado = (idEstado: number) => {
   return idEstado == 3

@@ -43,7 +43,7 @@ export const usePlantillaStore = defineStore('plantillas', {
 
       this.loading = true;
       try {
-        const response = await axios.get('/plantilla');
+        const response = await axios.get('/Plantilla');
         const data = response.data;
 
         if (!data.IsExito) {
@@ -88,7 +88,7 @@ export const usePlantillaStore = defineStore('plantillas', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/plantilla/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
+          `/Plantilla/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 

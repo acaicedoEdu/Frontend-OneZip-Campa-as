@@ -22,10 +22,10 @@ interface DatosNumerosMensaje {
 }
 
 interface DatosTimeLineMensaje {
-  Enviados: { Item1: Date; Item2: number }[];
-  Entregados: { Item1: Date; Item2: number }[];
-  Leidos: { Item1: Date; Item2: number }[];
-  Fallidos: { Item1: Date; Item2: number }[];
+  Enviados: { Fecha: Date; Total: number }[];
+  Entregados: { Fecha: Date; Total: number }[];
+  Leidos: { Fecha: Date; Total: number }[];
+  Fallidos: { Fecha: Date; Total: number }[];
 }
 
 export interface IdCampana {

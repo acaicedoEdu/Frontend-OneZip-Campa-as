@@ -45,7 +45,7 @@ export const useGrupoStore = defineStore('grupos', {
 
       this.loading = true;
       try {
-        const response = await axios.get('/grupo');
+        const response = await axios.get('/Grupo');
         const data = response.data;
 
         if (!data.IsExito) {
@@ -86,7 +86,7 @@ export const useGrupoStore = defineStore('grupos', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/grupo/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
+          `/Grupo/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 
@@ -115,7 +115,7 @@ export const useGrupoStore = defineStore('grupos', {
 
       this.loading = true;
       try {
-        const response = await axios.get(`/grupo/${id}`);
+        const response = await axios.get(`/Grupo/${id}`);
         const data = response.data;
 
         if (!data.IsExito) {
@@ -124,7 +124,7 @@ export const useGrupoStore = defineStore('grupos', {
         }
 
         const fetchedGrupo = data.Dato as Grupo;
-        if (fetchedGrupo && !this.getGrupoById(fetchedGrupo.IdGrupo!)) {
+        if (fetchedGrupo.IdGrupo && !this.getGrupoById(fetchedGrupo.IdGrupo)) {
           this.grupos.push(fetchedGrupo);
         }
 
@@ -148,7 +148,7 @@ export const useGrupoStore = defineStore('grupos', {
       const tempGrupo = { ...newGrupoData, IdGrupo: tempId };
       this.grupos.unshift(tempGrupo);
       try {
-        const response = await axios.post('/grupo', newGrupoData);
+        const response = await axios.post('/Grupo', newGrupoData);
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);

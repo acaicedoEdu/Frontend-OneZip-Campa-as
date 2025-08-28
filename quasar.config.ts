@@ -14,7 +14,7 @@ export default defineConfig((/* ctx */) => {
     boot: [
       'axios',
       'pinia',
-      // 'signalr',
+      'signalr',
       // 'i18n',
       // 'quasar-extras',
       // 'my-custom-boot-file'

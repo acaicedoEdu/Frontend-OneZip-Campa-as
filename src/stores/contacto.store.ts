@@ -50,7 +50,7 @@ export const useContactoStore = defineStore('contactos', {
 
       this.loading = true;
       try {
-        const response = await axios.get('/contacto');
+        const response = await axios.get('/Contacto');
         const data = response.data;
 
         if (!data.IsExito) {
@@ -91,7 +91,7 @@ export const useContactoStore = defineStore('contactos', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/contacto/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
+          `/Contacto/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 
@@ -114,7 +114,7 @@ export const useContactoStore = defineStore('contactos', {
 
     async agregarContacto(contacto: Contacto) {
       try {
-        const response = await axios.post('/contacto', contacto);
+        const response = await axios.post('/Contacto', contacto);
         const data = response.data;
 
         if (!data.IsExito) {
@@ -138,7 +138,7 @@ export const useContactoStore = defineStore('contactos', {
     async importarContacto(datos: FormData) {
       this.loadingImportarContacto = true;
       try {
-        const response = await axios.post('/contacto/importeMasivo', datos);
+        const response = await axios.post('/Contacto/importeMasivo', datos);
         const data = response.data;
 
         if (!data.IsExito) {

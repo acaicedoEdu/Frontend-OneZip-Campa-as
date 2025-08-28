@@ -11,6 +11,7 @@ interface CampanaState {
   campana: IdCampana | null;
   tamano: number;
   totalPaginas: number;
+  total: number;
   pagina: number;
   loading: boolean;
   lastFetch: number | null;
@@ -23,6 +24,7 @@ export const useCampanaStore = defineStore('campanas', {
     campana: null,
     tamano: 0,
     totalPaginas: 0,
+    total: 0,
     pagina: 0,
     loading: false,
     lastFetch: null,
@@ -48,7 +50,7 @@ export const useCampanaStore = defineStore('campanas', {
 
       this.loading = true;
       try {
-        const response = await axios.get('/campana');
+        const response = await axios.get('/Campana');
         const data = response.data;
 
         if (!data.IsExito) {
@@ -59,6 +61,7 @@ export const useCampanaStore = defineStore('campanas', {
         this.tamano = data.Tamano;
         this.totalPaginas = data.TotalPaginas;
         this.pagina = data.Pagina;
+        this.total = data.Total;
         this.lastFetch = Date.now();
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
@@ -89,7 +92,7 @@ export const useCampanaStore = defineStore('campanas', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/campana/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
+          `/Campana/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 
@@ -98,10 +101,14 @@ export const useCampanaStore = defineStore('campanas', {
         }
 
         this.campanasXAplicacion = data.Dato || [];
+        this.tamano = data.Tamano;
+        this.total = data.TotalDatos;
+        this.totalPaginas = data.TotalPaginas;
+        this.pagina = data.Pagina;
         this.lastFetch = Date.now();
       } catch (error) {
-        showErrorNotification('Algo salió mal al obtener las campañas por grupo.');
-        console.error('Error obteniendo las campañas por grupo:', error);
+        showErrorNotification('Algo salió mal al obtener las campañas por aplicacion.');
+        console.error('Error obteniendo las campañas por aplicacion:', error);
       } finally {
         this.loading = false;
       }
@@ -113,7 +120,7 @@ export const useCampanaStore = defineStore('campanas', {
       }
       this.loading = true;
       try {
-        const response = await axios.get(`/campana/${IdCampana}`);
+        const response = await axios.get(`/Campana/${IdCampana}`);
         const data = response.data;
 
         this.campana = data.Dato || {
@@ -138,7 +145,7 @@ export const useCampanaStore = defineStore('campanas', {
 
     async ejecutarCampana(nuevaCampana: object) {
       try {
-        const response = await axios.post('/campana', nuevaCampana);
+        const response = await axios.post('/Campana', nuevaCampana);
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -153,7 +160,7 @@ export const useCampanaStore = defineStore('campanas', {
 
     async pausarCampana(idCampana: number) {
       try {
-        const response = await axios.post(`/campana/pausar/${idCampana}`);
+        const response = await axios.post(`/Campana/pausar/${idCampana}`);
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -169,7 +176,7 @@ export const useCampanaStore = defineStore('campanas', {
 
     async desPausarCampana(idCampana: number) {
       try {
-        const response = await axios.post(`/campana/despausar/${idCampana}`);
+        const response = await axios.post(`/Campana/despausar/${idCampana}`);
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -185,7 +192,7 @@ export const useCampanaStore = defineStore('campanas', {
 
     async cancelarCampana(idCampana: number) {
       try {
-        const response = await axios.post(`/campana/cancelar/${idCampana}`);
+        const response = await axios.post(`/Campana/cancelar/${idCampana}`);
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);

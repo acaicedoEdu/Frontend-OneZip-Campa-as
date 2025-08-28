@@ -55,7 +55,7 @@ export const useMensajeStore = defineStore('mensajes', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/mensaje/campana/${id}?pagina=${pagina}&tamano=${tamano}`,
+          `/Mensaje/campana/${id}?pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 
@@ -105,7 +105,7 @@ export const useMensajeStore = defineStore('mensajes', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/mensaje/campana/${id}/buscar/${busqueda}?mensajeError=${existeMensajeError}&pagina=${pagina}&tamano=${tamano}`,
+          `/Mensaje/campana/${id}/buscar/${busqueda}?mensajeError=${existeMensajeError}&pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 
@@ -164,7 +164,7 @@ export const useMensajeStore = defineStore('mensajes', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/mensaje/campana/${id}/filtro/${filtro}?pagina=${pagina}&tamano=${tamano}`,
+          `/Mensaje/campana/${id}/filtro/${filtro}?pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 
@@ -213,7 +213,7 @@ export const useMensajeStore = defineStore('mensajes', {
       this.loading = true;
       try {
         const response = await axios.get(
-          `/mensaje/campana/${id}?mensajeError=true&pagina=${pagina}&tamano=${tamano}`,
+          `/Mensaje/campana/${id}?mensajeError=true&pagina=${pagina}&tamano=${tamano}`,
         );
         const data = response.data;
 
@@ -242,7 +242,7 @@ export const useMensajeStore = defineStore('mensajes', {
 
     async exportarReporte(id: number) {
       try {
-        await axios.get(`exportar-reporte/campana/${id}`);
+        await axios.get(`/Mensaje/exportar-reporte/campana/${id}`);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
           showErrorNotification(error.response.data.Mensaje);

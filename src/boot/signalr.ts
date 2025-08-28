@@ -9,7 +9,7 @@ declare module '@vue/runtime-core' {
 }
 
 const conexionSignalR: HubConnection = new HubConnectionBuilder()
-  .withUrl('http://localhost:55604/signalr')
+  .withUrl('http://localhost:5263/onezipcampanahub')
   .withAutomaticReconnect()
   .build();
 
@@ -18,14 +18,9 @@ export default boot(({ app }) => {
 
   app.provide('signalR', conexionSignalR);
 
-  conexionSignalR
-    .start()
-    .then(() => {
-      console.log('Conexión SignalR iniciada correctamente');
-    })
-    .catch((error) => {
-      console.error('Error al iniciar la conexión SignalR:', error);
-    });
+  conexionSignalR.start().catch((error) => {
+    console.error('Error al iniciar la conexión SignalR:', error);
+  });
 });
 
 export { conexionSignalR };
