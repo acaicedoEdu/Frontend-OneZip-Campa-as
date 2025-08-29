@@ -37,6 +37,11 @@ export const useCampanaStore = defineStore('campanas', {
         return state.campanas.find((campana) => campana.IdCampana === id);
       },
     hasData: (state) => state.campanas.length > 0,
+    getCampanaXAplicacionById:
+      (state) =>
+      (id: number): Campana | undefined => {
+        return state.campanasXAplicacion.find((campana) => campana.IdCampana === id);
+      },
   },
 
   actions: {
@@ -165,7 +170,7 @@ export const useCampanaStore = defineStore('campanas', {
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         } else {
-          const nombreCampana = this.getCampanaById(idCampana)?.Nombre;
+          const nombreCampana = this.getCampanaXAplicacionById(idCampana)?.Nombre;
           showErrorNotification(`Campaña (${nombreCampana}) Pausada.`);
         }
       } catch (error) {
@@ -181,7 +186,7 @@ export const useCampanaStore = defineStore('campanas', {
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         } else {
-          const nombreCampana = this.getCampanaById(idCampana)?.Nombre;
+          const nombreCampana = this.getCampanaXAplicacionById(idCampana)?.Nombre;
           showErrorNotification(`La campaña (${nombreCampana}) continúa con su ejecución.`);
         }
       } catch (error) {
@@ -197,7 +202,7 @@ export const useCampanaStore = defineStore('campanas', {
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         } else {
-          const nombreCampana = this.getCampanaById(idCampana)?.Nombre;
+          const nombreCampana = this.getCampanaXAplicacionById(idCampana)?.Nombre;
           showErrorNotification(`La campaña (${nombreCampana}) ha sido cancelada.`);
         }
       } catch (error) {

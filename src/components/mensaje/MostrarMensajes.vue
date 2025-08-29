@@ -67,10 +67,22 @@
           rounded
           class="text-weight-medium"
           size="12px"
-          :color="`${statusMap[props.row.estado as keyof typeof statusMap].color}-1`"
-          :text-color="`${statusMap[props.row.estado as keyof typeof statusMap].color}`"
-          :icon="statusMap[props.row.estado as keyof typeof statusMap].icon"
-          :label="props.row.estado"
+          :color="
+            props.row.estado == 'none'
+              ? 'grey-1'
+              : `${statusMap[props.row.estado as keyof typeof statusMap].color}-1`
+          "
+          :text-color="
+            props.row.estado == 'none'
+              ? 'grey'
+              : `${statusMap[props.row.estado as keyof typeof statusMap].color}`
+          "
+          :icon="
+            props.row.estado == 'none'
+              ? 'fa-solid fa-circle-exclamation'
+              : statusMap[props.row.estado as keyof typeof statusMap].icon
+          "
+          :label="props.row.estado == 'none' ? '...' : props.row.estado"
         />
       </q-td>
     </template>
@@ -188,7 +200,7 @@ const Todosmensajes = computed(() => {
     entrega: formatearFecha(msj.FechaEntrega),
     lectura: formatearFecha(msj.FechaLectura),
     error: msj.MensajeError && '-',
-    intentos: msj.Intentos <= 1 ? 1 : msj.Intentos,
+    intentos: msj.Intentos,
   }));
 
   return mensajesTrans;
