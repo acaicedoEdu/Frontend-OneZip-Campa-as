@@ -36,6 +36,12 @@
           </div>
         </div>
       </template>
+      <template v-slot:no-data>
+        <div class="full-width row flex-center text-grey-7 q-gutter-sm q-pa-xl">
+          <q-icon size="2em" name="fa-solid fa-circle-info" />
+          <span>No se encontraron resultados</span>
+        </div>
+      </template>
     </q-table>
   </div>
 </template>

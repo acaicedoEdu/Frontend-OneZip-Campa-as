@@ -89,9 +89,19 @@
 
     <template v-slot:body-cell-error="props">
       <q-td :props="props">
-        <div v-if="props.row.error" class="row items-center text-negative no-wrap">
+        <div
+          v-if="props.row.error"
+          style="width: 150px"
+          class="row items-center text-negative no-wrap"
+        >
           <q-icon name="warning" class="q-mr-xs" size="xs" />
-          <span>{{ props.row.error }}</span>
+          <span style="max-width: 150px; overflow: hidden; text-overflow: ellipsis"
+            >{{ props.row.error }}
+            <q-tooltip anchor="top middle" self="bottom middle" :offset="[10, 10]">
+              <strong>Error Completo:</strong>
+              <div style="max-width: 300px; white-space: normal">{{ props.row.error }}</div>
+            </q-tooltip>
+          </span>
         </div>
         <span v-else class="text-grey-6">-</span>
       </q-td>
@@ -114,8 +124,11 @@ import { type QTableProps } from 'quasar';
 import { useMensajeStore } from 'src/stores/mensaje.store';
 import { formatearFecha } from 'src/composables/campana/formatearFecha';
 import { useRoute } from 'vue-router';
+import { useCampanaStore } from 'src/stores/campana.store';
 
 const mensajeStore = useMensajeStore();
+const campanaStore = useCampanaStore();
+const campana = campanaStore.campana?.Campana;
 const textoBuscar = ref('');
 const estadoFiltro = ref([] as string[]);
 const route = useRoute();
@@ -166,7 +179,12 @@ const columns: QTableProps['columns'] = [
   { name: 'envio', label: 'Enviado', field: 'envio', align: 'left' },
   { name: 'entrega', label: 'Entregado', field: 'entrega', align: 'left' },
   { name: 'lectura', label: 'Leído', field: 'lectura', align: 'left' },
-  { name: 'error', label: 'Error', field: 'error', align: 'left' },
+  {
+    name: 'error',
+    label: 'Error',
+    field: 'error',
+    align: 'left',
+  },
   { name: 'intentos', label: 'Intentos', field: 'intentos', align: 'left' },
 ];
 
@@ -174,7 +192,11 @@ const statusMap = {
   Leído: { color: 'purple', icon: 'fa-solid fa-eye', nombreColumna: '' },
   Entregado: { color: 'green', icon: 'fa-solid fa-check', nombreColumna: '' },
   Enviado: { color: 'blue', icon: 'fa-solid fa-paper-plane', nombreColumna: '' },
-  Fallido: { color: 'red', icon: 'fa-solid fa-xmark', nombreColumna: '' },
+  Fallido: { color: 'red', icon: 'fa-solid fa-exclamation-triangle', nombreColumna: '' },
+  Cancelado: { color: 'black', icon: 'fa-solid fa-xmark', nombreColumna: '' },
+  Pausado: { color: 'orange', icon: 'fa-solid fa-square', nombreColumna: '' },
+  Programado: { color: 'orange', icon: 'fa-solid fa-clock', nombreColumna: '' },
+  Procesando: { color: 'orange', icon: 'fa-solid fa-spinner', nombreColumna: '' },
 };
 
 const opcionesEstado = Object.keys(statusMap).map((status) => ({
@@ -195,11 +217,19 @@ const Todosmensajes = computed(() => {
             ? 'Entregado'
             : msj.FechaEnvio != null
               ? 'Enviado'
-              : 'none',
+              : campana?.IdEstado === 9
+                ? 'Cancelado'
+                : campana?.IdEstado === 7
+                  ? 'Pausado'
+                  : campana?.IdEstado === 6
+                    ? 'Programado'
+                    : msj.IdEstado === 3 || msj.IdEstado === 12
+                      ? 'Procesando'
+                      : 'none',
     envio: formatearFecha(msj.FechaEnvio),
     entrega: formatearFecha(msj.FechaEntrega),
     lectura: formatearFecha(msj.FechaLectura),
-    error: msj.MensajeError && '-',
+    error: msj.MensajeError,
     intentos: msj.Intentos,
   }));
 

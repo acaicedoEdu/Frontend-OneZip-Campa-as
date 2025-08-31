@@ -40,8 +40,10 @@
             no-caps
             :class="boton.clase"
             padding="5px 8px"
+            :loading="boton.loading && campanaStore.loading"
             :outline="boton.outline"
             :href="boton.link ? `${boton.link}${Number(idCampana)}` : undefined"
+            @click="boton.accion && boton.accion(Number(idCampana))"
           >
             <q-icon :name="boton.icono" size="13px" />
             <span :class="boton.span.clase">{{ boton.span.valor }}</span>
@@ -197,7 +199,7 @@ const fechaFinFormateada = computed(() => {
 const estado = computed(() => {
   const estado = campana.value?.IdEstado;
 
-  return estado == 3
+  return estado == 3 || estado == 12
     ? 'Procesando'
     : estado == 6
       ? 'Programada'
@@ -214,18 +216,18 @@ const estado = computed(() => {
 const colorEstado = computed(() => {
   const estado = campana.value?.IdEstado;
 
-  return estado == 3
+  return estado == 3 || estado == 12
     ? 'blue'
     : estado == 6
       ? 'yellow'
       : estado == 7
         ? 'orange'
         : estado == 9
-          ? 'red'
+          ? 'black'
           : estado == 8
             ? 'green'
             : estado == 10
-              ? 'negative'
+              ? 'red'
               : 'grey';
 });
 

@@ -9,7 +9,8 @@ export interface BotonMostrarIdCampana {
   outline: boolean;
   clase: string;
   icono: string;
+  loading: boolean;
   link?: string;
   span: spanBotonMostrarIdCampana;
-  accion?: (idCampana: number) => Promise<void>;
+  accion?: (idCampana: number) => Promise<void> | void;
 }

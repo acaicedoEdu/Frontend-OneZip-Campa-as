@@ -152,11 +152,7 @@ export const useCampanaStore = defineStore('campanas', {
       try {
         const response = await axios.post('/Campana', nuevaCampana);
         const data = response.data;
-        if (!data.IsExito) {
-          showErrorNotification(data.Mensaje);
-        } else {
-          showErrorNotification('Campaña Ejecutada.');
-        }
+        showErrorNotification(data.Mensaje);
       } catch (error) {
         showErrorNotification('Algo salió mal al ejecutar la campaña.');
         console.error('Error al ejecutar la campaña:', error);
@@ -164,18 +160,18 @@ export const useCampanaStore = defineStore('campanas', {
     },
 
     async pausarCampana(idCampana: number) {
+      this.loading = true;
       try {
         const response = await axios.post(`/Campana/pausar/${idCampana}`);
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
-        } else {
-          const nombreCampana = this.getCampanaXAplicacionById(idCampana)?.Nombre;
-          showErrorNotification(`Campaña (${nombreCampana}) Pausada.`);
         }
       } catch (error) {
         showErrorNotification('Algo salió mal al pausar la campaña.');
         console.error('Error al pausar la campaña:', error);
+      } finally {
+        this.loading = true;
       }
     },
 
@@ -187,7 +183,7 @@ export const useCampanaStore = defineStore('campanas', {
           showErrorNotification(data.Mensaje);
         } else {
           const nombreCampana = this.getCampanaXAplicacionById(idCampana)?.Nombre;
-          showErrorNotification(`La campaña (${nombreCampana}) continúa con su ejecución.`);
+          showErrorNotification(`La campaña (${nombreCampana}) se ejecuto.`);
         }
       } catch (error) {
         showErrorNotification('Algo salió mal al despausar la campaña.');
@@ -196,18 +192,18 @@ export const useCampanaStore = defineStore('campanas', {
     },
 
     async cancelarCampana(idCampana: number) {
+      this.loading = true;
       try {
         const response = await axios.post(`/Campana/cancelar/${idCampana}`);
         const data = response.data;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
-        } else {
-          const nombreCampana = this.getCampanaXAplicacionById(idCampana)?.Nombre;
-          showErrorNotification(`La campaña (${nombreCampana}) ha sido cancelada.`);
         }
       } catch (error) {
         showErrorNotification('Algo salió mal al cancelar la campaña.');
         console.error('Error al cancelar la campaña:', error);
+      } finally {
+        this.loading = true;
       }
     },
   },

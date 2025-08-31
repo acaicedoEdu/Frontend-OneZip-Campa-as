@@ -103,6 +103,7 @@
   <ImportarContactos />
   <AgregarGrupo />
   <AgregarContacto v-model="addContactDialog" />
+  <AlertaConfirmacion />
 </template>
 
 <script setup lang="ts">
@@ -116,6 +117,7 @@ import AgregarContacto from 'src/components/contacto/AgregarContacto.vue';
 import { useGrupoStore } from 'src/stores/grupo.store';
 import { useContactoStore } from 'src/stores/contacto.store';
 import { useAplicacionStore } from 'src/stores/aplicacion.store';
+import AlertaConfirmacion from 'src/components/AlertaConfirmacion.vue';
 
 const navigationStore = ref(true);
 const addContactDialog = ref(false);

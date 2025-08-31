@@ -75,17 +75,35 @@ const metricasProgreso = computed(() => {
   return [
     {
       label: 'Tasa de Entrega',
-      value: campanaStore.campana?.DatosNumerosMensaje.TotalEntregados || 0,
+      value: Number(
+        Number(
+          ((campanaStore.campana?.DatosNumerosMensaje.TotalEntregados || 0) /
+            (campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios || 0)) *
+            100,
+        ).toFixed(1),
+      ),
       color: 'green',
     },
     {
       label: 'Tasa de Lectura',
-      value: campanaStore.campana?.DatosNumerosMensaje.TotalLeidos || 0,
+      value: Number(
+        Number(
+          ((campanaStore.campana?.DatosNumerosMensaje.TotalLeidos || 0) /
+            (campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios || 0)) *
+            100,
+        ).toFixed(1),
+      ),
       color: 'purple',
     },
     {
       label: 'Tasa de Error',
-      value: campanaStore.campana?.DatosNumerosMensaje.TotalFallidos || 0,
+      value: Number(
+        Number(
+          ((campanaStore.campana?.DatosNumerosMensaje.TotalFallidos || 0) /
+            (campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios || 0)) *
+            100,
+        ).toFixed(1),
+      ),
       color: 'red',
     },
   ];
@@ -122,10 +140,13 @@ const estadisticas = computed(() => {
     const duracionEnSegundos = convertirDuracion(duracionStr) || 0;
     const totalDestinatarios = campanaStore.campana?.DatosNumerosMensaje.TotalDestinatarios || 0;
 
-    destinatariosPorMinuto =
+    const base =
       duracionEnSegundos <= 60
         ? totalDestinatarios
         : (totalDestinatarios / duracionEnSegundos) * 60;
+
+    // Redondear SIEMPRE hacia arriba a 1 decimal
+    destinatariosPorMinuto = Math.ceil(base * 10) / 10;
   }
 
   return [

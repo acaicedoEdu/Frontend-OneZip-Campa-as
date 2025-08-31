@@ -33,6 +33,7 @@
               :value="stat.cambio"
               :format="{
                 style: stat.estiloCambio === 'percent' ? 'percent' : 'decimal',
+                maximumFractionDigits: 0,
                 notation: 'standard',
               }"
               :duration="1000"

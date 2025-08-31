@@ -6,13 +6,13 @@ export function obtenerDatosCardEstadisticas(): CardEstadisticas[] {
   const campanaStore = useCampanaStore();
   const datosNumerosMensaje = campanaStore.campana?.DatosNumerosMensaje;
   const tasaEntrega = datosNumerosMensaje?.TotalDestinatarios
-    ? (datosNumerosMensaje.TotalEntregados / datosNumerosMensaje.TotalDestinatarios) * 100
+    ? datosNumerosMensaje.TotalEntregados / datosNumerosMensaje.TotalDestinatarios
     : 0;
   const tasaLeidos = datosNumerosMensaje?.TotalDestinatarios
-    ? (datosNumerosMensaje.TotalLeidos / datosNumerosMensaje.TotalDestinatarios) * 100
+    ? datosNumerosMensaje.TotalLeidos / datosNumerosMensaje.TotalDestinatarios
     : 0;
   const tasaFallidos = datosNumerosMensaje?.TotalDestinatarios
-    ? (datosNumerosMensaje.TotalFallidos / datosNumerosMensaje.TotalDestinatarios) * 100
+    ? datosNumerosMensaje.TotalFallidos / datosNumerosMensaje.TotalDestinatarios
     : 0;
 
   return cardEstadisticas.map((cardEstadistica) => {

@@ -6,21 +6,69 @@
 import { onMounted, onUnmounted } from 'vue';
 import { conexionSignalR } from './boot/signalr';
 import { useCampanaStore } from 'src/stores/campana.store';
+import { useMensajeStore } from './stores/mensaje.store';
+import { useAlertaConfirmacion } from 'src/stores/alertaConfirmacion.store';
+import { useRoute } from 'vue-router';
 
 const campanaStore = useCampanaStore();
+const mensajeStore = useMensajeStore();
+const alertaConfirmacionStore = useAlertaConfirmacion();
+const route = useRoute();
 
 const manejarCampana = (tipoMensaje: string, idCampana: number = 0) => {
+  const existe = route.params.id as string;
+
+  const existeNumero = Number(existe);
   switch (tipoMensaje) {
     case 'mensaje':
-      campanaStore.fetchIdCampana(true, idCampana).catch((error) => {
-        console.error('Error al obtener la campana:', error);
-      });
+      if (!isNaN(existeNumero)) {
+        if (existeNumero == idCampana) {
+          campanaStore.fetchIdCampana(true, idCampana).catch((error) => {
+            console.error('Error al obtener la campana:', error);
+          });
+          mensajeStore.fetchMensajes(idCampana, true).catch((error) => {
+            console.error('Error al obtener los mensajes:', error);
+          });
+        }
+      } else {
+        campanaStore.fetchIdCampana(true, idCampana).catch((error) => {
+          console.error('Error al obtener la campana:', error);
+        });
+        mensajeStore.fetchMensajes(idCampana, true).catch((error) => {
+          console.error('Error al obtener los mensajes:', error);
+        });
+      }
       break;
 
     case 'campaña':
-      console.log('fUNCIONO');
+      if (alertaConfirmacionStore.dialog) alertaConfirmacionStore.toggleDialogAlertaConfirmacion();
       campanaStore.fetchCampanasXAplicacion(true).catch((error) => {
         console.error('Error al obtener la campañas:', error);
+      });
+      if (idCampana > 0) {
+        if (!isNaN(existeNumero)) {
+          if (existeNumero == idCampana) {
+            campanaStore.fetchIdCampana(true, idCampana).catch((error) => {
+              console.error('Error al obtener la campana:', error);
+            });
+          }
+        } else {
+          campanaStore.fetchIdCampana(true, idCampana).catch((error) => {
+            console.error('Error al obtener la campana:', error);
+          });
+        }
+      }
+      break;
+
+    case 'mensajeError':
+      campanaStore.fetchIdCampana(true, idCampana).catch((error) => {
+        console.error('Error al obtener la campana:', error);
+      });
+      mensajeStore.fetchMensajes(idCampana, true).catch((error) => {
+        console.error('Error al obtener los mensajes:', error);
+      });
+      mensajeStore.fetchMensajesError(idCampana, true).catch((error) => {
+        console.error('Error al obtener los mensajes de error:', error);
       });
       break;
 

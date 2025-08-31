@@ -36,7 +36,7 @@
       :columns="columnas"
       row-key="IdCampana"
       :loading="campanaStore.loading"
-      :pagination="paginacion"
+      v-model:pagination="paginacion"
       :filter="textoBuscar"
       icon-next-page="fa-solid fa-angle-right"
       icon-prev-page="fa-solid fa-angle-left"
@@ -64,6 +64,8 @@
             dense
             round
             flat
+            :style="boton.style && boton.style"
+            :loading="boton.loading && campanaStore.loading"
             color="grey-9"
             size="10px"
             :to="boton.to && `${boton.to}${props.row.IdCampana}`"
@@ -85,7 +87,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+// import type { ComputedRef } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCampanaStore } from 'src/stores/campana.store';
 import VacioDatos from 'src/components/VacioDatos.vue';
 import type { QTableProps } from 'quasar';
@@ -96,6 +99,13 @@ import type { Campana } from 'src/types/campana';
 
 const campanaStore = useCampanaStore();
 const textoBuscar = ref('');
+const paginacion = ref<Paginacion>({
+  page: campanaStore.pagina || 1,
+  rowsPerPage: campanaStore.tamano || 10,
+  rowsNumber: campanaStore.total || 0,
+  sortBy: '',
+  descending: false,
+});
 
 const campanas = computed<Campana[]>(() =>
   campanaStore.campanasXAplicacion.map((campana) => {
@@ -109,14 +119,8 @@ const campanas = computed<Campana[]>(() =>
   }),
 );
 
-const paginacion = computed<Paginacion>(() => ({
-  page: campanaStore.pagina,
-  rowsPerPage: campanaStore.tamano,
-  sortBy: '',
-  descending: false,
-}));
-
 const activarPaginado = async (props: RequestProps) => {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
   if (textoBuscar.value.trim()) {
     // const busqueda = textoBuscar.value.toLowerCase().trim();
     // await mensajeStore.buscarMensajes(
@@ -128,16 +132,17 @@ const activarPaginado = async (props: RequestProps) => {
     //   true,
     // );
   } else {
-    await campanaStore.fetchCampanasXAplicacion(
-      true,
-      props.pagination.page,
-      props.pagination.rowsPerPage,
-    );
+    await campanaStore.fetchCampanasXAplicacion(true, page, rowsPerPage);
   }
+
+  paginacion.value.rowsNumber = campanaStore.total;
+  paginacion.value.page = campanaStore.pagina;
+  paginacion.value.sortBy = sortBy;
+  paginacion.value.descending = descending;
 };
 
 const nombreEstado = (idEstado: number) => {
-  return idEstado == 3
+  return idEstado == 3 || idEstado == 12
     ? 'Procesando'
     : idEstado == 6
       ? 'Programada'
@@ -152,20 +157,31 @@ const nombreEstado = (idEstado: number) => {
               : '...';
 };
 const colorEstado = (idEstado: number) => {
-  return idEstado == 3
+  return idEstado == 3 || idEstado == 12
     ? 'blue'
     : idEstado == 6
       ? 'yellow'
       : idEstado == 7
         ? 'orange'
         : idEstado == 9
-          ? 'red'
+          ? 'black'
           : idEstado == 8
             ? 'green'
             : idEstado == 10
-              ? 'negative'
+              ? 'red'
               : 'grey';
 };
+
+watch(
+  () => campanaStore.pagina,
+  () => {
+    paginacion.value.rowsNumber = campanaStore.total;
+    paginacion.value.page = campanaStore.pagina;
+  },
+  {
+    immediate: true,
+  },
+);
 
 const columnas: QTableProps['columns'] = [
   {
