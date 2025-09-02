@@ -3,6 +3,7 @@ import { axios } from 'boot/axios';
 import type { Plantilla } from 'src/types/plantilla';
 import { showErrorNotification } from 'src/components/notificacion/notificacion';
 import { useAplicacionStore } from './aplicacion.store';
+import type { RespuestaPaginacion } from 'src/types/Respuesta';
 
 interface PlantillaState {
   plantillas: Plantilla[];
@@ -44,7 +45,7 @@ export const usePlantillaStore = defineStore('plantillas', {
       this.loading = true;
       try {
         const response = await axios.get('/Plantilla');
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Plantilla[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -90,7 +91,7 @@ export const usePlantillaStore = defineStore('plantillas', {
         const response = await axios.get(
           `/Plantilla/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Plantilla[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Aplicacion } from 'src/types/aplicacion';
 import { showErrorNotification } from 'src/components/notificacion/notificacion';
+import type { RespuestaPaginacion } from 'src/types/Respuesta';
 
 interface AplicacionState {
   aplicaciones: Aplicacion[];
@@ -39,7 +40,7 @@ export const useAplicacionStore = defineStore('aplicaciones', {
       this.loading = true;
       try {
         const response = await axios.get('/Aplicacion');
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Aplicacion[]>;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         }

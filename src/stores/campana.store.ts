@@ -2,8 +2,13 @@ import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Campana } from 'src/types/campana';
 import type { IdCampana } from 'src/types/idCampana';
-import { showErrorNotification } from 'src/components/notificacion/notificacion';
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from 'src/components/notificacion/notificacion';
 import { useAplicacionStore } from './aplicacion.store';
+import type { RespuestaPaginacion } from 'src/types/Respuesta';
+import type { Respuesta } from 'src/types/Respuesta';
 
 interface CampanaState {
   campanas: Campana[];
@@ -56,7 +61,7 @@ export const useCampanaStore = defineStore('campanas', {
       this.loading = true;
       try {
         const response = await axios.get('/Campana');
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Campana[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -66,7 +71,7 @@ export const useCampanaStore = defineStore('campanas', {
         this.tamano = data.Tamano;
         this.totalPaginas = data.TotalPaginas;
         this.pagina = data.Pagina;
-        this.total = data.Total;
+        this.total = data.TotalDatos;
         this.lastFetch = Date.now();
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
@@ -99,7 +104,7 @@ export const useCampanaStore = defineStore('campanas', {
         const response = await axios.get(
           `/Campana/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Campana[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -151,7 +156,7 @@ export const useCampanaStore = defineStore('campanas', {
     async ejecutarCampana(nuevaCampana: object) {
       try {
         const response = await axios.post('/Campana', nuevaCampana);
-        const data = response.data;
+        const data = response.data as Respuesta<Campana>;
         showErrorNotification(data.Mensaje);
       } catch (error) {
         showErrorNotification('Algo salió mal al ejecutar la campaña.');
@@ -163,9 +168,11 @@ export const useCampanaStore = defineStore('campanas', {
       this.loading = true;
       try {
         const response = await axios.post(`/Campana/pausar/${idCampana}`);
-        const data = response.data;
+        const data = response.data as Respuesta<Campana>;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
+        } else {
+          showSuccessNotification(data.Mensaje);
         }
       } catch (error) {
         showErrorNotification('Algo salió mal al pausar la campaña.');
@@ -178,12 +185,11 @@ export const useCampanaStore = defineStore('campanas', {
     async desPausarCampana(idCampana: number) {
       try {
         const response = await axios.post(`/Campana/despausar/${idCampana}`);
-        const data = response.data;
+        const data = response.data as Respuesta<Campana>;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
         } else {
-          const nombreCampana = this.getCampanaXAplicacionById(idCampana)?.Nombre;
-          showErrorNotification(`La campaña (${nombreCampana}) se ejecuto.`);
+          showSuccessNotification(data.Mensaje);
         }
       } catch (error) {
         showErrorNotification('Algo salió mal al despausar la campaña.');
@@ -195,9 +201,11 @@ export const useCampanaStore = defineStore('campanas', {
       this.loading = true;
       try {
         const response = await axios.post(`/Campana/cancelar/${idCampana}`);
-        const data = response.data;
+        const data = response.data as Respuesta<Campana>;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
+        } else {
+          showSuccessNotification(data.Mensaje);
         }
       } catch (error) {
         showErrorNotification('Algo salió mal al cancelar la campaña.');

@@ -1,9 +1,14 @@
 import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Contacto } from 'src/types/contacto';
-import { showErrorNotification } from 'src/components/notificacion/notificacion';
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from 'src/components/notificacion/notificacion';
 import { useGrupoStore } from './grupo.store';
 import { useAplicacionStore } from './aplicacion.store';
+import type { Respuesta, RespuestaPaginacion } from 'src/types/Respuesta';
+import type { Grupo } from 'src/types/grupo';
 
 interface ContactoState {
   contactos: Contacto[];
@@ -51,7 +56,7 @@ export const useContactoStore = defineStore('contactos', {
       this.loading = true;
       try {
         const response = await axios.get('/Contacto');
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Contacto[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -93,7 +98,7 @@ export const useContactoStore = defineStore('contactos', {
         const response = await axios.get(
           `/Contacto/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Contacto[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -115,7 +120,7 @@ export const useContactoStore = defineStore('contactos', {
     async agregarContacto(contacto: Contacto) {
       try {
         const response = await axios.post('/Contacto', contacto);
-        const data = response.data;
+        const data = response.data as Respuesta<Contacto>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -123,7 +128,7 @@ export const useContactoStore = defineStore('contactos', {
         }
 
         this.contactos.push(data.Dato);
-        showErrorNotification('Contacto agregado correctamente.');
+        showSuccessNotification('Contacto agregado correctamente.');
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
           showErrorNotification(error.response.data.Mensaje);
@@ -139,7 +144,7 @@ export const useContactoStore = defineStore('contactos', {
       this.loadingImportarContacto = true;
       try {
         const response = await axios.post('/Contacto/importeMasivo', datos);
-        const data = response.data;
+        const data = response.data as Respuesta<Grupo>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -147,7 +152,7 @@ export const useContactoStore = defineStore('contactos', {
         }
 
         useGrupoStore().setGrupo(data.Dato);
-        showErrorNotification('Contactos importados.');
+        showSuccessNotification('Contactos importados.');
       } catch (error: unknown) {
         if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
           showErrorNotification(error.response.data.Mensaje);

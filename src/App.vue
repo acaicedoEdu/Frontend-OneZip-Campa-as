@@ -9,13 +9,22 @@ import { useCampanaStore } from 'src/stores/campana.store';
 import { useMensajeStore } from './stores/mensaje.store';
 import { useAlertaConfirmacion } from 'src/stores/alertaConfirmacion.store';
 import { useRoute } from 'vue-router';
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from 'src/components/notificacion/notificacion';
+import type { RespuestaMensaje } from './types/Respuesta';
 
 const campanaStore = useCampanaStore();
 const mensajeStore = useMensajeStore();
 const alertaConfirmacionStore = useAlertaConfirmacion();
 const route = useRoute();
 
-const manejarCampana = (tipoMensaje: string, idCampana: number = 0) => {
+const manejarCampana = (
+  tipoMensaje: string,
+  idCampana: number = 0,
+  notificacionMensaje: RespuestaMensaje,
+) => {
   const existe = route.params.id as string;
 
   const existeNumero = Number(existe);
@@ -56,6 +65,14 @@ const manejarCampana = (tipoMensaje: string, idCampana: number = 0) => {
           campanaStore.fetchIdCampana(true, idCampana).catch((error) => {
             console.error('Error al obtener la campana:', error);
           });
+        }
+      }
+
+      if (notificacionMensaje.Mensaje.trim().length > 0) {
+        if (notificacionMensaje.IsExito) {
+          showSuccessNotification(notificacionMensaje.Mensaje);
+        } else {
+          showErrorNotification(notificacionMensaje.Mensaje);
         }
       }
       break;

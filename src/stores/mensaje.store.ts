@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
-import { type Mensaje } from 'src/types/Mensaje';
+import type { Mensaje } from 'src/types/Mensaje';
 import { showErrorNotification } from 'src/components/notificacion/notificacion';
+import type { RespuestaPaginacion } from 'src/types/Respuesta';
 
 interface MensajeState {
   mensajes: Mensaje[];
@@ -57,7 +58,7 @@ export const useMensajeStore = defineStore('mensajes', {
         const response = await axios.get(
           `/Mensaje/campana/${id}?pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Mensaje[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -107,7 +108,7 @@ export const useMensajeStore = defineStore('mensajes', {
         const response = await axios.get(
           `/Mensaje/campana/${id}/buscar/${busqueda}?mensajeError=${existeMensajeError}&pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Mensaje[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -166,7 +167,7 @@ export const useMensajeStore = defineStore('mensajes', {
         const response = await axios.get(
           `/Mensaje/campana/${id}/filtro/${filtro}?pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Mensaje[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -215,7 +216,7 @@ export const useMensajeStore = defineStore('mensajes', {
         const response = await axios.get(
           `/Mensaje/campana/${id}?mensajeError=true&pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Mensaje[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);

@@ -1,8 +1,12 @@
 import { defineStore } from 'pinia';
 import { axios } from 'boot/axios';
 import type { Grupo } from 'src/types/grupo';
-import { showErrorNotification } from 'src/components/notificacion/notificacion';
+import {
+  showErrorNotification,
+  showSuccessNotification,
+} from 'src/components/notificacion/notificacion';
 import { useAplicacionStore } from './aplicacion.store';
+import type { Respuesta, RespuestaPaginacion } from 'src/types/Respuesta';
 
 interface GrupoState {
   grupos: Grupo[];
@@ -46,7 +50,7 @@ export const useGrupoStore = defineStore('grupos', {
       this.loading = true;
       try {
         const response = await axios.get('/Grupo');
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Grupo[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -88,7 +92,7 @@ export const useGrupoStore = defineStore('grupos', {
         const response = await axios.get(
           `/Grupo/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
         );
-        const data = response.data;
+        const data = response.data as RespuestaPaginacion<Grupo[]>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
@@ -116,14 +120,14 @@ export const useGrupoStore = defineStore('grupos', {
       this.loading = true;
       try {
         const response = await axios.get(`/Grupo/${id}`);
-        const data = response.data;
+        const data = response.data as Respuesta<Grupo>;
 
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
           return null;
         }
 
-        const fetchedGrupo = data.Dato as Grupo;
+        const fetchedGrupo = data.Dato;
         if (fetchedGrupo.IdGrupo && !this.getGrupoById(fetchedGrupo.IdGrupo)) {
           this.grupos.push(fetchedGrupo);
         }
@@ -149,17 +153,18 @@ export const useGrupoStore = defineStore('grupos', {
       this.grupos.unshift(tempGrupo);
       try {
         const response = await axios.post('/Grupo', newGrupoData);
-        const data = response.data;
+        const data = response.data as Respuesta<Grupo>;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);
           this.grupos = this.grupos.filter((g) => g.IdGrupo !== tempId);
         } else {
-          const savedGrupo = data.Dato as Grupo;
+          const savedGrupo = data.Dato;
           const index = this.grupos.findIndex((g) => g.IdGrupo === tempId);
           if (index !== -1) {
             this.grupos.splice(index, 1);
             this.grupos.unshift(savedGrupo);
           }
+          showSuccessNotification('Grupo creado correctamente.');
         }
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {

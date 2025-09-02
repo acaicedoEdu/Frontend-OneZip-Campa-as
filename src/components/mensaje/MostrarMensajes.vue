@@ -209,14 +209,14 @@ const Todosmensajes = computed(() => {
     idMensaje: msj.IdMensaje,
     telefono: msj.Contacto.Telefono,
     estado:
-      msj.MensajeError != null
-        ? 'Fallido'
-        : msj.FechaLectura != null
-          ? 'Leído'
-          : msj.FechaEntrega != null
-            ? 'Entregado'
-            : msj.FechaEnvio != null
-              ? 'Enviado'
+      msj.FechaLectura != null
+        ? 'Leído'
+        : msj.FechaEntrega != null
+          ? 'Entregado'
+          : msj.FechaEnvio != null
+            ? 'Enviado'
+            : msj.MensajeError != null
+              ? 'Fallido'
               : campana?.IdEstado === 9
                 ? 'Cancelado'
                 : campana?.IdEstado === 7

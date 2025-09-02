@@ -83,7 +83,7 @@
             :done="step > 3"
             :disable="step < 3"
           >
-            <div class="text-h6 q-mb-md">Nueva Campaña: Variables y Programación</div>
+            <PerzonalizacionVariables />
           </q-step>
 
           <q-step
@@ -198,7 +198,7 @@
                 class="verde-principal text-white"
                 padding="8px 24px"
                 :disable="disableBotonSiguiente"
-                @click="step !== 2 ? step++ : (step += 2)"
+                @click="step++"
               >
                 <span class="text-white text-subtitle2">Siguiente</span>
                 <q-icon name="fa-solid fa-angle-right text-white" class="q-ml-sm" size="13px" />
@@ -234,6 +234,7 @@ import { useAplicacionStore } from 'src/stores/aplicacion.store';
 import { useCampanaStore } from 'src/stores/campana.store';
 import { usePlantillaStore } from 'src/stores/plantilla.store';
 import { useContactoStore } from 'src/stores/contacto.store';
+import PerzonalizacionVariables from 'src/pages/plantilla/PerzonalizacionVariables.vue';
 import { useRouter } from 'vue-router';
 
 const grupoStore = useGrupoStore();

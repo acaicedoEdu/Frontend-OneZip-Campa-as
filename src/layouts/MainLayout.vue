@@ -149,4 +149,40 @@ const botonesActual = computed(() => {
 .boton-importar:hover {
   background-color: #f4f4f5 !important;
 }
+
+/*
+  Coloca este código en el <style> de tu App.vue o en un
+  archivo CSS global de tu proyecto.
+*/
+
+.custom-success-notification {
+  /* ¡La clave! El borde izquierdo verde */
+  border-left: 5px solid var(--q-positive);
+
+  /* Aseguramos el fondo blanco y el color de texto */
+  background-color: white !important;
+  color: #333;
+
+  /* Hacemos que el ícono tenga el fondo circular verde claro */
+  & .q-notification__icon {
+    background-color: #e8f5e9; /* Un tono verde muy claro */
+    border-radius: 50%;
+    padding: 6px;
+  }
+}
+.custom-error-notification {
+  /* ¡La clave! El borde izquierdo rojo */
+  border-left: 5px solid var(--q-negative);
+
+  /* Aseguramos el fondo blanco y el color de texto */
+  background-color: white !important;
+  color: #333;
+
+  /* Hacemos que el ícono tenga el fondo circular rojo claro */
+  & .q-notification__icon {
+    background-color: #ffebee; /* Un tono rojo muy claro */
+    border-radius: 50%;
+    padding: 6px;
+  }
+}
 </style>
