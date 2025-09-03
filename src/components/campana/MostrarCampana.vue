@@ -160,7 +160,7 @@ const colorEstado = (idEstado: number) => {
   return idEstado == 3 || idEstado == 12
     ? 'blue'
     : idEstado == 6
-      ? 'yellow'
+      ? 'brown'
       : idEstado == 7
         ? 'orange'
         : idEstado == 9

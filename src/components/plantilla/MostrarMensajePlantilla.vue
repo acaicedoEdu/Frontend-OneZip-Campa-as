@@ -4,6 +4,9 @@
       <div class="text-weight-medium text-h6 text-dark">
         {{ props.nombre }}:
         <span class="text-weight-regular text-subtitle1 text-green-5">Vista previa</span>
+        <q-avatar color="green-1" class="q-ml-sm" text-color="green-7" size="md">
+          <q-icon name="fa-regular fa-eye" size="xs" />
+        </q-avatar>
       </div>
     </q-card-section>
 

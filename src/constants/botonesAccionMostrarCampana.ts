@@ -54,6 +54,14 @@ export const botonesAccion = [
     mensajeTooltip: 'Ver campaña',
   },
   {
+    nombre: 'visualizar',
+    icono: 'fa-solid fa-eye',
+    to: '/campana/',
+    loading: false,
+    idEstado: 6,
+    mensajeTooltip: 'Ver campaña',
+  },
+  {
     nombre: 'pausar',
     icono: 'fa-solid fa-square',
     loading: true,

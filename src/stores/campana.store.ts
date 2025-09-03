@@ -9,6 +9,8 @@ import {
 import { useAplicacionStore } from './aplicacion.store';
 import type { RespuestaPaginacion } from 'src/types/Respuesta';
 import type { Respuesta } from 'src/types/Respuesta';
+import { conexionSignalR } from 'boot/signalr';
+import { HubConnectionState } from '@microsoft/signalr';
 
 interface CampanaState {
   campanas: Campana[];
@@ -155,9 +157,13 @@ export const useCampanaStore = defineStore('campanas', {
 
     async ejecutarCampana(nuevaCampana: object) {
       try {
-        const response = await axios.post('/Campana', nuevaCampana);
+        if (conexionSignalR.state !== HubConnectionState.Connected) {
+          await conexionSignalR.start();
+        }
+        const connectionId = await conexionSignalR.invoke('GetConnectionId');
+        const response = await axios.post(`/Campana/${connectionId}`, nuevaCampana);
         const data = response.data as Respuesta<Campana>;
-        showErrorNotification(data.Mensaje);
+        showSuccessNotification(data.Mensaje);
       } catch (error) {
         showErrorNotification('Algo salió mal al ejecutar la campaña.');
         console.error('Error al ejecutar la campaña:', error);
@@ -184,7 +190,12 @@ export const useCampanaStore = defineStore('campanas', {
 
     async desPausarCampana(idCampana: number) {
       try {
-        const response = await axios.post(`/Campana/despausar/${idCampana}`);
+        if (conexionSignalR.state !== HubConnectionState.Connected) {
+          await conexionSignalR.start();
+        }
+        const connectionId = await conexionSignalR.invoke('GetConnectionId');
+
+        const response = await axios.post(`/Campana/despausar/${idCampana}/${connectionId}`);
         const data = response.data as Respuesta<Campana>;
         if (!data.IsExito) {
           showErrorNotification(data.Mensaje);

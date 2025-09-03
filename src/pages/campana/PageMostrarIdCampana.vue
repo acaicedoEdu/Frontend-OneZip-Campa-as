@@ -219,7 +219,7 @@ const colorEstado = computed(() => {
   return estado == 3 || estado == 12
     ? 'blue'
     : estado == 6
-      ? 'yellow'
+      ? 'brown'
       : estado == 7
         ? 'orange'
         : estado == 9

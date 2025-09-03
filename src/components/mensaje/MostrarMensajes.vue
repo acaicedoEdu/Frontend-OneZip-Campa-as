@@ -195,7 +195,7 @@ const statusMap = {
   Fallido: { color: 'red', icon: 'fa-solid fa-exclamation-triangle', nombreColumna: '' },
   Cancelado: { color: 'black', icon: 'fa-solid fa-xmark', nombreColumna: '' },
   Pausado: { color: 'orange', icon: 'fa-solid fa-square', nombreColumna: '' },
-  Programado: { color: 'orange', icon: 'fa-solid fa-clock', nombreColumna: '' },
+  Programado: { color: 'brown', icon: 'fa-solid fa-clock', nombreColumna: '' },
   Procesando: { color: 'orange', icon: 'fa-solid fa-spinner', nombreColumna: '' },
 };
 

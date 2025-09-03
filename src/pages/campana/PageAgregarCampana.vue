@@ -83,7 +83,12 @@
             :done="step > 3"
             :disable="step < 3"
           >
-            <PerzonalizacionVariables />
+            <PerzonalizacionVariables
+              :nombre="plantillasSeleccionada[0]?.Nombre || ''"
+              :body="String(plantillasSeleccionada[0]?.Contenido || '')"
+              :configuracionEnvioCampana="configuracionEnvioCampana"
+              @update:configuracionEnvioCampana="actualizarSchedule"
+            />
           </q-step>
 
           <q-step
@@ -123,6 +128,15 @@
                       (contactoSeleccionado.contactosSeleccionados?.length || 0)
                     }}
                     contactos
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="text-caption text-grey-7">Programación del Envío</div>
+                  <div v-if="configuracionEnvioCampana.EnvioInmediato" class="text-weight-bold">
+                    Enviado Inmediatamente
+                  </div>
+                  <div v-else class="text-weight-bold">
+                    {{ configuracionEnvioCampana.Fecha }} {{ configuracionEnvioCampana.Hora }}
                   </div>
                 </div>
               </div>
@@ -183,7 +197,7 @@
                 v-if="step > 1"
                 unelevated
                 outline
-                @click="step === 4 ? (step -= 2) : step--"
+                @click="step--"
                 padding="8px 24px"
                 class="q-mr-sm bg-white soft-text"
                 no-caps
@@ -236,6 +250,7 @@ import { usePlantillaStore } from 'src/stores/plantilla.store';
 import { useContactoStore } from 'src/stores/contacto.store';
 import PerzonalizacionVariables from 'src/pages/plantilla/PerzonalizacionVariables.vue';
 import { useRouter } from 'vue-router';
+import type { ConfiguracionEnvioCampanas } from 'src/types/configuracionEnvioCampanas';
 
 const grupoStore = useGrupoStore();
 const aplicacionStore = useAplicacionStore();
@@ -249,7 +264,20 @@ const modelNombreCampana = ref('');
 const plantillasSeleccionada: Ref<Plantilla[]> = ref([]);
 const contactoSeleccionado: Ref<ContactosSeleccionados> = ref({});
 const IdAplicacionEscogida = computed(() => aplicacionStore.IdAplicacionEscogida);
+const fechaActual = computed(() => {
+  const fecha = new Date();
+  const year = fecha.getFullYear();
+  const month = String(fecha.getMonth() + 1).padStart(2, '0'); // Los meses empiezan en 0
+  const day = String(fecha.getDate()).padStart(2, '0');
 
+  return `${year}-${month}-${day}`;
+});
+
+const configuracionEnvioCampana = ref<ConfiguracionEnvioCampanas>({
+  EnvioInmediato: true,
+  Fecha: `${fechaActual.value}`,
+  Hora: '',
+});
 onMounted(async () => {
   if (IdAplicacionEscogida.value <= 0) {
     try {
@@ -283,6 +311,9 @@ const actualizarContactos = (nuevosContactos: ContactosSeleccionados) => {
   contactoSeleccionado.value = nuevosContactos;
 };
 
+const actualizarSchedule = (nuevaConfiguracion: ConfiguracionEnvioCampanas) => {
+  configuracionEnvioCampana.value = nuevaConfiguracion;
+};
 const disableBotonSiguiente = computed(() => {
   return step.value === 1 && (!modelNombreCampana.value || !plantillasSeleccionada.value.length);
 });
@@ -295,6 +326,8 @@ const obtenerContactosGrupo = computed(() => {
 
 const ejecutarCampana = async () => {
   let tipoEnvio: string;
+  let fechaInicio: string | null = null;
+  let idEstado: number = 3;
 
   if (contactoSeleccionado.value.idGrupo && contactoSeleccionado.value.idGrupo > 0) {
     tipoEnvio = 'Masivo';
@@ -309,6 +342,12 @@ const ejecutarCampana = async () => {
     }
   }
 
+  if (!configuracionEnvioCampana.value.EnvioInmediato) {
+    idEstado = 6;
+    fechaInicio =
+      configuracionEnvioCampana.value.Fecha + 'T' + configuracionEnvioCampana.value.Hora;
+  }
+
   const campanaEjecutar: object = {
     IdAplicacion: IdAplicacionEscogida.value,
     IdPlantilla: plantillasSeleccionada.value[0]?.IdPlantilla || 0,
@@ -316,6 +355,8 @@ const ejecutarCampana = async () => {
     Contactos: contactoSeleccionado.value.contactosSeleccionados,
     TipoEnvio: tipoEnvio,
     Nombre: modelNombreCampana.value,
+    IdEstado: idEstado,
+    FechaInicio: fechaInicio,
   };
 
   try {
