@@ -45,7 +45,13 @@
             icon="fa-regular fa-folder-open"
             style="flex: 1"
             :label="
-              grupoStore.grupos.length > 0 ? `Grupos (${grupoStore.grupos.length})` : 'Grupos'
+              props.componentePadre === 'agregarCampana'
+                ? grupoStore.totalNoVacios > 0
+                  ? `Grupos (${grupoStore.totalNoVacios})`
+                  : 'Grupos'
+                : grupoStore.total > 0
+                  ? `Grupos (${grupoStore.total})`
+                  : 'Grupos'
             "
           />
           <q-tab
@@ -53,8 +59,8 @@
             name="contactos"
             icon="fa-solid fa-user"
             :label="
-              contactoStore.contactos.length > 0
-                ? `Contactos Individuales (${contactoStore.contactos.length})`
+              contactoStore.total > 0
+                ? `Contactos Individuales (${contactoStore.total})`
                 : 'Contactos Individuales'
             "
           />
@@ -117,9 +123,15 @@ const actualizarContactos = (nuevosContactos: ContactosSeleccionados) => {
 };
 
 const obtenerContactosGrupo = computed(() => {
-  return contactoSeleccionado.value.idGrupo
-    ? grupoStore.getGrupoById(contactoSeleccionado.value.idGrupo)
-    : null;
+  if (props.componentePadre === 'agregarCampana') {
+    return contactoSeleccionado.value.idGrupo
+      ? grupoStore.getGrupoByIdNoVacios(contactoSeleccionado.value.idGrupo)
+      : null;
+  } else {
+    return contactoSeleccionado.value.idGrupo
+      ? grupoStore.getGrupoById(contactoSeleccionado.value.idGrupo)
+      : null;
+  }
 });
 
 const mostrarContactosSeleccionados = computed(() => {
@@ -150,7 +162,11 @@ watch(
   IdAplicacionEscogida,
   async (newAppId) => {
     if (newAppId) {
-      await grupoStore.fetchGruposXAplicacion(true);
+      if (props.componentePadre === 'agregarCampana') {
+        await grupoStore.fetchGruposXAplicacionNoVacios(true);
+      } else {
+        await grupoStore.fetchGruposXAplicacion(true);
+      }
       await contactoStore.fetchContactosXAplicacion(true);
     }
   },

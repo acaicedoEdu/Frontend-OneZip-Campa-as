@@ -48,7 +48,7 @@
     :columns="columns"
     row-key="idMensaje"
     flat
-    :pagination="paginacion"
+    v-model:pagination="paginacion"
     :loading="mensajeStore.loading || loadingTimeout"
     bordered
     :table-header-style="{ fontWeight: 'normal' }"
@@ -135,42 +135,31 @@ const route = useRoute();
 let timeoutId: ReturnType<typeof setTimeout> | null = null;
 const loadingTimeout = ref(false);
 
-const paginacion = computed<Paginacion>(() => ({
+const paginacion = ref<Paginacion>({
   page: mensajeStore.pagina,
   rowsPerPage: mensajeStore.tamano,
   rowsNumber: mensajeStore.total,
   sortBy: '',
   descending: false,
-}));
+});
 
 const activarPaginado = async (props: RequestProps) => {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
   const idCampanaNumero = Number(route.params.id as string);
   if (estadoFiltro.value.length > 0) {
     const estado = String(estadoFiltro.value);
-    await mensajeStore.filtroMensajes(
-      idCampanaNumero,
-      estado,
-      true,
-      props.pagination.page,
-      props.pagination.rowsPerPage,
-    );
+    await mensajeStore.filtroMensajes(idCampanaNumero, estado, true, page, rowsPerPage);
   } else if (textoBuscar.value.trim()) {
     const busqueda = textoBuscar.value.toLowerCase().trim();
-    await mensajeStore.buscarMensajes(
-      idCampanaNumero,
-      busqueda,
-      true,
-      props.pagination.page,
-      props.pagination.rowsPerPage,
-    );
+    await mensajeStore.buscarMensajes(idCampanaNumero, busqueda, true, page, rowsPerPage);
   } else {
-    await mensajeStore.fetchMensajes(
-      idCampanaNumero,
-      true,
-      props.pagination.page,
-      props.pagination.rowsPerPage,
-    );
+    await mensajeStore.fetchMensajes(idCampanaNumero, true, page, rowsPerPage);
   }
+
+  paginacion.value.rowsNumber = mensajeStore.total;
+  paginacion.value.page = mensajeStore.pagina;
+  paginacion.value.sortBy = sortBy;
+  paginacion.value.descending = descending;
 };
 
 const columns: QTableProps['columns'] = [
@@ -296,6 +285,17 @@ watch(
         })();
       }, 500);
     }
+  },
+);
+
+watch(
+  () => [mensajeStore.total, mensajeStore.pagina, mensajeStore.tamano],
+  () => {
+    paginacion.value.rowsNumber = mensajeStore.total;
+    paginacion.value.page = mensajeStore.pagina;
+  },
+  {
+    immediate: true,
   },
 );
 </script>

@@ -10,10 +10,16 @@ import type { Respuesta, RespuestaPaginacion } from 'src/types/Respuesta';
 
 interface GrupoState {
   grupos: Grupo[];
+  gruposNoVacios: Grupo[];
   estadoAgregarGrupo: boolean;
   tamano: number;
   totalPaginas: number;
   pagina: number;
+  total: number;
+  tamanoNoVacios: number;
+  totalPaginasNoVacios: number;
+  paginaNoVacios: number;
+  totalNoVacios: number;
   loading: boolean;
   lastFetch: number | null;
 }
@@ -21,10 +27,16 @@ interface GrupoState {
 export const useGrupoStore = defineStore('grupos', {
   state: (): GrupoState => ({
     grupos: [],
+    gruposNoVacios: [],
     estadoAgregarGrupo: false,
     tamano: 0,
     totalPaginas: 0,
     pagina: 0,
+    total: 0,
+    tamanoNoVacios: 0,
+    totalPaginasNoVacios: 0,
+    paginaNoVacios: 0,
+    totalNoVacios: 0,
     loading: false,
     lastFetch: null,
   }),
@@ -34,6 +46,11 @@ export const useGrupoStore = defineStore('grupos', {
       (state) =>
       (id: number): Grupo | undefined => {
         return state.grupos.find((grupo) => grupo.IdGrupo === id);
+      },
+    getGrupoByIdNoVacios:
+      (state) =>
+      (id: number): Grupo | undefined => {
+        return state.gruposNoVacios.find((grupo) => grupo.IdGrupo === id);
       },
     hasData: (state) => state.grupos.length > 0,
   },
@@ -60,6 +77,7 @@ export const useGrupoStore = defineStore('grupos', {
         this.tamano = data.Tamano;
         this.totalPaginas = data.TotalPaginas;
         this.pagina = data.Pagina;
+        this.total = data.TotalDatos;
         this.lastFetch = Date.now();
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.data?.Mensaje) {
@@ -74,7 +92,7 @@ export const useGrupoStore = defineStore('grupos', {
       }
     },
 
-    async fetchGruposXAplicacion(forceRefresh = false, pagina: number = 1, tamano: number = 10) {
+    async fetchGruposXAplicacion(forceRefresh = false, pagina: number = 1, tamano: number = 8) {
       const now = Date.now();
       const cacheDuration = 5 * 60 * 1000;
 
@@ -102,6 +120,45 @@ export const useGrupoStore = defineStore('grupos', {
         this.tamano = data.Tamano;
         this.totalPaginas = data.TotalPaginas;
         this.pagina = data.Pagina;
+        this.total = data.TotalDatos;
+        this.lastFetch = Date.now();
+      } catch (error) {
+        showErrorNotification('Algo salió mal al obtener los grupos.');
+        console.error('Error obteniendo los grupos:', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async fetchGruposXAplicacionNoVacios(
+      forceRefresh = false,
+      pagina: number = 1,
+      tamano: number = 8,
+    ) {
+      const now = Date.now();
+      const cacheDuration = 5 * 60 * 1000;
+
+      if (
+        this.gruposNoVacios.length > 0 &&
+        !forceRefresh &&
+        this.lastFetch &&
+        now - this.lastFetch < cacheDuration
+      ) {
+        return;
+      }
+      const idAplicacion = useAplicacionStore().IdAplicacionEscogida;
+      this.loading = true;
+      try {
+        const response = await axios.get(
+          `/Grupo/novacio/aplicacion/${idAplicacion}?pagina=${pagina}&tamano=${tamano}`,
+        );
+        const data = response.data as RespuestaPaginacion<Grupo[]>;
+
+        this.gruposNoVacios = data.Dato || [];
+        this.tamanoNoVacios = data.Tamano;
+        this.totalPaginasNoVacios = data.TotalPaginas;
+        this.paginaNoVacios = data.Pagina;
+        this.totalNoVacios = data.TotalDatos;
         this.lastFetch = Date.now();
       } catch (error) {
         showErrorNotification('Algo salió mal al obtener los grupos.');

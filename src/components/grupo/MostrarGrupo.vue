@@ -1,13 +1,17 @@
 <template>
   <div class="q-pa-md">
-    <div v-if="grupos.length === 0">
+    <div v-if="proops.componentePadre === 'PageGrupo' && grupos.length === 0">
+      <q-spinner-oval v-if="grupoStore.loading" color="primary" size="4em" />
+      <VacioDatos v-else pagina="grupo" />
+    </div>
+    <div v-else-if="proops.componentePadre === 'agregarCampana' && grupos.length === 0">
       <q-spinner-oval v-if="grupoStore.loading" color="primary" size="4em" />
       <VacioDatos v-else pagina="grupo" />
     </div>
     <div v-else class="row items-center q-mb-lg">
       <div v-if="proops.componentePadre === 'PageGrupo'">
         <div class="text-h5 text-weight-bold">Grupos de Contactos</div>
-        <div class="text-grey-8">{{ grupos.length }} grupos disponibles</div>
+        <div class="text-grey-8">{{  grupoStore.total }} grupos disponibles</div>
       </div>
 
       <q-space v-if="proops.componentePadre === 'PageGrupo'" />
@@ -15,7 +19,7 @@
       <q-input
         outlined
         dense
-        v-model="searchText"
+        v-model="textoBuscar"
         placeholder="Buscar grupos..."
         style="width: 250px"
       >
@@ -31,21 +35,21 @@
       row-key="IdGrupo"
       grid
       :loading="grupoStore.loading"
-      :pagination="paginacion"
+      v-model:pagination="paginacion"
       v-model:selected="gruposSeleccionados"
       selection="single"
-      :filter="searchText"
+      :filter="textoBuscar"
       :selected-rows-label="(numberOfRows) => `${numberOfRows} contactos seleccionados`"
       rows-per-page-label="Filas por página"
-      :rows-per-page-options="[10]"
-      @request="onRequest"
+      :rows-per-page-options="[8]"
+      @request="activarPaginado"
     >
       <template v-slot:item="props">
         <div
-          class="q-pa-md col-12 col-md-6 col-lg-4 transition-card-contacto"
+          class="q-pa-md col-12 col-md-6 col-lg-3 transition-card-contacto"
           :style="props.selected ? 'transform: scale(0.95);' : ''"
         >
-          <q-card flat bordered class="full-height cursor-pointer card-grupo">
+          <q-card flat bordered class="cursor-pointer card-grupo">
             <q-card-section class="q-pb-xs row items-center no-wrap">
               <q-icon
                 name="fa-regular fa-folder-open"
@@ -159,7 +163,7 @@ import type { ContactosSeleccionados } from 'src/types/contactosSeleccionados';
 import { useContactoStore } from 'src/stores/contacto.store';
 
 const grupoStore = useGrupoStore();
-const searchText = ref('');
+const textoBuscar = ref('');
 
 interface LocalContactoSeleccionado {
   componentePadre: string;
@@ -171,44 +175,38 @@ const proops = defineProps<LocalContactoSeleccionado>();
 const emit = defineEmits(['update:contactoSeleccionado']);
 
 const obtenerContactosGrupo = computed(() => {
-  return proops.contactoSeleccionado?.idGrupo
-    ? grupoStore.getGrupoById(proops.contactoSeleccionado.idGrupo)
-      ? ([grupoStore.getGrupoById(proops.contactoSeleccionado.idGrupo)] as Grupo[])
-      : ([] as Grupo[])
-    : ([] as Grupo[]);
+  if (proops.componentePadre === 'agregarCampana') {
+    return proops.contactoSeleccionado?.idGrupo
+      ? grupoStore.getGrupoByIdNoVacios(proops.contactoSeleccionado.idGrupo)
+        ? ([grupoStore.getGrupoByIdNoVacios(proops.contactoSeleccionado.idGrupo)] as Grupo[])
+        : ([] as Grupo[])
+      : ([] as Grupo[]);
+  } else {
+    return proops.contactoSeleccionado?.idGrupo
+      ? grupoStore.getGrupoById(proops.contactoSeleccionado.idGrupo)
+        ? ([grupoStore.getGrupoById(proops.contactoSeleccionado.idGrupo)] as Grupo[])
+        : ([] as Grupo[])
+      : ([] as Grupo[]);
+  }
 });
 
 const gruposSeleccionados = ref<Grupo[]>(obtenerContactosGrupo.value || []);
 
-const grupos = computed<Grupo[]>(() => grupoStore.grupos);
-
-// const grupos = ref<Grupo[]>([
-//   {
-//     IdGrupo: 1,
-//     Nombre: 'Grupo 1',
-//     Descripcion: 'Descripcion 1',
-//     IdAplicacion: 1,
-//     TotalContactos: 1,
-//     FechaCarga: new Date(),
-//     FechaModificacion: new Date(),
-//     FuenteCarga: 'Manual',
-//   },
-//   {
-//     IdGrupo: 2,
-//     Nombre: 'Grupo 2',
-//     Descripcion: 'Descripcion 2',
-//     IdAplicacion: 1,
-//     TotalContactos: 2,
-//     FechaCarga: new Date(),
-//     FechaModificacion: new Date(),
-//     FuenteCarga: 'Manual',
-//   },
-// ]);
+const grupos = computed<Grupo[]>(() =>
+  proops.componentePadre === 'agregarCampana' ? grupoStore.gruposNoVacios : grupoStore.grupos,
+);
 
 const paginacion = ref<Paginacion>({
-  page: grupoStore.pagina,
-  rowsPerPage: grupoStore.tamano,
-  rowsNumber: grupoStore.totalPaginas,
+  page:
+    proops.componentePadre === 'agregarCampana'
+      ? grupoStore.paginaNoVacios
+      : grupoStore.pagina || 1,
+  rowsPerPage:
+    proops.componentePadre === 'agregarCampana'
+      ? grupoStore.tamanoNoVacios
+      : grupoStore.tamano || 8,
+  rowsNumber:
+    proops.componentePadre === 'agregarCampana' ? grupoStore.totalNoVacios : grupoStore.total || 0,
   sortBy: '',
   descending: false,
 });
@@ -237,8 +235,56 @@ watch(
   { deep: true },
 );
 
-const onRequest = (props: RequestProps) => {
-  console.log('onRequest', props);
+if (proops.componentePadre === 'agregarCampana') {
+  watch(
+    () => [grupoStore.totalNoVacios, grupoStore.paginaNoVacios, grupoStore.tamanoNoVacios],
+    () => {
+      paginacion.value.rowsNumber = grupoStore.totalNoVacios;
+      paginacion.value.page = grupoStore.paginaNoVacios;
+    },
+    {
+      immediate: true,
+    },
+  );
+} else {
+  watch(
+    () => [grupoStore.total, grupoStore.pagina, grupoStore.tamano],
+    () => {
+      paginacion.value.rowsNumber = grupoStore.total;
+      paginacion.value.page = grupoStore.pagina;
+    },
+    {
+      immediate: true,
+    },
+  );
+}
+
+const activarPaginado = async (props: RequestProps) => {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  if (textoBuscar.value.trim()) {
+    // const busqueda = textoBuscar.value.toLowerCase().trim();
+    // await mensajeStore.buscarMensajes(
+    //   idCampanaNumero,
+    //   busqueda,
+    //   true,
+    //   props.pagination.page,
+    //   props.pagination.rowsPerPage,
+    //   true,
+    // );
+  } else {
+    if (proops.componentePadre === 'agregarCampana') {
+      await grupoStore.fetchGruposXAplicacionNoVacios(true, page, rowsPerPage);
+    } else {
+      await grupoStore.fetchGruposXAplicacion(true, page, rowsPerPage);
+    }
+  }
+
+  paginacion.value.rowsNumber =
+    proops.componentePadre === 'agregarCampana' ? grupoStore.totalNoVacios : grupoStore.total;
+  paginacion.value.page =
+    proops.componentePadre === 'agregarCampana' ? grupoStore.paginaNoVacios : grupoStore.pagina;
+  paginacion.value.sortBy = sortBy;
+  paginacion.value.descending = descending;
 };
 </script>
 

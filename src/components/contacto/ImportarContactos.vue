@@ -83,8 +83,14 @@ const grupoStore = useGrupoStore();
 const contactoStore = useContactoStore();
 const modelValue = ref(computed(() => contactoStore.estadoImportarContacto));
 
+interface GrupoImportar {
+  nombreGrupo?: string;
+}
+
+const props = defineProps<GrupoImportar>();
+
 const archivo = ref<File | null>(null);
-const nombreGrupoEscogido = ref<string | null>(null);
+const nombreGrupoEscogido = ref<string | null>(props.nombreGrupo || null);
 
 const opcionesGrupo = computed<string[]>(() =>
   grupoStore.grupos

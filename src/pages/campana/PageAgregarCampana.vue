@@ -296,7 +296,7 @@ watch(
   async (newAppId) => {
     if (newAppId) {
       await plantillaStore.fetchPlantillasXAplicacion();
-      await grupoStore.fetchGruposXAplicacion();
+      await grupoStore.fetchGruposXAplicacionNoVacios();
       await contactoStore.fetchContactosXAplicacion();
     }
   },

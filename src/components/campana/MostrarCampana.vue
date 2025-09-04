@@ -173,7 +173,7 @@ const colorEstado = (idEstado: number) => {
 };
 
 watch(
-  () => campanaStore.pagina,
+  () => [campanaStore.total, campanaStore.pagina, campanaStore.tamano],
   () => {
     paginacion.value.rowsNumber = campanaStore.total;
     paginacion.value.page = campanaStore.pagina;

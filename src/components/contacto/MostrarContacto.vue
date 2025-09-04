@@ -22,7 +22,7 @@
       <q-input
         outlined
         dense
-        v-model="searchText"
+        v-model="textoBuscar"
         placeholder="Buscar contactos..."
         class="bg-white"
         style="width: 250px"
@@ -41,7 +41,7 @@
         v-if="contactos.length > 0"
       >
         <q-icon name="fa-solid fa-user-plus" size="15px" class="text-grey-9" />
-        <span class="text-weight-bold q-ml-sm text-grey-9">Añadir Contacto</span>
+        <span class="text-weight-bold q-ml-sm text-grey-9">Añadir a Grupo</span>
       </q-btn>
     </div>
     <q-table
@@ -50,26 +50,22 @@
       row-key="Telefono"
       grid
       :loading="contactoStore.loading"
-      v-model:pagination="pagination"
+      v-model:pagination="paginacion"
       v-model:selected="selectedContacts"
       selection="multiple"
-      :filter="searchText"
+      :filter="textoBuscar"
       icon-next-page="fa-solid fa-angle-right"
       icon-prev-page="fa-solid fa-angle-left"
-      :rows-per-page-options="[6]"
+      :rows-per-page-options="[20]"
       :selected-rows-label="(numberOfRows) => `${numberOfRows} contactos seleccionados`"
+      @request="activarPaginado"
     >
       <template v-slot:item="contacto">
         <div
-          class="q-pa-md col-12 col-md-6 col-lg-4 transition-card-contacto"
+          class="q-pa-md col-12 col-md-3 col-lg-3 transition-card-contacto"
           :style="contacto.selected ? 'transform: scale(0.95);' : ''"
         >
-          <q-card
-            flat
-            bordered
-            class="full-height card-contacto"
-            :class="contacto.selected ? 'bg-blue-1' : ''"
-          >
+          <q-card flat bordered class="card-contacto" :class="contacto.selected ? 'bg-blue-1' : ''">
             <q-card-section
               :class="
                 contacto.row.CampoPersonalizado && contacto.row.CampoPersonalizado.length > 0
@@ -158,9 +154,10 @@ import { useContactoStore } from 'src/stores/contacto.store';
 import { type Contacto } from 'src/types/contacto';
 import { type CampoPersonalizadoContacto } from 'src/types/campopersonalizadocontacto';
 import type { ContactosSeleccionados } from 'src/types/contactosSeleccionados';
+import type { Paginacion, RequestProps } from 'src/types/paginacion';
 
 const contactoStore = useContactoStore();
-const searchText = ref('');
+const textoBuscar = ref('');
 
 interface LocalContactoSeleccionado {
   componentePadre: string;
@@ -179,9 +176,12 @@ const selectedContacts = ref<Contacto[]>(contactosSeleccionadosExistentes.value)
 
 const contactos: ComputedRef<Contacto[]> = computed(() => contactoStore.contactos);
 
-const pagination = ref({
-  page: contactoStore.pagina,
-  rowsPerPage: contactoStore.tamano,
+const paginacion = ref<Paginacion>({
+  page: contactoStore.pagina || 1,
+  rowsPerPage: contactoStore.tamano || 20,
+  rowsNumber: contactoStore.total || 0,
+  sortBy: '',
+  descending: false,
 });
 
 interface Columnas {
@@ -210,12 +210,45 @@ const columnas: Columnas[] = [
   },
 ];
 
+const activarPaginado = async (props: RequestProps) => {
+  const { page, rowsPerPage, sortBy, descending } = props.pagination;
+  if (textoBuscar.value.trim()) {
+    // const busqueda = textoBuscar.value.toLowerCase().trim();
+    // await mensajeStore.buscarMensajes(
+    //   idCampanaNumero,
+    //   busqueda,
+    //   true,
+    //   props.pagination.page,
+    //   props.pagination.rowsPerPage,
+    //   true,
+    // );
+  } else {
+    await contactoStore.fetchContactosXAplicacion(true, page, rowsPerPage);
+  }
+
+  paginacion.value.rowsNumber = contactoStore.total;
+  paginacion.value.page = contactoStore.pagina;
+  paginacion.value.sortBy = sortBy;
+  paginacion.value.descending = descending;
+};
+
 watch(
   selectedContacts,
   (newVal) => {
     emit('update:contactoSeleccionado', { contactosSeleccionados: newVal });
   },
   { deep: true },
+);
+
+watch(
+  () => [contactoStore.total, contactoStore.pagina, contactoStore.tamano],
+  () => {
+    paginacion.value.rowsNumber = contactoStore.total;
+    paginacion.value.page = contactoStore.pagina;
+  },
+  {
+    immediate: true,
+  },
 );
 </script>
 

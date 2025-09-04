@@ -16,6 +16,7 @@ interface ContactoState {
   estadoImportarContacto: boolean;
   tamano: number;
   totalPaginas: number;
+  total: number;
   pagina: number;
   loading: boolean;
   loadingImportarContacto: boolean;
@@ -29,6 +30,7 @@ export const useContactoStore = defineStore('contactos', {
     estadoImportarContacto: false,
     tamano: 0,
     totalPaginas: 0,
+    total: 0,
     pagina: 0,
     loading: false,
     loadingImportarContacto: false,
@@ -65,6 +67,7 @@ export const useContactoStore = defineStore('contactos', {
         this.contactos = data.Dato || [];
         this.tamano = data.Tamano;
         this.totalPaginas = data.TotalPaginas;
+        this.total = data.TotalDatos;
         this.pagina = data.Pagina;
         this.lastFetch = Date.now();
       } catch (error) {
@@ -80,7 +83,7 @@ export const useContactoStore = defineStore('contactos', {
       }
     },
 
-    async fetchContactosXAplicacion(forceRefresh = false, pagina: number = 1, tamano: number = 10) {
+    async fetchContactosXAplicacion(forceRefresh = false, pagina: number = 1, tamano: number = 20) {
       const now = Date.now();
       const cacheDuration = 5 * 60 * 1000;
 
@@ -107,6 +110,7 @@ export const useContactoStore = defineStore('contactos', {
         this.contactos = data.Dato || [];
         this.tamano = data.Tamano;
         this.totalPaginas = data.TotalPaginas;
+        this.total = data.TotalDatos;
         this.pagina = data.Pagina;
         this.lastFetch = Date.now();
       } catch (error) {
