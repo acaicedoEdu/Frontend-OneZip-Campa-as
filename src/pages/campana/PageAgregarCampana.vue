@@ -295,9 +295,9 @@ watch(
   IdAplicacionEscogida,
   async (newAppId) => {
     if (newAppId) {
-      await plantillaStore.fetchPlantillasXAplicacion();
-      await grupoStore.fetchGruposXAplicacionNoVacios();
-      await contactoStore.fetchContactosXAplicacion();
+      await plantillaStore.fetchPlantillasXAplicacion(true);
+      await grupoStore.fetchGruposXAplicacionNoVacios(true);
+      await contactoStore.fetchContactosXAplicacion(true);
     }
   },
   { immediate: true },
@@ -315,12 +315,18 @@ const actualizarSchedule = (nuevaConfiguracion: ConfiguracionEnvioCampanas) => {
   configuracionEnvioCampana.value = nuevaConfiguracion;
 };
 const disableBotonSiguiente = computed(() => {
-  return step.value === 1 && (!modelNombreCampana.value || !plantillasSeleccionada.value.length);
+  return (
+    (step.value === 1 && (!modelNombreCampana.value || !plantillasSeleccionada.value.length)) ||
+    (step.value === 2 &&
+      (obtenerContactosGrupo.value?.TotalContactos || 0) +
+        (contactoSeleccionado.value.contactosSeleccionados?.length || 0) <=
+        0)
+  );
 });
 
 const obtenerContactosGrupo = computed(() => {
   return contactoSeleccionado.value.idGrupo
-    ? grupoStore.getGrupoById(contactoSeleccionado.value.idGrupo)
+    ? grupoStore.getGrupoByIdNoVacios(contactoSeleccionado.value.idGrupo)
     : null;
 });
 

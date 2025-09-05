@@ -9,12 +9,19 @@
       <VacioDatos v-else pagina="grupo" />
     </div>
     <div v-else class="row items-center q-mb-lg">
-      <div v-if="proops.componentePadre === 'PageGrupo'">
+      <div>
         <div class="text-h5 text-weight-bold">Grupos de Contactos</div>
-        <div class="text-grey-8">{{  grupoStore.total }} grupos disponibles</div>
+        <div class="text-grey-8">
+          {{
+            proops.componentePadre === 'agregarCampana'
+              ? grupoStore.totalNoVacios
+              : grupoStore.total
+          }}
+          grupos disponibles
+        </div>
       </div>
 
-      <q-space v-if="proops.componentePadre === 'PageGrupo'" />
+      <q-space />
 
       <q-input
         outlined
@@ -27,6 +34,19 @@
           <q-icon name="fa-solid fa-magnifying-glass" size="18px" />
         </template>
       </q-input>
+
+      <q-btn
+        v-if="proops.componentePadre === 'agregarCampana'"
+        unelevated
+        outline
+        padding="8px 24px"
+        class="q-ml-sm bg-white soft-text"
+        no-caps
+        @click="grupoStore.toggleAgregarGrupo()"
+      >
+        <q-icon name="fa-solid fa-folder-plus text-dark" size="13px" />
+        <span class="q-ml-sm text-dark text-subtitle2">Nuevo Grupo</span>
+      </q-btn>
     </div>
     <q-table
       v-if="grupos.length > 0"
@@ -39,7 +59,7 @@
       v-model:selected="gruposSeleccionados"
       selection="single"
       :filter="textoBuscar"
-      :selected-rows-label="(numberOfRows) => `${numberOfRows} contactos seleccionados`"
+      :selected-rows-label="(numberOfRows) => `${numberOfRows} grupos seleccionados`"
       rows-per-page-label="Filas por página"
       :rows-per-page-options="[8]"
       @request="activarPaginado"

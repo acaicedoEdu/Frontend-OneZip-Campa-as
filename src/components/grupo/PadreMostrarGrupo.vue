@@ -83,7 +83,7 @@
         :componentePadre="props.componentePadre"
       />
     </q-tab-panel>
-    <q-tab-panel name="contactos">
+    <q-tab-panel name="contactos" class="bordered-panel q-pa-none">
       <MostrarContactos
         @update:contactoSeleccionado="actualizarContactos"
         :contactoSeleccionado="contactoSeleccionado"

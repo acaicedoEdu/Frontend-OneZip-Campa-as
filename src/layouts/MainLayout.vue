@@ -54,7 +54,7 @@
                     @click="
                       opcion.titulo === 'Nuevo Grupo'
                         ? useGrupoStore().toggleAgregarGrupo()
-                        : (addContactDialog = true)
+                        : useContactoStore().toggleAgregarContacto()
                     "
                   >
                     <q-item-section side>
@@ -102,7 +102,7 @@
 
   <ImportarContactos />
   <AgregarGrupo />
-  <AgregarContacto v-model="addContactDialog" />
+  <AgregarContacto />
   <AlertaConfirmacion />
 </template>
 
@@ -120,7 +120,6 @@ import { useAplicacionStore } from 'src/stores/aplicacion.store';
 import AlertaConfirmacion from 'src/components/AlertaConfirmacion.vue';
 
 const navigationStore = ref(true);
-const addContactDialog = ref(false);
 const rutaActual = useRoute();
 
 const anoActual = computed(() => new Date().getFullYear());

@@ -40,8 +40,21 @@
         padding="7px 24px"
         v-if="contactos.length > 0"
       >
-        <q-icon name="fa-solid fa-user-plus" size="15px" class="text-grey-9" />
+        <q-icon name="fa-solid fa-folder-plus" size="15px" class="text-grey-9" />
         <span class="text-weight-bold q-ml-sm text-grey-9">Añadir a Grupo</span>
+      </q-btn>
+      <q-btn
+        unelevated
+        outline
+        no-caps
+        default
+        class="bg-white soft-text q-ml-sm"
+        padding="7px 24px"
+        v-if="props.componentePadre == 'agregarCampana'"
+        @click="contactoStore.toggleAgregarContacto()"
+      >
+        <q-icon name="fa-solid fa-user-plus" size="15px" class="text-grey-9" />
+        <span class="text-weight-bold q-ml-sm text-grey-9">Añadir Contacto</span>
       </q-btn>
     </div>
     <q-table
